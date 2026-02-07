@@ -1,0 +1,2 @@
+Create a component at @components that will allow a user to upload a raw csv file. It will then build the jupyter notebook that can clean the raw csv file.
+The component will be mounted on app/admin/page.js. The raw csv file will be saved in app/ipynb alomg with the notebook created by the component will be saved to this folder as well as the cleaned csv file
