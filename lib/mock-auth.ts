@@ -118,7 +118,8 @@ export const mockAuth = {
     return currentUser?.uid === uid ? currentUser : null;
   },
 
-  isAdmin: (uid: string): boolean => {
+  isAdmin: (_uid: string): boolean => {
+    void _uid;
     // In demo mode, make all users admins
     return true;
   },

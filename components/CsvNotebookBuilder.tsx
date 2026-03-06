@@ -3,13 +3,14 @@
 import { useState, type ChangeEvent } from "react";
 import Papa from "papaparse";
 import NotebookViewer from "./NotebookViewer";
+import CsvVisualizations from "./CsvVisualizations";
 
 type Stats = {
   rows: number;
   columns: string[];
 };
 
-type Tab = "upload" | "notebook";
+type Tab = "upload" | "notebook" | "visualizations";
 
 const normalizeHeader = (header: string) =>
   header
@@ -156,9 +157,13 @@ export default function CsvNotebookBuilder() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h2 className="text-2xl font-semibold text-[#f4d03f]">
+    <div className="flex flex-col gap-6 reveal-up delay-2">
+      <div className="section-glow">
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#d4af37]/70 bg-[#20190f]/80 px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-[#f4d03f]">
+          <span className="status-pulse inline-block h-2 w-2 rounded-full bg-[#ffd700]" />
+          Smart data pipeline
+        </div>
+        <h2 className="text-2xl font-semibold text-[#f4d03f] md:text-3xl">
           CSV Cleanup & Interactive Notebook
         </h2>
         <p className="mt-2 text-sm text-[#c9a961]">
@@ -168,13 +173,13 @@ export default function CsvNotebookBuilder() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex gap-2 border-b border-[#d4af37]">
+      <div className="glass-card flex flex-wrap gap-2 rounded-2xl p-2">
         <button
           onClick={() => setActiveTab("upload")}
-          className={`px-6 py-3 text-sm font-semibold transition ${
+          className={`tab-pill rounded-xl px-4 py-2.5 text-sm font-semibold ${
             activeTab === "upload"
-              ? "border-b-2 border-[#f4d03f] text-[#f4d03f]"
-              : "text-[#c9a961] hover:text-[#f4d03f]"
+              ? "border-[#d4af37] bg-[#f4d03f] text-[#111111]"
+              : "border-[#d4af37]/30 bg-[#191919] text-[#c9a961] hover:border-[#d4af37] hover:text-[#f4d03f]"
           }`}
         >
           Upload & Download
@@ -182,21 +187,33 @@ export default function CsvNotebookBuilder() {
         <button
           onClick={() => setActiveTab("notebook")}
           disabled={!rawCsvContent}
-          className={`px-6 py-3 text-sm font-semibold transition ${
+          className={`tab-pill rounded-xl px-4 py-2.5 text-sm font-semibold ${
             activeTab === "notebook"
-              ? "border-b-2 border-[#f4d03f] text-[#f4d03f]"
-              : "text-[#c9a961] hover:text-[#f4d03f] disabled:cursor-not-allowed disabled:text-[#6b5d45]"
+              ? "border-[#d4af37] bg-[#f4d03f] text-[#111111]"
+              : "border-[#d4af37]/30 bg-[#191919] text-[#c9a961] hover:border-[#d4af37] hover:text-[#f4d03f] disabled:cursor-not-allowed disabled:border-[#6b5d45] disabled:text-[#6b5d45]"
           }`}
         >
           Interactive Notebook
           {!rawCsvContent && " (upload first)"}
         </button>
+        <button
+          onClick={() => setActiveTab("visualizations")}
+          disabled={!cleanedCsv}
+          className={`tab-pill rounded-xl px-4 py-2.5 text-sm font-semibold ${
+            activeTab === "visualizations"
+              ? "border-[#d4af37] bg-[#f4d03f] text-[#111111]"
+              : "border-[#d4af37]/30 bg-[#191919] text-[#c9a961] hover:border-[#d4af37] hover:text-[#f4d03f] disabled:cursor-not-allowed disabled:border-[#6b5d45] disabled:text-[#6b5d45]"
+          }`}
+        >
+          Visualizations
+          {!cleanedCsv && " (upload first)"}
+        </button>
       </div>
 
       {/* Upload Tab */}
       {activeTab === "upload" && (
-        <div className="flex flex-col gap-6">
-          <label className="flex cursor-pointer flex-col gap-3 rounded-2xl border border-dashed border-[#d4af37] bg-[#2a2416] p-6 text-sm text-[#c9a961] transition hover:border-[#ffd700]">
+        <div className="panel-enter flex flex-col gap-6">
+          <label className="glass-card hover-lift flex cursor-pointer flex-col gap-3 rounded-2xl border border-dashed border-[#d4af37] bg-[#2a2416]/85 p-6 text-sm text-[#c9a961] transition hover:border-[#ffd700]">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c9a961]">
               Upload CSV
             </span>
@@ -210,19 +227,19 @@ export default function CsvNotebookBuilder() {
           </label>
 
           {processing && (
-            <div className="rounded-2xl border border-[#d4af37] bg-[#2a2416] p-4 text-sm text-[#c9a961]">
+            <div className="glass-card rounded-2xl bg-[#2a2416]/88 p-4 text-sm text-[#c9a961]">
               Cleaning your CSV...
             </div>
           )}
 
           {error && (
-            <div className="rounded-2xl border border-[#d4af37] bg-[#2a2416] p-4 text-sm text-[#ffd700]">
+            <div className="glass-card rounded-2xl bg-[#2a2416]/88 p-4 text-sm text-[#ffd700]">
               {error}
             </div>
           )}
 
           {stats && (
-            <div className="rounded-2xl border border-[#d4af37] bg-[#1a1a1a] p-6 text-sm text-[#c9a961]">
+            <div className="glass-card hover-lift rounded-2xl p-6 text-sm text-[#c9a961]">
               <p className="font-medium text-[#f4d03f]">Cleanup summary</p>
               <div className="mt-3 grid gap-2 text-xs uppercase tracking-[0.2em] text-[#c9a961]">
                 <span>Rows: {stats.rows}</span>
@@ -247,7 +264,7 @@ export default function CsvNotebookBuilder() {
                   "text/csv;charset=utf-8",
                 )
               }
-              className="inline-flex h-11 items-center justify-center rounded-xl bg-[#d4af37] px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#0a0a0a] transition hover:bg-[#ffd700] disabled:cursor-not-allowed disabled:bg-[#6b5d45] disabled:text-[#3a3420]"
+              className="shine-btn inline-flex h-11 items-center justify-center rounded-xl bg-[#d4af37] px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#0a0a0a] transition hover:-translate-y-0.5 hover:bg-[#ffd700] disabled:cursor-not-allowed disabled:bg-[#6b5d45] disabled:text-[#3a3420]"
             >
               Download Clean CSV
             </button>
@@ -263,7 +280,7 @@ export default function CsvNotebookBuilder() {
                   "application/x-ipynb+json",
                 )
               }
-              className="inline-flex h-11 items-center justify-center rounded-xl border border-[#d4af37] px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f] transition hover:bg-[#d4af37] hover:text-[#0a0a0a] disabled:cursor-not-allowed disabled:border-[#6b5d45] disabled:text-[#6b5d45]"
+              className="shine-btn inline-flex h-11 items-center justify-center rounded-xl border border-[#d4af37] bg-[#1a1a1a]/60 px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f] transition hover:-translate-y-0.5 hover:bg-[#d4af37] hover:text-[#0a0a0a] disabled:cursor-not-allowed disabled:border-[#6b5d45] disabled:text-[#6b5d45]"
             >
               Download Notebook
             </button>
@@ -271,19 +288,22 @@ export default function CsvNotebookBuilder() {
               <button
                 type="button"
                 onClick={() => setActiveTab("notebook")}
-                className="inline-flex h-11 items-center justify-center rounded-xl border border-[#ffd700] px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#ffd700] transition hover:bg-[#ffd700] hover:text-[#0a0a0a]"
+                className="shine-btn inline-flex h-11 items-center justify-center rounded-xl border border-[#ffd700] bg-[#20190f]/80 px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#ffd700] transition hover:-translate-y-0.5 hover:bg-[#ffd700] hover:text-[#0a0a0a]"
               >
                 View Interactive Notebook →
               </button>
             )}
           </div>
 
-          <div className="rounded-2xl border border-[#d4af37] bg-[#1a1a1a] p-6 text-sm text-[#c9a961]">
+          <div className="glass-card hover-lift rounded-2xl p-6 text-sm text-[#c9a961]">
             <p className="font-medium text-[#f4d03f]">Next steps</p>
             <ul className="mt-3 space-y-2">
               <li>• Download the cleaned CSV for immediate use</li>
               <li>• Download the Jupyter notebook for automated processing</li>
-              <li>• Switch to "Interactive Notebook" tab to see the cleaning process and run Python code</li>
+              <li>
+                • Switch to &quot;Interactive Notebook&quot; tab to see the
+                cleaning process and run Python code
+              </li>
             </ul>
           </div>
         </div>
@@ -291,7 +311,16 @@ export default function CsvNotebookBuilder() {
 
       {/* Interactive Notebook Tab */}
       {activeTab === "notebook" && rawCsvContent && (
-        <NotebookViewer csvContent={rawCsvContent} fileName={file?.name ?? "data.csv"} />
+        <div className="panel-enter">
+          <NotebookViewer csvContent={rawCsvContent} fileName={file?.name ?? "data.csv"} />
+        </div>
+      )}
+
+      {/* Visualizations Tab */}
+      {activeTab === "visualizations" && cleanedCsv && stats && (
+        <div className="panel-enter">
+          <CsvVisualizations cleanedCsv={cleanedCsv} stats={stats} />
+        </div>
       )}
     </div>
   );

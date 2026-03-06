@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db, firebaseConfigError } from "@/lib/firebase";
+import { replaceWithTransition } from "@/lib/view-transition";
 import { isValidEmail } from "@/lib/validators";
 
 type Stage = "checking" | "needsEmail" | "signingIn" | "error";
@@ -59,7 +60,7 @@ export default function FinishPage() {
       }
 
       window.localStorage.removeItem("emailForSignIn");
-      router.replace("/dashboard");
+      replaceWithTransition(router, "/dashboard");
     } catch (err) {
       console.error(err);
       setError("This sign-in link is invalid or expired.");

@@ -2,11 +2,21 @@
 
 import { useEffect, useState, useRef } from "react";
 
-type PyodideInterface = {
-  runPythonAsync: (code: string) => Promise<any>;
-  loadPackagesFromImports: (code: string) => Promise<void>;
-  globals: any;
+type PyodideGlobals = {
+  set: (key: string, value: string) => void;
 };
+
+type PyodideInterface = {
+  runPythonAsync: (code: string) => Promise<unknown>;
+  loadPackage: (packages: string[] | string) => Promise<void>;
+  globals: PyodideGlobals;
+};
+
+declare global {
+  interface Window {
+    loadPyodide?: (options: { indexURL: string }) => Promise<PyodideInterface>;
+  }
+}
 
 export function usePyodide() {
   const [pyodide, setPyodide] = useState<PyodideInterface | null>(null);
@@ -32,7 +42,10 @@ export function usePyodide() {
         document.head.appendChild(script);
         await scriptLoadPromise;
 
-        // @ts-ignore - Pyodide is loaded from CDN
+        if (!window.loadPyodide) {
+          throw new Error("Pyodide loader not available");
+        }
+
         const pyodideInstance = await window.loadPyodide({
           indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/",
         });
@@ -42,9 +55,9 @@ export function usePyodide() {
 
         setPyodide(pyodideInstance);
         setLoading(false);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Failed to load Pyodide:", err);
-        setError("Failed to load Python runtime");
+        setError(err instanceof Error ? err.message : "Failed to load Python runtime");
         setLoading(false);
       }
     })();
@@ -68,8 +81,10 @@ sys.stderr = StringIO()
       const result = await pyodide.runPythonAsync(code);
 
       // Get stdout
-      const stdout = await pyodide.runPythonAsync(`sys.stdout.getvalue()`);
-      const stderr = await pyodide.runPythonAsync(`sys.stderr.getvalue()`);
+      const stdoutResult = await pyodide.runPythonAsync(`sys.stdout.getvalue()`);
+      const stderrResult = await pyodide.runPythonAsync(`sys.stderr.getvalue()`);
+      const stdout = typeof stdoutResult === "string" ? stdoutResult : String(stdoutResult ?? "");
+      const stderr = typeof stderrResult === "string" ? stderrResult : String(stderrResult ?? "");
 
       // Reset stdout
       await pyodide.runPythonAsync(`
@@ -86,10 +101,10 @@ sys.stderr = sys.__stderr__
         output: output || "(no output)",
         error: stderr || null,
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
       return {
         output: "",
-        error: err.message || "Execution error",
+        error: err instanceof Error ? err.message : "Execution error",
       };
     }
   };

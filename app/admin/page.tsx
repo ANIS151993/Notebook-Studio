@@ -6,6 +6,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import CsvNotebookBuilder from "@/components/CsvNotebookBuilder";
 import { auth, db, firebaseConfigError } from "@/lib/firebase";
+import { replaceWithTransition } from "@/lib/view-transition";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function AdminPage() {
 
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (user) => {
       if (!user) {
-        router.replace("/");
+        replaceWithTransition(router, "/");
         return;
       }
 
@@ -48,33 +49,33 @@ export default function AdminPage() {
       return;
     }
     await signOut(auth);
-    router.replace("/");
+    replaceWithTransition(router, "/");
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] px-6 py-16">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 rounded-3xl border border-[#d4af37] bg-[#1a1a1a] p-8 shadow-[0_20px_60px_rgba(212,175,55,0.1)]">
+    <div className="min-h-screen px-6 py-16">
+      <div className="glass-card reveal-up mx-auto flex w-full max-w-4xl flex-col gap-6 rounded-3xl p-8">
         {loading && (
-          <div className="rounded-2xl border border-[#d4af37] bg-[#2a2416] p-4 text-sm text-[#c9a961]">
+          <div className="glass-card panel-enter rounded-2xl bg-[#2a2416]/88 p-4 text-sm text-[#c9a961]">
             Checking admin access...
           </div>
         )}
 
         {error && (
-          <div className="rounded-2xl border border-[#d4af37] bg-[#2a2416] p-4 text-sm text-[#ffd700]">
+          <div className="glass-card panel-enter rounded-2xl bg-[#2a2416]/88 p-4 text-sm text-[#ffd700]">
             {error}
           </div>
         )}
 
         {!loading && !error && !isAdmin && (
-          <div className="flex flex-col gap-4">
-            <div className="rounded-2xl border border-[#d4af37] bg-[#2a2416] p-6 text-sm text-[#c9a961]">
+          <div className="flex flex-col gap-4 panel-enter">
+            <div className="glass-card rounded-2xl bg-[#2a2416]/88 p-6 text-sm text-[#c9a961]">
               You do not have admin access. Contact your workspace owner to be
               added.
             </div>
             <button
               type="button"
-              className="inline-flex h-11 items-center justify-center rounded-xl border border-[#d4af37] px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f] transition hover:bg-[#d4af37] hover:text-[#0a0a0a]"
+              className="tab-pill shine-btn inline-flex h-11 items-center justify-center rounded-xl border border-[#d4af37] bg-[#1a1a1a]/70 px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f] hover:bg-[#d4af37] hover:text-[#0a0a0a]"
               onClick={handleSignOut}
             >
               Sign out
