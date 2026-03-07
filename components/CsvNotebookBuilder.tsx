@@ -131,7 +131,7 @@ export default function CsvNotebookBuilder() {
         columns: Object.keys(deduped[0] ?? {}),
       });
 
-      const templateResponse = await fetch("/api/ipynb-template");
+      const templateResponse = await fetch("/clean_csv_template.ipynb");
       if (!templateResponse.ok) {
         throw new Error("Unable to load notebook template.");
       }

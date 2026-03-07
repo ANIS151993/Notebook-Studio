@@ -207,23 +207,32 @@ Set these in `.env.local`:
 npm run dev
 npm run lint
 npm run build
-npm run start
+```
+
+Optional static preview after build:
+
+```bash
+npx serve out
 ```
 
 ---
 
 ## Deployment Guidance
 
-### Option A: Vercel
+### Option A: Cloudflare Pages (Recommended)
+
+1. Connect your GitHub repo to Cloudflare Pages
+2. Build command: `npm run build`
+3. Build output directory: `out`
+4. Add all required `NEXT_PUBLIC_*` environment variables
+5. Deploy
+6. Attach your custom domain (for example: `marcb.site`)
+
+### Option B: Vercel
 
 - Import repo in Vercel
 - Set environment variables
 - Deploy
-
-### Option B: Firebase Hosting
-
-- Build app: `npm run build`
-- Configure hosting + deploy with Firebase CLI
 
 ---
 
@@ -237,13 +246,14 @@ app/
   finish/page.tsx
   dashboard/page.tsx
   admin/page.tsx
-  api/ipynb-template/route.ts
 components/
   CsvNotebookBuilder.tsx
   NotebookViewer.tsx
   CodeCell.tsx
   CsvVisualizations.tsx
   charts/*
+public/
+  clean_csv_template.ipynb
 hooks/
   usePyodide.ts
 lib/
