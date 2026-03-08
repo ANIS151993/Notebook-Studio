@@ -23,6 +23,7 @@ export default function CodeCell({
   showOutput = true,
   explanation,
 }: CodeCellProps) {
+  const maxAutoRepairAttempts = 3;
   const [code, setCode] = useState(initialCode);
   const [output, setOutput] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -39,26 +40,74 @@ export default function CodeCell({
     setIsRunning(true);
     setError(null);
     setOutput(null);
+    setAutoFixStatus("Running...");
 
     try {
-      const result = await onExecute(codeToRun);
-      setOutput(result.output);
-      setError(result.error);
-      setHasRun(true);
+      let workingCode = codeToRun;
+      let lastError: string | null = null;
+
+      for (let attempt = 0; attempt <= maxAutoRepairAttempts; attempt += 1) {
+        const result = await onExecute(workingCode);
+        setOutput(result.output);
+        setError(result.error);
+        setHasRun(true);
+        lastError = result.error;
+
+        if (!result.error) {
+          if (attempt === 0) {
+            setAutoFixStatus("Run successful.");
+          } else {
+            setAutoFixStatus(`Resolved after ${attempt} auto-fix attempt(s).`);
+          }
+          return;
+        }
+
+        if (!isEditable) {
+          setAutoFixStatus("Error detected. Auto-fix is available only in editable cells.");
+          return;
+        }
+
+        if (attempt === maxAutoRepairAttempts) {
+          setAutoFixStatus(
+            `Auto-fix reached max attempts (${maxAutoRepairAttempts}). Please edit manually.`,
+          );
+          return;
+        }
+
+        const fixResult = autoFixPythonCodeWithRuntimeError(workingCode, result.error);
+        if (!fixResult || fixResult.code === workingCode) {
+          setAutoFixStatus("Error detected. No safe automatic fix found.");
+          return;
+        }
+
+        const detail =
+          fixResult.changes.length > 0
+            ? fixResult.changes.join("; ")
+            : "basic correction";
+        setAutoFixStatus(`Attempt ${attempt + 1}: ${detail}`);
+
+        workingCode = fixResult.code;
+        setCode(workingCode);
+      }
+
+      if (lastError) {
+        setError(lastError);
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Execution failed");
+      setAutoFixStatus("Execution failed.");
     } finally {
       setIsRunning(false);
     }
-  }, [onExecute]);
+  }, [onExecute, isEditable]);
 
   useEffect(() => {
-    if (!isEditable) {
+    if (!isEditable || isRunning || Boolean(error)) {
       return;
     }
 
     const timer = window.setTimeout(() => {
-      const fixResult = autoFixPythonCodeWithRuntimeError(code, error);
+      const fixResult = autoFixPythonCodeWithRuntimeError(code, null);
       if (!fixResult || fixResult.code === code) {
         setAutoFixStatus("Monitoring...");
         lastAppliedFixRef.current = null;
