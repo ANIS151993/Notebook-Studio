@@ -1,22 +1,27 @@
-A Practical, User-Centric Framework for Serverless CSV Intelligence and Interactive Notebook Automation
+A Practical Framework for Serverless CSV Intelligence with Interactive Notebook Automation and Local AI Runtime Repair
 
 Author: MD ANISUR RAHMAN CHOWDHURY
 Affiliation: Gannon University
+App URL: https://datamentor.marcbd.site
 
 Abstract:
-Notebook Studio is a serverless platform that turns raw CSV files into cleaned datasets and guided interactive notebooks. It combines browser Python execution, cloud auth, resilient storage, and local AI-assisted runtime correction.
+Notebook Studio is a serverless, browser-first data workflow platform for CSV cleaning, notebook automation, and runtime debugging support. It combines deterministic preprocessing, browser Python execution, cloud persistence with local continuity fallback, and hybrid automatic repair.
 
-Core Contribution:
-- Deterministic CSV cleaning
-- Interactive notebook generation
-- Practical visualization workflows
-- Persistent user workspace
-- Hybrid auto-repair for runtime Python errors
+Method Summary (Line-by-Line):
+1) Prepare heterogeneous CSV datasets.
+2) Record manual baseline preprocessing time.
+3) Run same datasets in Notebook Studio.
+4) Inject Python error categories and observe repair behavior.
+5) Capture runtime repair latency and resolution outcomes.
+6) Compare with baseline through chart-driven analysis.
 
-Use Cases:
+Real-World Use Cases:
 - Academic data labs
 - SME analytics operations
-- Fraud/anomaly prep pipelines
+- Pre-model analyst screening pipelines
 
-Policy:
-Reading and downloading are allowed for academic and non-commercial use with proper citation. Redistribution must preserve attribution. Commercial resale and plagiarism are prohibited.
+Conclusion:
+A serverless architecture can deliver practical productivity gains and reproducible data workflow outcomes.
+
+Reading and Download Policy:
+Reading and downloading are allowed for academic and non-commercial use with proper attribution. Redistribution must preserve author and affiliation. Commercial resale and plagiarism are prohibited.

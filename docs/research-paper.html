@@ -17,6 +17,7 @@
         <a href="./index.html">Home</a>
         <a href="#paper">Paper</a>
         <a href="#policy">Policy</a>
+        <a href="#references">References</a>
       </nav>
       <a class="cta-app" href="https://datamentor.marcbd.site" target="_blank" rel="noopener noreferrer">Use Web App</a>
     </div>
@@ -24,68 +25,161 @@
 
   <main class="paper-layout" id="paper">
     <article class="paper-shell">
-      <h1>A Practical, User-Centric Framework for Serverless CSV Intelligence and Interactive Notebook Automation</h1>
-      <p><strong>Author:</strong> MD ANISUR RAHMAN CHOWDHURY · <strong>Affiliation:</strong> Gannon University</p>
+      <p class="paper-kicker">Research Article · Applied Data Systems</p>
+      <h1>A Practical Framework for Serverless CSV Intelligence with Interactive Notebook Automation and Local AI Runtime Repair</h1>
+      <p class="paper-meta"><strong>Author:</strong> MD ANISUR RAHMAN CHOWDHURY</p>
+      <p class="paper-meta"><strong>Affiliation:</strong> Gannon University</p>
+      <p class="paper-meta"><strong>Application URL:</strong> <a href="https://datamentor.marcbd.site" target="_blank" rel="noopener noreferrer">https://datamentor.marcbd.site</a></p>
 
       <h2>Abstract</h2>
       <p>
-        This paper presents Notebook Studio, a serverless web platform that transforms raw CSV files into cleaned,
-        analysis-ready datasets and guided interactive notebooks. The system integrates browser-native Python execution,
-        cloud-based authentication, resilient storage, and local AI-assisted runtime correction. The objective is to
-        reduce manual preprocessing effort while improving reproducibility, interpretability, and operational reliability
-        for academic and business data workflows.
+        This research presents a production-deployed, serverless data engineering platform, Notebook Studio, designed to
+        convert raw CSV exports into cleaned datasets, reproducible Python notebooks, and interpretable analytics outputs.
+        The platform integrates browser-executed Python, cloud identity and workspace persistence, resilient local fallback,
+        and a hybrid local AI repair layer for execution-time debugging. The central hypothesis is that a guided,
+        automation-first architecture can reduce preprocessing burden, increase reproducibility, and improve runtime error
+        recovery for both educational and operational analytics contexts [1]-[8].
       </p>
 
-      <h2>1. Problem Context</h2>
+      <h2>1. Introduction</h2>
       <p>
-        Data users frequently receive inconsistent CSV exports with irregular headers, missing values, duplicates,
-        and unstructured formatting. Traditional cleanup workflows are manual, error-prone, and difficult to document.
-        Notebook Studio addresses this gap by providing deterministic cleaning, notebook generation, and visual analysis
-        in a single, browser-accessible interface.
+        Real-world CSV inputs often contain inconsistent headers, whitespace noise, duplicate rows, sparse records, and
+        ambiguous types. Manual correction is slow and non-reproducible. Existing workflows frequently split across multiple
+        tools, which weakens traceability and increases onboarding cost. Notebook Studio was built to unify cleaning,
+        notebook execution, visualization, and account continuity in one web interface.
       </p>
 
-      <h2>2. System Design</h2>
-      <p>
-        The platform follows a modular architecture: ingestion and normalization pipeline, notebook composition module,
-        browser Python runtime, chart analytics layer, and account-scoped persistence. Runtime resilience is achieved
-        through dual-path state continuity (cloud + local cache) and automatic repair attempts for common Python errors.
-      </p>
+      <h2>2. Research Objectives</h2>
+      <ol>
+        <li>Design a browser-accessible pipeline for deterministic CSV cleaning and notebook generation.</li>
+        <li>Evaluate time-efficiency against manual baseline preprocessing workflows.</li>
+        <li>Measure reliability of runtime error recovery under automatic repair strategies.</li>
+        <li>Assess usability for real-world contexts: education, SME operations, and analyst pipelines.</li>
+      </ol>
 
-      <h2>3. Methodology</h2>
+      <h2>3. Research Questions</h2>
+      <ol>
+        <li>Can serverless browser-native execution support practical, repeatable data cleaning workflows?</li>
+        <li>What measurable productivity gains are achieved versus manual preprocessing?</li>
+        <li>How effectively can hybrid rule-based + local-model repair reduce notebook runtime failures?</li>
+      </ol>
+
+      <h2>4. System Architecture Summary</h2>
       <ul>
-        <li>Requirement-driven iteration for deployment stability and user continuity.</li>
-        <li>Progressive enhancement from static cleaning pipeline to intelligent runtime correction.</li>
-        <li>Comparative benchmarking against manual preprocessing baselines.</li>
-        <li>Evaluation through time-to-clean, error resolution latency, and workflow reproducibility indicators.</li>
+        <li><strong>Data Intake Layer:</strong> CSV ingestion, schema normalization, deduplication.</li>
+        <li><strong>Notebook Layer:</strong> guided code cells for transparent cleaning logic.</li>
+        <li><strong>Execution Layer:</strong> in-browser Python runtime with deterministic outputs.</li>
+        <li><strong>Persistence Layer:</strong> cloud workspace + local fallback continuity.</li>
+        <li><strong>Intelligence Layer:</strong> automatic runtime repair loop (rules first, local neural fallback).</li>
+        <li><strong>Analytics Layer:</strong> standard and custom visual diagnostics for quality and performance.</li>
       </ul>
 
-      <h2>4. Results and Observations</h2>
+      <h2>5. Methodology (Line-by-Line Experimental Procedure)</h2>
+      <ol>
+        <li>Collect heterogeneous CSV samples from academic and operational contexts.</li>
+        <li>Execute baseline manual preprocessing and log time per workflow stage.</li>
+        <li>Run identical datasets through Notebook Studio automated cleaning pipeline.</li>
+        <li>Generate notebook artifacts and execute cells in-browser under controlled order.</li>
+        <li>Inject representative Python errors (syntax, NameError, KeyError, indentation, incomplete calls).</li>
+        <li>Observe runtime recovery behavior: rule-based repair, neural fallback, retry count, terminal status.</li>
+        <li>Capture outcome metrics: total time, fix success, unresolved cases, user continuity status.</li>
+        <li>Compare baseline vs automated outcomes using line, bar, radar, and scatter analytics.</li>
+      </ol>
+
+      <h2>6. Evaluation Metrics</h2>
+      <table class="paper-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Definition</th>
+            <th>Target Outcome</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Workflow Time</td>
+            <td>End-to-end minutes from upload to validated notebook output</td>
+            <td>Lower than manual baseline</td>
+          </tr>
+          <tr>
+            <td>Repair Latency</td>
+            <td>Time from runtime error detection to stable execution</td>
+            <td>Reduced via auto-repair loop</td>
+          </tr>
+          <tr>
+            <td>Reproducibility</td>
+            <td>Ability to rerun the same pipeline with equivalent outputs</td>
+            <td>Consistent notebook/state behavior</td>
+          </tr>
+          <tr>
+            <td>User Continuity</td>
+            <td>Recovery of work across sessions/cloud interruptions</td>
+            <td>No material workflow loss</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>7. Results and Discussion</h2>
       <p>
-        Experimental usage showed strong reduction in end-to-end preparation time, improved consistency of normalized
-        schemas, and faster debugging cycles through assisted runtime correction. Interactive charts and notebook traces
-        significantly improved transparency for audit and teaching scenarios.
+        Observed outcomes indicate substantial reduction in preprocessing effort and improved operational transparency.
+        The system consistently reduced repetitive cleanup overhead and accelerated issue resolution when compared with
+        manual notebook-only workflows. While not all arbitrary logic errors are automatically solvable, the hybrid repair
+        strategy improved first-pass recovery rates and reduced debugging fatigue.
       </p>
 
-      <h2>5. Real-World Applicability</h2>
+      <h2>8. Real-World Use Cases</h2>
       <ul>
-        <li><strong>Education:</strong> reproducible, guided data-lab workflows for students.</li>
-        <li><strong>SMEs:</strong> low-friction preprocessing without dedicated data engineering teams.</li>
-        <li><strong>Analyst operations:</strong> rapid anomaly/fraud-prep screening before downstream modeling.</li>
+        <li><strong>Academic Labs:</strong> reproducible student workflows for data cleaning and notebook literacy.</li>
+        <li><strong>SME Operations:</strong> low-friction preprocessing for teams without dedicated data engineering.</li>
+        <li><strong>Analyst Teams:</strong> fast readiness checks before model training, anomaly, or fraud analysis.</li>
       </ul>
 
-      <h2>6. Limitations and Future Work</h2>
+      <h2>9. Limitations</h2>
+      <ul>
+        <li>No automated repair framework can guarantee universal correction for all Python logic defects.</li>
+        <li>Complex semantic/business-rule bugs still require human validation.</li>
+        <li>Local model quality depends on runtime availability and browser capability.</li>
+      </ul>
+
+      <h2>10. Conclusion</h2>
       <p>
-        No automatic repair framework can guarantee universal correction of all arbitrary logic errors. Future work will
-        include broader domain-aware repair policies, retrieval-augmented technical references, and controlled
-        server-assisted reasoning modes for complex edge cases.
+        Notebook Studio demonstrates that a serverless, user-centered architecture can deliver practical and sustainable
+        data preparation intelligence with measurable productivity gains. The combination of deterministic processing,
+        interactive notebooks, resilient persistence, and hybrid local AI repair creates a strong foundation for applied
+        analytics in both education and professional operations.
       </p>
 
-      <h2>7. Conclusion</h2>
-      <p>
-        Notebook Studio demonstrates that a carefully engineered serverless architecture can deliver practical,
-        production-usable data cleaning and notebook intelligence while preserving user accessibility and deployment
-        sustainability.
-      </p>
+      <h2 id="references">11. References</h2>
+      <div class="ref-controls">
+        <button type="button" class="ref-btn active" data-ref="ieee">IEEE</button>
+        <button type="button" class="ref-btn" data-ref="apa">APA</button>
+      </div>
+
+      <div class="ref-block active" data-ref-block="ieee">
+        <ol>
+          <li>W. McKinney, <em>Python for Data Analysis</em>, 3rd ed. Sebastopol, CA, USA: O'Reilly Media, 2022.</li>
+          <li>Pandas Development Team, "pandas documentation," <em>pandas.pydata.org</em>. [Online]. Available: https://pandas.pydata.org/docs/ (accessed Mar. 8, 2026).</li>
+          <li>Pyodide Developers, "Pyodide documentation," <em>pyodide.org</em>. [Online]. Available: https://pyodide.org/en/stable/ (accessed Mar. 8, 2026).</li>
+          <li>Google Firebase, "Firebase documentation," <em>firebase.google.com</em>. [Online]. Available: https://firebase.google.com/docs (accessed Mar. 8, 2026).</li>
+          <li>Cloudflare, "Cloudflare Pages documentation," <em>developers.cloudflare.com</em>. [Online]. Available: https://developers.cloudflare.com/pages/ (accessed Mar. 8, 2026).</li>
+          <li>Chart.js Contributors, "Chart.js documentation," <em>chartjs.org</em>. [Online]. Available: https://www.chartjs.org/docs/latest/ (accessed Mar. 8, 2026).</li>
+          <li>M. Holt and contributors, "Papa Parse documentation," <em>papaparse.com</em>. [Online]. Available: https://www.papaparse.com/docs (accessed Mar. 8, 2026).</li>
+          <li>Vercel, "Next.js documentation," <em>nextjs.org</em>. [Online]. Available: https://nextjs.org/docs (accessed Mar. 8, 2026).</li>
+        </ol>
+      </div>
+
+      <div class="ref-block" data-ref-block="apa">
+        <ol>
+          <li>McKinney, W. (2022). <em>Python for data analysis</em> (3rd ed.). O'Reilly Media.</li>
+          <li>Pandas Development Team. (2026). <em>pandas documentation</em>. https://pandas.pydata.org/docs/</li>
+          <li>Pyodide Developers. (2026). <em>Pyodide documentation</em>. https://pyodide.org/en/stable/</li>
+          <li>Google Firebase. (2026). <em>Firebase documentation</em>. https://firebase.google.com/docs</li>
+          <li>Cloudflare. (2026). <em>Cloudflare Pages documentation</em>. https://developers.cloudflare.com/pages/</li>
+          <li>Chart.js Contributors. (2026). <em>Chart.js documentation</em>. https://www.chartjs.org/docs/latest/</li>
+          <li>Holt, M., & contributors. (2026). <em>Papa Parse documentation</em>. https://www.papaparse.com/docs</li>
+          <li>Vercel. (2026). <em>Next.js documentation</em>. https://nextjs.org/docs</li>
+        </ol>
+      </div>
 
       <div class="paper-cta">
         <a class="btn-secondary" href="./research-paper.md" download>Download Markdown</a>
@@ -96,18 +190,36 @@
 
     <article class="paper-shell" id="policy">
       <h2>Reading and Download Policy</h2>
-      <ul>
-        <li>Open reading access is granted for academic, educational, and non-commercial review.</li>
-        <li>Downloads are allowed for personal study, classroom use, and citation-based scholarly referencing.</li>
-        <li>Any redistribution or republication must preserve author attribution and institutional affiliation.</li>
-        <li>Commercial resale or plagiarism of any section is strictly prohibited.</li>
-        <li>Derivative works must include clear citation: <em>MD Anisur Rahman Chowdhury, Gannon University</em>.</li>
-      </ul>
+      <div class="policy-box">
+        <ul>
+          <li>Open reading is permitted for academic, educational, and non-commercial review.</li>
+          <li>Download is permitted for personal study, teaching, and citation-based scholarly use.</li>
+          <li>Any redistribution must preserve full author and affiliation attribution.</li>
+          <li>Commercial resale, plagiarism, and unattributed republication are prohibited.</li>
+          <li>Derivative or adapted versions must cite: <em>MD Anisur Rahman Chowdhury, Gannon University</em>.</li>
+        </ul>
+      </div>
     </article>
   </main>
 
   <footer class="footer">
     <p>© MD ANISUR RAHMAN CHOWDHURY · Gannon University</p>
   </footer>
+
+  <script>
+    const refButtons = document.querySelectorAll('.ref-btn');
+    const refBlocks = document.querySelectorAll('.ref-block');
+
+    refButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-ref');
+
+        refButtons.forEach((b) => b.classList.toggle('active', b === btn));
+        refBlocks.forEach((block) => {
+          block.classList.toggle('active', block.getAttribute('data-ref-block') === target);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
