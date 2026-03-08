@@ -5,6 +5,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import AIAssistant from "./AIAssistant";
 import { autoFixPythonCodeWithRuntimeError } from "@/lib/pythonAssistant";
+import { attemptModelCodeAutoFix } from "@/lib/localPythonLlm";
 
 type CodeCellProps = {
   initialCode: string;
@@ -33,6 +34,24 @@ export default function CodeCell({
   const [autoRunAfterFix, setAutoRunAfterFix] = useState(true);
   const [autoFixStatus, setAutoFixStatus] = useState("Monitoring...");
   const lastAppliedFixRef = useRef<string | null>(null);
+
+  const withTimeout = useCallback(async <T,>(promise: Promise<T>, timeoutMs: number) => {
+    return new Promise<T>((resolve, reject) => {
+      const timer = window.setTimeout(() => {
+        reject(new Error("timeout"));
+      }, timeoutMs);
+
+      promise
+        .then((value) => {
+          window.clearTimeout(timer);
+          resolve(value);
+        })
+        .catch((reason) => {
+          window.clearTimeout(timer);
+          reject(reason);
+        });
+    });
+  }, []);
 
   const runWithCode = useCallback(async (codeToRun: string) => {
     if (!onExecute) return;
@@ -76,8 +95,30 @@ export default function CodeCell({
 
         const fixResult = autoFixPythonCodeWithRuntimeError(workingCode, result.error);
         if (!fixResult || fixResult.code === workingCode) {
-          setAutoFixStatus("Error detected. No safe automatic fix found.");
-          return;
+          try {
+            setAutoFixStatus(`Attempt ${attempt + 1}: trying neural auto-fix...`);
+            const modelFix = await withTimeout(
+              attemptModelCodeAutoFix({
+                code: workingCode,
+                runtimeError: result.error,
+              }),
+              25000,
+            );
+
+            if (!modelFix || modelFix === workingCode) {
+              setAutoFixStatus("Error detected. No safe automatic fix found.");
+              return;
+            }
+
+            workingCode = modelFix;
+            setCode(workingCode);
+            setError(null);
+            continue;
+          } catch (modelFixError) {
+            console.error("Neural auto-fix failed:", modelFixError);
+            setAutoFixStatus("Error detected. No safe automatic fix found.");
+            return;
+          }
         }
 
         const detail =
@@ -99,7 +140,7 @@ export default function CodeCell({
     } finally {
       setIsRunning(false);
     }
-  }, [onExecute, isEditable]);
+  }, [onExecute, isEditable, withTimeout]);
 
   useEffect(() => {
     if (!isEditable || isRunning || Boolean(error)) {

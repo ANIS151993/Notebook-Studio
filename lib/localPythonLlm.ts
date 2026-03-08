@@ -21,6 +21,11 @@ export type LocalModelPromptInput = {
   runtimeError: string | null;
 };
 
+export type LocalModelAutoFixInput = {
+  code: string;
+  runtimeError: string;
+};
+
 const DEFAULT_MODEL_ID = "onnx-community/Qwen2.5-Coder-0.5B-Instruct";
 
 let transformersModulePromise: Promise<LocalTransformersModule> | null = null;
@@ -201,4 +206,77 @@ export const askLocalPythonModel = async (
 
   const text = extractText(result);
   return text || "No response generated. Please try again with a shorter question.";
+};
+
+const extractCodeBlock = (text: string): string | null => {
+  const fenced = text.match(/```(?:python)?\s*([\s\S]*?)```/i);
+  if (fenced && fenced[1]) {
+    return fenced[1].trim();
+  }
+  return null;
+};
+
+const looksLikeCode = (text: string): boolean => {
+  const lineCount = text.split("\n").length;
+  return (
+    lineCount > 1 ||
+    text.includes("=") ||
+    text.includes("df.") ||
+    text.includes("print(") ||
+    text.includes("for ") ||
+    text.includes("if ")
+  );
+};
+
+export const attemptModelCodeAutoFix = async (
+  input: LocalModelAutoFixInput,
+): Promise<string | null> => {
+  if (!generatorPromise) {
+    await loadLocalPythonModel();
+  }
+
+  if (!generatorPromise) {
+    return null;
+  }
+
+  const generator = await generatorPromise;
+  const safeCode = input.code.slice(0, 5500);
+  const safeError = input.runtimeError.slice(0, 1500);
+
+  const prompt = `You are an expert Python bug fixer.
+Task: Fix the code so it runs without the given runtime error.
+Rules:
+- Return ONLY corrected Python code.
+- No explanations.
+- Keep intent of original code.
+- If minimal change is possible, prefer minimal change.
+
+Runtime error:
+${safeError}
+
+Original code:
+${safeCode}
+
+Corrected Python code:`;
+
+  const result = await generator(prompt, {
+    max_new_tokens: 320,
+    temperature: 0.15,
+    top_p: 0.9,
+    do_sample: true,
+    repetition_penalty: 1.06,
+    return_full_text: false,
+  });
+
+  const rawText = extractText(result);
+  const candidate = extractCodeBlock(rawText) ?? rawText.trim();
+  if (!candidate || candidate === input.code) {
+    return null;
+  }
+
+  if (!looksLikeCode(candidate)) {
+    return null;
+  }
+
+  return candidate;
 };
