@@ -3,44 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notebook Studio Research Portal</title>
-  <meta name="description" content="Interactive research portal for Notebook Studio with architecture walkthrough, step-by-step development journey, and impact analytics." />
+  <title>Notebook Studio | Scientific Engineering Portal</title>
+  <meta
+    name="description"
+    content="Single-page scientific and technical portal for Notebook Studio: architecture, methodology, evaluation, development steps, and professional profile."
+  />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Serif:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="./index.html">Notebook Studio Research</a>
-      <nav class="topnav">
+      <a class="brand" href="#overview">Notebook Studio Scientific Portal</a>
+      <nav class="topnav" aria-label="Primary">
         <a href="#overview">Overview</a>
-        <a href="#easy-flow">Easy Flow</a>
-        <a href="#build-steps">Build Steps</a>
+        <a href="#science">Scientific Basis</a>
+        <a href="#workflow">Development Steps</a>
         <a href="#architecture">Architecture</a>
-        <a href="#analytics">Impact</a>
-        <a href="#builder">About Anis</a>
-        <a href="#connect">Hire Me</a>
-        <a href="./research-paper.html">Research Paper</a>
+        <a href="#evaluation">Evaluation</a>
+        <a href="#paper">Research Brief</a>
+        <a href="#contact">Profiles & Contact</a>
       </nav>
-      <a class="cta-app" href="https://datamentor.marcbd.site" target="_blank" rel="noopener noreferrer">Use Web App</a>
+      <a class="cta-app" href="https://datamentor.marcbd.site" target="_blank" rel="noopener noreferrer">Open Live App</a>
     </div>
   </header>
 
-  <main>
-    <section class="hero reveal" id="overview">
-      <div class="hero-layout">
-        <div class="hero-copy">
-          <p class="eyebrow">Applied Research + Product Engineering</p>
-          <h1>Notebook Studio makes CSV-to-notebook analytics fast, clear, and beginner-friendly.</h1>
+  <main class="site-main">
+    <section class="panel hero reveal" id="overview">
+      <div class="hero-grid">
+        <article class="hero-copy">
+          <p class="eyebrow">Integrated Technical + Scientific Documentation</p>
+          <h1>Notebook Studio: A Reproducible Framework for Serverless CSV Intelligence and Notebook Automation</h1>
           <p class="lead">
-            This portal explains the full product journey in simple language: how the app was planned, built, tested,
-            and improved. It also shows measurable gains in speed, reliability, and data quality.
+            This single website includes everything in one place: product overview, step-by-step development,
+            system architecture, evaluation metrics, methodology, references, and professional profile.
           </p>
           <div class="hero-actions">
-            <a class="btn-primary" href="#build-steps">Start 1-Minute Build Tour</a>
-            <a class="btn-secondary" href="https://datamentor.marcbd.site" target="_blank" rel="noopener noreferrer">Try the Live App</a>
+            <a class="btn-primary" href="#workflow">View Development Steps</a>
+            <a class="btn-secondary" href="#paper">Read Scientific Summary</a>
           </div>
           <div class="hero-profiles">
             <a href="https://linkedin.com/in/md-anisur-rahman-chowdhury-15862420a" target="_blank" rel="noopener noreferrer">LinkedIn</a>
@@ -50,327 +52,311 @@
             <a href="https://marcbd.com" target="_blank" rel="noopener noreferrer">Portfolio</a>
           </div>
           <div class="hero-tags">
-            <span>Serverless Workflow</span>
+            <span>Serverless Analytics</span>
             <span>In-Browser Python</span>
-            <span>AI-Assisted Debugging</span>
-            <span>Cloud + Local Persistence</span>
+            <span>Interactive Notebooks</span>
+            <span>Hybrid AI Runtime Repair</span>
           </div>
-        </div>
+        </article>
 
-        <aside class="founder-highlight">
-          <p class="founder-kicker">Creator Spotlight</p>
-          <h2>MD ANISUR RAHMAN CHOWDHURY</h2>
-          <p class="founder-role">Software Engineer | Gannon University</p>
-          <p>
-            Designed and developed Notebook Studio end-to-end: product vision, full-stack architecture,
-            notebook automation engine, visualization modules, and AI-based runtime repair pipeline.
-          </p>
-          <ul>
-            <li>Built complete CSV cleaning + notebook generation flow.</li>
-            <li>Integrated Firebase auth and resilient cloud/local workspace save.</li>
-            <li>Shipped deployable static web delivery with interactive analytics UI.</li>
-          </ul>
+        <aside class="identity-card">
+          <div class="identity-mark" aria-hidden="true">MARC</div>
+          <h2>Md Anisur Rahman Chowdhury</h2>
+          <p class="identity-role">Master's of Information Technology</p>
+          <p class="identity-meta">Dept. of Computer and Information Science, Gannon University, USA</p>
+          <div class="identity-contact">
+            <a href="mailto:engr.aanis@gmail.com">engr.aanis@gmail.com</a>
+            <a href="mailto:chowdhur014@gannon.edu">chowdhur014@gannon.edu</a>
+          </div>
         </aside>
       </div>
 
-      <div class="hero-metrics">
+      <div class="metrics-grid">
         <article>
           <h3 class="kpi-value" data-target="70" data-suffix="%+">0</h3>
-          <p>less manual preprocessing effort</p>
+          <p>Reduction in repetitive manual preprocessing</p>
         </article>
         <article>
           <h3 class="kpi-value" data-target="3" data-suffix="x">0</h3>
-          <p>faster runtime issue resolution</p>
+          <p>Faster notebook runtime issue resolution</p>
         </article>
         <article>
           <h3 class="kpi-value" data-target="100" data-suffix="%">0</h3>
-          <p>browser-based, serverless workflow coverage</p>
+          <p>Cloud-delivered serverless workflow coverage</p>
         </article>
       </div>
     </section>
 
-    <section class="panel reveal" id="easy-flow">
+    <section class="panel reveal" id="science">
       <div class="section-head">
-        <h2>Notebook Studio in 4 Easy Steps</h2>
-        <p>A simple explanation for students, beginners, and non-technical teams.</p>
+        <h2>Scientific Basis and Research Objective</h2>
+        <p>Problem framing, hypotheses, and measurable research goals.</p>
       </div>
-      <div class="easy-grid">
-        <article class="easy-step">
-          <span class="step-index">1</span>
-          <h3>Upload CSV</h3>
-          <p>Drop your raw file into the app. It checks format and reads columns safely.</p>
+      <div class="science-grid">
+        <article class="science-card">
+          <h3>Research Problem</h3>
+          <p>
+            Raw CSV workflows are often non-reproducible, labor-intensive, and error-prone due to inconsistent schemas,
+            duplicate rows, missing values, and fragmented multi-tool processing.
+          </p>
         </article>
-        <article class="easy-step">
-          <span class="step-index">2</span>
-          <h3>Auto-Clean Data</h3>
-          <p>The cleaning engine trims noise, fixes headers, removes duplicates, and standardizes rows.</p>
+        <article class="science-card">
+          <h3>Core Hypothesis</h3>
+          <p>
+            A guided automation-first architecture with browser-native execution and deterministic repair logic can
+            reduce preprocessing burden while improving repeatability and debugging reliability.
+          </p>
         </article>
-        <article class="easy-step">
-          <span class="step-index">3</span>
-          <h3>Generate Notebook</h3>
-          <p>A guided Python notebook is generated so users can inspect each step transparently.</p>
+        <article class="science-card">
+          <h3>Primary Objectives</h3>
+          <ul>
+            <li>Build deterministic CSV cleaning + notebook generation pipeline.</li>
+            <li>Evaluate productivity gain versus manual baseline workflows.</li>
+            <li>Assess error recovery behavior under hybrid rule/model repair strategy.</li>
+          </ul>
         </article>
-        <article class="easy-step">
-          <span class="step-index">4</span>
-          <h3>Analyze + Save</h3>
-          <p>Run charts, detect issues, and save your work to your account for future sessions.</p>
+        <article class="science-card">
+          <h3>Applied Domains</h3>
+          <ul>
+            <li>Academic labs and reproducible coursework analytics.</li>
+            <li>SME operations teams without dedicated data engineering staff.</li>
+            <li>Analyst pipelines for anomaly/fraud readiness screening.</li>
+          </ul>
         </article>
       </div>
     </section>
 
-    <section class="panel reveal" id="build-steps">
+    <section class="panel reveal" id="workflow">
       <div class="section-head">
-        <h2>Step-by-Step Development of the App</h2>
-        <p>Click each stage to see what was built, why it mattered, and what result it produced.</p>
+        <h2>Step-by-Step Development (Easy + Technical)</h2>
+        <p>Select each stage to inspect engineering decisions and outcomes.</p>
       </div>
-
-      <div class="build-layout">
-        <div class="build-tabs" role="tablist" aria-label="Development Stages">
+      <div class="workflow-grid">
+        <div class="build-tabs" role="tablist" aria-label="Development stages">
           <button type="button" class="build-tab" data-step="discovery">Step 1: Problem Discovery</button>
-          <button type="button" class="build-tab" data-step="foundation">Step 2: Core Data Engine</button>
-          <button type="button" class="build-tab" data-step="notebook">Step 3: Notebook Layer</button>
-          <button type="button" class="build-tab" data-step="platform">Step 4: User Platform</button>
-          <button type="button" class="build-tab" data-step="analytics">Step 5: Visual Analytics</button>
-          <button type="button" class="build-tab" data-step="ai">Step 6: AI Reliability</button>
+          <button type="button" class="build-tab" data-step="engine">Step 2: Data Cleaning Engine</button>
+          <button type="button" class="build-tab" data-step="notebook">Step 3: Notebook Orchestration</button>
+          <button type="button" class="build-tab" data-step="platform">Step 4: Auth + Persistence</button>
+          <button type="button" class="build-tab" data-step="visuals">Step 5: Visual Analytics</button>
+          <button type="button" class="build-tab" data-step="reliability">Step 6: AI Reliability Layer</button>
         </div>
 
         <article class="build-detail" id="buildDetail" aria-live="polite">
           <h3>Step 1: Problem Discovery</h3>
-          <p>Analyzed real CSV pain points from academic and operations users.</p>
+          <p>Mapped common CSV pain points from real educational and operational data workflows.</p>
           <ul>
-            <li><strong>Goal:</strong> Reduce repeated manual data cleaning.</li>
-            <li><strong>Built:</strong> Requirements map and target workflow blueprint.</li>
-            <li><strong>Result:</strong> Clear architecture plan for a beginner-friendly automation app.</li>
+            <li><strong>Goal:</strong> Define repeatable target workflow from upload to validated analytics output.</li>
+            <li><strong>Built:</strong> Requirements matrix and failure-mode taxonomy.</li>
+            <li><strong>Result:</strong> Architecture blueprint for reproducible, user-friendly automation.</li>
           </ul>
         </article>
       </div>
 
-      <div class="progress-wrap" aria-hidden="true">
-        <div class="progress-track">
-          <span id="buildProgressFill"></span>
-        </div>
+      <div class="progress-track" aria-hidden="true">
+        <span id="buildProgressFill"></span>
       </div>
     </section>
 
     <section class="panel reveal" id="architecture">
       <div class="section-head">
-        <h2>Interactive Architecture</h2>
-        <p>Click a module to inspect data flow, outputs, and reliability behavior.</p>
+        <h2>Interactive System Architecture</h2>
+        <p>Click each module to inspect inputs, outputs, and resilience strategy.</p>
       </div>
-      <div class="arch-grid">
-        <div class="arch-canvas">
-          <div class="arch-stage">
-            <svg class="arch-lines" viewBox="0 0 900 500" aria-hidden="true">
-              <path class="arch-line" data-flow="upload-clean" d="M120 120 C 220 120, 260 180, 340 180"></path>
-              <path class="arch-line" data-flow="clean-notebook" d="M380 180 C 480 180, 520 160, 620 160"></path>
-              <path class="arch-line" data-flow="notebook-pyodide" d="M660 160 C 760 160, 780 230, 820 280"></path>
-              <path class="arch-line" data-flow="auth-storage" d="M120 320 C 240 320, 290 320, 380 300"></path>
-              <path class="arch-line" data-flow="storage-dashboard" d="M420 300 C 520 300, 580 330, 680 340"></path>
-              <path class="arch-line" data-flow="ai-editor" d="M620 360 C 700 360, 740 320, 820 300"></path>
-              <path class="arch-line" data-flow="visual-analytics" d="M380 180 C 520 220, 620 250, 760 250"></path>
-            </svg>
 
-            <button class="arch-node" data-node="upload" data-flows="upload-clean auth-storage" style="left:40px;top:90px;">CSV Upload</button>
-            <button class="arch-node" data-node="cleaning" data-flows="upload-clean clean-notebook visual-analytics" style="left:310px;top:150px;">Cleaning Engine</button>
-            <button class="arch-node" data-node="notebook" data-flows="clean-notebook notebook-pyodide" style="left:590px;top:130px;">Notebook Builder</button>
-            <button class="arch-node" data-node="pyodide" data-flows="notebook-pyodide ai-editor" style="left:760px;top:250px;">Pyodide Runtime</button>
-            <button class="arch-node" data-node="auth" data-flows="auth-storage storage-dashboard" style="left:40px;top:300px;">Firebase Auth</button>
-            <button class="arch-node" data-node="storage" data-flows="auth-storage storage-dashboard" style="left:350px;top:270px;">Firestore + Local Cache</button>
-            <button class="arch-node" data-node="dashboard" data-flows="storage-dashboard visual-analytics" style="left:640px;top:320px;">User Dashboard</button>
-            <button class="arch-node" data-node="assistant" data-flows="ai-editor" style="left:760px;top:360px;">Local AI Assistant</button>
-          </div>
+      <div class="arch-layout">
+        <div class="arch-node-grid" role="listbox" aria-label="Architecture modules">
+          <button type="button" class="arch-node" data-node="ingest">1. CSV Ingestion</button>
+          <button type="button" class="arch-node" data-node="cleaning">2. Cleaning Engine</button>
+          <button type="button" class="arch-node" data-node="notebook">3. Notebook Builder</button>
+          <button type="button" class="arch-node" data-node="runtime">4. Pyodide Runtime</button>
+          <button type="button" class="arch-node" data-node="auth">5. Firebase Auth</button>
+          <button type="button" class="arch-node" data-node="storage">6. Workspace Storage</button>
+          <button type="button" class="arch-node" data-node="dashboard">7. User Dashboard</button>
+          <button type="button" class="arch-node" data-node="assistant">8. AI Repair Assistant</button>
         </div>
 
-        <aside class="arch-detail" id="archDetail">
+        <article class="arch-detail" id="archDetail" aria-live="polite">
           <h3>Architecture Node Details</h3>
-          <p>Select a component to view operational behavior.</p>
+          <p>Select a module from the left to view technical details.</p>
           <ul>
             <li><strong>Inputs:</strong> -</li>
             <li><strong>Outputs:</strong> -</li>
-            <li><strong>Failure Handling:</strong> -</li>
+            <li><strong>Reliability Strategy:</strong> -</li>
           </ul>
-        </aside>
+        </article>
       </div>
+
+      <p class="flow-note"><strong>Data Flow:</strong> Ingestion → Cleaning → Notebook → Runtime → Visualization, with Auth + Storage + AI reliability spanning all stages.</p>
     </section>
 
-    <section class="panel reveal" id="info">
+    <section class="panel reveal" id="evaluation">
       <div class="section-head">
-        <h2>More Product Details (Easy to Understand)</h2>
-        <p>Open each item for plain-language explanations of important app behavior.</p>
+        <h2>Experimental Evaluation and Impact</h2>
+        <p>Observed efficiency, quality, and scalability behavior under baseline comparison.</p>
       </div>
 
-      <div class="info-grid">
-        <details class="info-item" open>
-          <summary>How does the app protect user work?</summary>
-          <p>Your notebook and profile data are saved in cloud storage and can fall back to local cache to reduce work loss during network interruptions.</p>
-        </details>
-        <details class="info-item">
-          <summary>What does “AI-assisted debugging” mean here?</summary>
-          <p>When a Python cell fails, the assistant first applies known repair rules and then uses a local model fallback for unresolved patterns.</p>
-        </details>
-        <details class="info-item">
-          <summary>Why use in-browser Python?</summary>
-          <p>Pyodide lets users execute notebook cells directly in the browser, reducing setup friction and helping reproducibility for classroom and SME users.</p>
-        </details>
-        <details class="info-item">
-          <summary>Who benefits most from Notebook Studio?</summary>
-          <p>Students, researchers, and operations teams that receive messy CSV exports and need a faster path to clean data and actionable charts.</p>
-        </details>
-      </div>
-    </section>
-
-    <section class="panel reveal" id="analytics">
-      <div class="section-head">
-        <h2>Efficiency and Impact Analytics</h2>
-        <p>Interactive charts summarize measured performance improvements versus manual workflow.</p>
-      </div>
-
-      <div class="impact-cards">
+      <div class="impact-grid">
         <article>
-          <h3>Measured Outcome</h3>
-          <p>Automated cleaning reduces repetitive effort and improves first-pass readiness for analysis.</p>
+          <h3>Efficiency Gain</h3>
+          <p>Automated cleaning reduced repetitive data preparation time across workflow stages.</p>
         </article>
         <article>
-          <h3>Reliability Outcome</h3>
-          <p>Hybrid repair loop decreases runtime interruption and shortens troubleshooting time.</p>
+          <h3>Quality Improvement</h3>
+          <p>Consistency and traceability metrics improved after deterministic transformation rules.</p>
         </article>
         <article>
-          <h3>Usability Outcome</h3>
-          <p>Stepwise UI and saved sessions help non-expert users continue work with less confusion.</p>
+          <h3>Runtime Reliability</h3>
+          <p>Hybrid repair loop reduced interruption time for common notebook execution failures.</p>
         </article>
       </div>
 
       <div class="chart-grid">
         <article class="chart-card">
           <h3>Processing Time Trend</h3>
-          <div class="chart-frame">
-            <canvas id="trendChart"></canvas>
-          </div>
+          <div class="chart-frame"><canvas id="trendChart"></canvas></div>
         </article>
         <article class="chart-card">
-          <h3>Manual vs Automated Workflow Time</h3>
-          <div class="chart-frame">
-            <canvas id="barChart"></canvas>
-          </div>
+          <h3>Manual vs Automated Stage Time</h3>
+          <div class="chart-frame"><canvas id="barChart"></canvas></div>
         </article>
         <article class="chart-card">
-          <h3>Data Quality Improvements</h3>
-          <div class="chart-frame">
-            <canvas id="radarChart"></canvas>
-          </div>
+          <h3>Data Quality Radar</h3>
+          <div class="chart-frame"><canvas id="radarChart"></canvas></div>
         </article>
         <article class="chart-card">
           <h3>Scalability Profile</h3>
-          <div class="chart-frame">
-            <canvas id="scatterChart"></canvas>
-          </div>
+          <div class="chart-frame"><canvas id="scatterChart"></canvas></div>
         </article>
       </div>
     </section>
 
-    <section class="panel reveal builder-panel" id="builder">
+    <section class="panel reveal" id="paper">
       <div class="section-head">
-        <h2>Highlighted Developer Profile</h2>
-        <p>The person behind Notebook Studio and what was delivered.</p>
+        <h2>Integrated Research Brief (All-in-One)</h2>
+        <p>Abstract, methodology, metrics, findings, limitations, and references in the same page.</p>
       </div>
-      <div class="builder-grid">
-        <article class="builder-card">
-          <div class="photo-frame">
-            <img
-              class="builder-photo"
-              src="https://avatars.githubusercontent.com/ANIS151993?v=4"
-              alt="MD Anisur Rahman Chowdhury"
-              loading="lazy"
-              decoding="async"
-              referrerpolicy="no-referrer"
-            />
-          </div>
-          <h3>MD ANISUR RAHMAN CHOWDHURY</h3>
-          <p class="builder-role">Engineer, Researcher, and Full-Stack Builder</p>
+
+      <div class="paper-grid">
+        <article class="paper-card">
+          <h3>Abstract</h3>
           <p>
-            Planned, designed, and shipped Notebook Studio from concept to deployment with a focus on
-            practical usability, reproducible analytics, and intelligent runtime support.
+            Notebook Studio is a production-deployed serverless platform that transforms raw CSV files into cleaned
+            datasets, reproducible notebooks, and interpretable analytics. The system integrates browser-executed Python,
+            cloud authentication, durable persistence, and a hybrid runtime repair strategy.
           </p>
-          <div class="builder-tags">
-            <span>Product Strategy</span>
-            <span>System Architecture</span>
-            <span>Data Engineering UX</span>
-            <span>AI Runtime Support</span>
-          </div>
-          <div class="profile-badges">
-            <a href="https://linkedin.com/in/md-anisur-rahman-chowdhury-15862420a" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a href="https://github.com/ANIS151993" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="https://scholar.google.com/citations?user=NQyywPoAAAAJ" target="_blank" rel="noopener noreferrer">Google Scholar</a>
-            <a href="https://researchgate.net/profile/Md-Anisur-Rahman-Chowdhury" target="_blank" rel="noopener noreferrer">ResearchGate</a>
-            <a href="https://marcbd.com" target="_blank" rel="noopener noreferrer">Portfolio</a>
-          </div>
+
+          <h3>Methodology</h3>
+          <ol>
+            <li>Collect heterogeneous CSV datasets from academic and operational scenarios.</li>
+            <li>Measure manual baseline workflow time by stage.</li>
+            <li>Run equivalent datasets through Notebook Studio automated pipeline.</li>
+            <li>Inject representative Python runtime errors and observe repair behavior.</li>
+            <li>Compare efficiency, quality, and continuity outcomes across conditions.</li>
+          </ol>
+
+          <h3>Evaluation Metrics</h3>
+          <table class="metric-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Definition</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Workflow Time</td>
+                <td>Upload-to-validated-output duration</td>
+              </tr>
+              <tr>
+                <td>Repair Latency</td>
+                <td>Error detection to successful rerun</td>
+              </tr>
+              <tr>
+                <td>Reproducibility</td>
+                <td>Consistency of rerun outputs</td>
+              </tr>
+              <tr>
+                <td>User Continuity</td>
+                <td>State preservation across sessions</td>
+              </tr>
+            </tbody>
+          </table>
         </article>
 
-        <article class="builder-achievements">
-          <h3>Key Contributions by Anis</h3>
+        <article class="paper-card">
+          <h3>Findings</h3>
           <ul>
-            <li>Created the full app architecture for ingestion, cleaning, notebook generation, and analytics.</li>
-            <li>Integrated Firebase-based account authentication and workspace persistence.</li>
-            <li>Implemented interactive chart ecosystem for practical insight delivery.</li>
-            <li>Built hybrid rule-based plus local model AI repair workflow for notebook runtime errors.</li>
-            <li>Prepared documentation and research portal for transparent academic communication.</li>
+            <li>Substantial reduction in repetitive preprocessing effort compared with manual baseline.</li>
+            <li>Higher first-pass data readiness through deterministic cleaning logic.</li>
+            <li>Lower debugging overhead under hybrid rule-first runtime repair.</li>
+            <li>Improved continuity through account-scoped workspace persistence.</li>
           </ul>
 
-          <div class="builder-actions">
-            <a class="btn-primary" href="https://datamentor.marcbd.site" target="_blank" rel="noopener noreferrer">Open Notebook Studio</a>
-            <a class="btn-secondary" href="./research-paper.html">Read Full Research Paper</a>
+          <h3>Limitations</h3>
+          <ul>
+            <li>No automated repair strategy can solve all semantic logic errors.</li>
+            <li>Complex domain-specific bugs still require human validation.</li>
+            <li>Local model fallback depends on browser/runtime capability.</li>
+          </ul>
+
+          <h3>References</h3>
+          <ol class="references-list">
+            <li>McKinney, W. (2022). <em>Python for Data Analysis</em> (3rd ed.). O'Reilly Media.</li>
+            <li>Pandas Development Team. (2026). <em>pandas documentation</em>.</li>
+            <li>Pyodide Developers. (2026). <em>Pyodide documentation</em>.</li>
+            <li>Google Firebase. (2026). <em>Firebase documentation</em>.</li>
+            <li>Cloudflare. (2026). <em>Cloudflare Pages documentation</em>.</li>
+            <li>Chart.js Contributors. (2026). <em>Chart.js documentation</em>.</li>
+            <li>Papa Parse Contributors. (2026). <em>Papa Parse documentation</em>.</li>
+            <li>Vercel. (2026). <em>Next.js documentation</em>.</li>
+          </ol>
+
+          <div class="paper-actions">
+            <a class="btn-secondary" href="./research-paper.md" download>Download Markdown</a>
+            <a class="btn-secondary" href="./research-paper.txt" download>Download Text</a>
           </div>
         </article>
       </div>
     </section>
 
-    <section class="panel reveal" id="connect">
+    <section class="panel reveal" id="contact">
       <div class="section-head">
-        <h2>Contact and Hire Me</h2>
-        <p>Open for freelance builds, applied research collaboration, and product engineering projects.</p>
+        <h2>Professional Profiles and Collaboration</h2>
+        <p>Complete profile links and technical collaboration request entry point.</p>
       </div>
 
-      <div class="connect-layout">
+      <div class="contact-grid">
         <article class="contact-card">
-          <img
-            class="contact-photo"
-            src="https://avatars.githubusercontent.com/ANIS151993?v=4"
-            alt="MD Anisur Rahman Chowdhury profile"
-            loading="lazy"
-            decoding="async"
-            referrerpolicy="no-referrer"
-          />
-          <h3>MD ANISUR RAHMAN CHOWDHURY</h3>
-          <p class="contact-role">Full-Stack Engineer | Data + AI Workflow Builder</p>
-          <p class="contact-copy">
-            I build practical, user-friendly systems for CSV automation, notebook analytics, and intelligent runtime support.
-            If you need a similar platform or research-backed product, let's connect.
-          </p>
-          <div class="social-links">
-            <a class="social-link" href="https://linkedin.com/in/md-anisur-rahman-chowdhury-15862420a" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a class="social-link" href="https://github.com/ANIS151993" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a class="social-link" href="https://scholar.google.com/citations?user=NQyywPoAAAAJ" target="_blank" rel="noopener noreferrer">Google Scholar</a>
-            <a class="social-link" href="https://researchgate.net/profile/Md-Anisur-Rahman-Chowdhury" target="_blank" rel="noopener noreferrer">ResearchGate</a>
-            <a class="social-link" href="https://marcbd.com" target="_blank" rel="noopener noreferrer">Portfolio</a>
-            <a class="social-link" href="https://github.com/ANIS151993/Notebook-Studio" target="_blank" rel="noopener noreferrer">Notebook Studio Repo</a>
-            <a class="social-link" href="https://anis151993.github.io/Notebook-Studio/" target="_blank" rel="noopener noreferrer">Research Portal</a>
-            <a class="social-link" href="https://datamentor.marcbd.site" target="_blank" rel="noopener noreferrer">Live App Demo</a>
+          <h3>Md Anisur Rahman Chowdhury</h3>
+          <p class="contact-role">Master's of Information Technology</p>
+          <p class="contact-meta">Dept. of Computer and Information Science, Gannon University, USA</p>
+          <div class="email-list">
+            <a href="mailto:engr.aanis@gmail.com">engr.aanis@gmail.com</a>
+            <a href="mailto:chowdhur014@gannon.edu">chowdhur014@gannon.edu</a>
+          </div>
+
+          <div class="profile-grid">
+            <a class="profile-link" href="https://linkedin.com/in/md-anisur-rahman-chowdhury-15862420a" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a class="profile-link" href="https://github.com/ANIS151993" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a class="profile-link" href="https://scholar.google.com/citations?user=NQyywPoAAAAJ" target="_blank" rel="noopener noreferrer">Google Scholar</a>
+            <a class="profile-link" href="https://researchgate.net/profile/Md-Anisur-Rahman-Chowdhury" target="_blank" rel="noopener noreferrer">ResearchGate</a>
+            <a class="profile-link" href="https://marcbd.com" target="_blank" rel="noopener noreferrer">Portfolio</a>
+            <a class="profile-link" href="https://github.com/ANIS151993/Notebook-Studio" target="_blank" rel="noopener noreferrer">Notebook Studio Repo</a>
           </div>
         </article>
 
         <article class="hire-card">
-          <h3>Build a Project Request</h3>
-          <p>Select what you need and generate a ready-to-send collaboration request.</p>
+          <h3>Start a Technical Collaboration Request</h3>
+          <p>Choose your required service area and send a structured request in one click.</p>
 
           <div class="service-options" role="listbox" aria-label="Service options">
             <button type="button" class="service-option active" data-service="Data Workflow Automation">Data Workflow Automation</button>
-            <button type="button" class="service-option" data-service="Custom Web App Development">Custom Web App Development</button>
-            <button type="button" class="service-option" data-service="Notebook and Dashboard Engineering">Notebook and Dashboard Engineering</button>
-            <button type="button" class="service-option" data-service="Applied Research Collaboration">Applied Research Collaboration</button>
+            <button type="button" class="service-option" data-service="Full-Stack Web Application">Full-Stack Web Application</button>
+            <button type="button" class="service-option" data-service="Notebook and Analytics Engineering">Notebook and Analytics Engineering</button>
+            <button type="button" class="service-option" data-service="Scientific Research Collaboration">Scientific Research Collaboration</button>
           </div>
 
           <p class="hire-summary" id="hireSummary">Selected service: Data Workflow Automation</p>
-
           <div class="hire-actions">
             <a
               class="btn-primary"
@@ -381,35 +367,15 @@
             >
               Send Collaboration Request
             </a>
-            <a
-              class="btn-secondary"
-              href="https://github.com/ANIS151993"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Message via GitHub
-            </a>
+            <a class="btn-secondary" href="https://marcbd.com" target="_blank" rel="noopener noreferrer">Visit Portfolio</a>
           </div>
-          <p class="hire-note">Fastest contact path on this site: submit a request through GitHub with your project scope and timeline.</p>
         </article>
-      </div>
-    </section>
-
-    <section class="panel reveal" id="paper">
-      <div class="section-head">
-        <h2>Research Paper Access</h2>
-        <p>Review full methodology, outcomes, references, and policy details.</p>
-      </div>
-      <div class="paper-actions">
-        <a class="btn-primary" href="./research-paper.html">Read Research Paper</a>
-        <a class="btn-secondary" href="./research-paper.md" download>Download .md</a>
-        <a class="btn-secondary" href="./research-paper.txt" download>Download .txt</a>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <p>© MD ANISUR RAHMAN CHOWDHURY · Gannon University</p>
+    <p>© Md Anisur Rahman Chowdhury · Gannon University · Notebook Studio Scientific Portal</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>

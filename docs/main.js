@@ -1,67 +1,67 @@
-const nodeDetails = {
-  upload: {
-    title: "CSV Upload",
+const architectureDetails = {
+  ingest: {
+    title: "CSV Ingestion Layer",
     description:
-      "Receives raw CSV files, validates file format, and hands structured rows to the cleaning engine.",
-    inputs: "Raw CSV files from user",
-    outputs: "Parsed tabular records",
-    failure: "Invalid file guard + schema-safe parsing",
+      "Validates CSV format, parses rows safely, and extracts column-level schema metadata.",
+    inputs: "Raw CSV files",
+    outputs: "Structured tabular records + schema snapshot",
+    reliability: "Format checks and guarded parsing",
   },
   cleaning: {
-    title: "Cleaning Engine",
+    title: "Deterministic Cleaning Engine",
     description:
-      "Normalizes headers, trims whitespace, removes duplicates/empty rows, and prepares a stable DataFrame contract.",
-    inputs: "Parsed CSV records",
-    outputs: "Cleaned CSV + schema metadata",
-    failure: "Rule-based cleanup + fallback diagnostics",
+      "Applies repeatable transformations: header normalization, whitespace trimming, duplicate removal, null handling.",
+    inputs: "Parsed records",
+    outputs: "Cleaned dataset and normalized schema contract",
+    reliability: "Rule-based pipeline with transparent step mapping",
   },
   notebook: {
     title: "Notebook Builder",
     description:
-      "Creates an interactive notebook sequence and maps each cleaning step to executable Python cells.",
+      "Generates guided notebook cells aligned with each cleaning and analysis phase.",
     inputs: "Cleaned dataset + template",
-    outputs: "Guided notebook cells",
-    failure: "Template fallback and safe defaults",
+    outputs: "Executable notebook workflow",
+    reliability: "Template-safe defaults and deterministic cell ordering",
   },
-  pyodide: {
+  runtime: {
     title: "Pyodide Runtime",
     description:
-      "Runs Python directly in-browser for reproducible execution without server compute.",
-    inputs: "Python code cells",
-    outputs: "Execution outputs/errors",
-    failure: "Error tracing + auto-repair loop",
+      "Executes Python in-browser for reproducibility without server-side compute dependencies.",
+    inputs: "Notebook code cells",
+    outputs: "Execution outputs, logs, and tracebacks",
+    reliability: "Controlled cell execution and structured traceback capture",
   },
   auth: {
-    title: "Firebase Auth",
+    title: "Firebase Authentication",
     description:
-      "Provides secure sign-up/sign-in with verification and session-scoped account identity.",
-    inputs: "Email/password credentials",
-    outputs: "User session token",
-    failure: "Verified-email checks + guarded flows",
+      "Provides account-scoped identity and secure access control for protected workflows.",
+    inputs: "Credentials and session requests",
+    outputs: "Authenticated user session",
+    reliability: "Session token controls and verification checks",
   },
   storage: {
-    title: "Firestore + Local Cache",
+    title: "Workspace Storage",
     description:
-      "Persists user profiles and work snapshots in cloud; local browser fallback keeps continuity during sync failures.",
-    inputs: "User work artifacts",
-    outputs: "Saved/reloadable workspace",
-    failure: "Cloud/local dual-path persistence",
+      "Persists profile and workflow artifacts using cloud-backed state with continuity safeguards.",
+    inputs: "Notebook and user artifacts",
+    outputs: "Reloadable workspace state",
+    reliability: "Cloud persistence with fallback continuity path",
   },
   dashboard: {
     title: "User Dashboard",
     description:
-      "Exposes profile controls, saved work management, and continuity features across sessions.",
-    inputs: "Account + saved artifacts",
-    outputs: "Resumable user workflow",
-    failure: "Transparent state/status messaging",
+      "Surfaces saved work, project continuity controls, and profile management.",
+    inputs: "User identity + stored artifacts",
+    outputs: "Resumable data workflow interface",
+    reliability: "State-aware UI with explicit status handling",
   },
   assistant: {
-    title: "Local AI Assistant",
+    title: "AI Runtime Repair Assistant",
     description:
-      "Combines deterministic repair with local neural fallback to resolve common Python runtime failures.",
-    inputs: "Cell code + traceback",
-    outputs: "Auto-corrected code suggestions/repairs",
-    failure: "Rule-first + model fallback with safety checks",
+      "Combines deterministic repair rules with local model fallback for unresolved runtime errors.",
+    inputs: "Code cell + traceback context",
+    outputs: "Repair proposals and rerun-ready code",
+    reliability: "Rule-first repair policy and constrained fallback behavior",
   },
 };
 
@@ -69,116 +69,94 @@ const buildStepDetails = {
   discovery: {
     title: "Step 1: Problem Discovery",
     description:
-      "The first goal was to understand why CSV workflows are slow and frustrating for many users.",
-    goal: "Map real pain points from students, researchers, and SME teams.",
-    built: "A practical workflow blueprint and requirements baseline.",
-    result: "A focused app plan centered on ease of use and reproducibility.",
+      "Identified recurring friction in manual CSV preparation across educational and operational scenarios.",
+    goal: "Define a measurable target workflow from raw ingestion to validated analytics output.",
+    built: "Pain-point map, failure taxonomy, and architecture requirements.",
+    result: "Engineering plan grounded in reproducibility and usability.",
   },
-  foundation: {
-    title: "Step 2: Core Data Engine",
+  engine: {
+    title: "Step 2: Data Cleaning Engine",
     description:
-      "Built the ingestion and cleaning backbone to make raw datasets analysis-ready.",
-    goal: "Automate repetitive cleaning tasks with predictable output.",
-    built: "CSV parser, schema normalization, duplicate removal, and missing-value handling.",
-    result: "Reliable cleaned data contract for downstream notebooks and charts.",
+      "Implemented deterministic data preparation pipeline for repeatable transformations.",
+    goal: "Eliminate repetitive manual cleanup and schema inconsistency.",
+    built: "Parser integration, normalization rules, duplicate/null handling.",
+    result: "Stable cleaned-data contract for downstream stages.",
   },
   notebook: {
-    title: "Step 3: Notebook Layer",
+    title: "Step 3: Notebook Orchestration",
     description:
-      "Created guided Python notebooks so users can see and rerun each processing step.",
-    goal: "Make automation transparent instead of a black box.",
-    built: "Template-driven notebook cells linked to cleaned dataset metadata.",
-    result: "Reproducible notebook workflow for learning and operations.",
+      "Created guided notebook generation to preserve transparency and rerunability.",
+    goal: "Expose each transformation stage as traceable executable cells.",
+    built: "Template-linked notebook cell pipeline.",
+    result: "Reproducible and inspectable workflow artifacts.",
   },
   platform: {
-    title: "Step 4: User Platform",
+    title: "Step 4: Auth + Persistence",
     description:
-      "Added account system and persistence so work is protected across sessions.",
-    goal: "Turn a prototype into a practical daily-use product.",
-    built: "Firebase authentication, profile storage, and resumable workspace state.",
-    result: "User continuity with cloud save and local fallback safety.",
+      "Added identity and durable workspace continuity.",
+    goal: "Move from prototype to production-use platform behavior.",
+    built: "Firebase auth, profile state, and cloud-backed save/reload flow.",
+    result: "Session continuity and account-scoped workflows.",
   },
-  analytics: {
+  visuals: {
     title: "Step 5: Visual Analytics",
     description:
-      "Integrated chart modules to help users inspect quality and performance quickly.",
-    goal: "Convert cleaned data into understandable insights.",
-    built: "Interactive trend, bar, radar, and scatter visual dashboards.",
-    result: "Faster diagnosis of data quality and pipeline efficiency.",
+      "Integrated chart modules for quality diagnostics and performance comparison.",
+    goal: "Convert processed data into immediate, interpretable insights.",
+    built: "Trend, stage-time, radar, and scalability visual layers.",
+    result: "Faster quality review and evidence-based decisions.",
   },
-  ai: {
-    title: "Step 6: AI Reliability",
+  reliability: {
+    title: "Step 6: AI Reliability Layer",
     description:
-      "Added automated repair support for notebook runtime failures.",
-    goal: "Reduce debugging time and improve user confidence.",
-    built: "Hybrid repair flow: deterministic rules first, local model fallback second.",
-    result: "Higher first-pass recovery and smoother iteration loop.",
+      "Implemented runtime repair pipeline for common notebook execution failures.",
+    goal: "Reduce debugging overhead and improve first-pass completion.",
+    built: "Rule-based repair path plus local-model fallback.",
+    result: "Improved runtime resilience and user confidence.",
   },
 };
 
-const buildStepOrder = [
-  "discovery",
-  "foundation",
-  "notebook",
-  "platform",
-  "analytics",
-  "ai",
-];
+const buildStepOrder = ["discovery", "engine", "notebook", "platform", "visuals", "reliability"];
 
-function initArchitectureMap() {
-  const nodes = document.querySelectorAll(".arch-node");
-  const lines = document.querySelectorAll(".arch-line");
-  const archDetail = document.getElementById("archDetail");
+function initArchitectureExplorer() {
+  const nodeButtons = Array.from(document.querySelectorAll(".arch-node"));
+  const detail = document.getElementById("archDetail");
+  if (nodeButtons.length === 0 || !detail) return;
 
-  function renderNode(nodeKey, flows) {
-    const details = nodeDetails[nodeKey];
-    if (!details || !archDetail) return;
+  function renderNode(nodeKey) {
+    const node = architectureDetails[nodeKey];
+    if (!node) return;
 
-    archDetail.innerHTML = `
-      <h3>${details.title}</h3>
-      <p>${details.description}</p>
+    detail.innerHTML = `
+      <h3>${node.title}</h3>
+      <p>${node.description}</p>
       <ul>
-        <li><strong>Inputs:</strong> ${details.inputs}</li>
-        <li><strong>Outputs:</strong> ${details.outputs}</li>
-        <li><strong>Failure Handling:</strong> ${details.failure}</li>
+        <li><strong>Inputs:</strong> ${node.inputs}</li>
+        <li><strong>Outputs:</strong> ${node.outputs}</li>
+        <li><strong>Reliability Strategy:</strong> ${node.reliability}</li>
       </ul>
     `;
 
-    lines.forEach((line) => {
-      const flow = line.getAttribute("data-flow") || "";
-      line.classList.toggle("active", flows.includes(flow));
-    });
-
-    nodes.forEach((node) => {
-      const key = node.getAttribute("data-node");
-      node.classList.toggle("active", key === nodeKey);
+    nodeButtons.forEach((button) => {
+      button.classList.toggle("active", button.getAttribute("data-node") === nodeKey);
     });
   }
 
-  nodes.forEach((node) => {
-    node.addEventListener("click", () => {
-      const nodeKey = node.getAttribute("data-node") || "";
-      const flows = (node.getAttribute("data-flows") || "")
-        .split(" ")
-        .filter(Boolean);
-      renderNode(nodeKey, flows);
+  nodeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = button.getAttribute("data-node") || "ingest";
+      renderNode(key);
     });
   });
 
-  if (nodes.length > 0) {
-    const firstNode = nodes[0];
-    const key = firstNode.getAttribute("data-node") || "";
-    const flows = (firstNode.getAttribute("data-flows") || "")
-      .split(" ")
-      .filter(Boolean);
-    renderNode(key, flows);
-  }
+  const firstKey = nodeButtons[0].getAttribute("data-node") || "ingest";
+  renderNode(firstKey);
 }
 
 function initBuildStepExplorer() {
   const tabs = Array.from(document.querySelectorAll(".build-tab"));
   const detail = document.getElementById("buildDetail");
-  const fill = document.getElementById("buildProgressFill");
+  const progressFill = document.getElementById("buildProgressFill");
   if (tabs.length === 0 || !detail) return;
 
   function renderStep(stepKey) {
@@ -199,16 +177,17 @@ function initBuildStepExplorer() {
       tab.classList.toggle("active", tab.getAttribute("data-step") === stepKey);
     });
 
-    if (fill) {
-      const stepIndex = buildStepOrder.indexOf(stepKey);
-      const width = ((stepIndex + 1) / buildStepOrder.length) * 100;
-      fill.style.width = `${Math.max(8, width)}%`;
+    if (progressFill) {
+      const index = buildStepOrder.indexOf(stepKey);
+      const width = ((index + 1) / buildStepOrder.length) * 100;
+      progressFill.style.width = `${Math.max(8, width)}%`;
     }
   }
 
   tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
-      renderStep(tab.getAttribute("data-step") || "discovery");
+      const key = tab.getAttribute("data-step") || "discovery";
+      renderStep(key);
     });
   });
 
@@ -219,23 +198,23 @@ function initKpiCounters() {
   const counters = document.querySelectorAll(".kpi-value");
   if (counters.length === 0) return;
 
-  const animateCounter = (counter) => {
-    const target = Number(counter.getAttribute("data-target") || "0");
-    const suffix = counter.getAttribute("data-suffix") || "";
-    const duration = 1000;
-    const start = performance.now();
+  function animateCounter(el) {
+    const target = Number(el.getAttribute("data-target") || "0");
+    const suffix = el.getAttribute("data-suffix") || "";
+    const startTime = performance.now();
+    const durationMs = 1000;
 
     function tick(now) {
-      const progress = Math.min(1, (now - start) / duration);
+      const progress = Math.min(1, (now - startTime) / durationMs);
       const value = Math.round(progress * target);
-      counter.textContent = `${value}${suffix}`;
+      el.textContent = `${value}${suffix}`;
       if (progress < 1) {
         window.requestAnimationFrame(tick);
       }
     }
 
     window.requestAnimationFrame(tick);
-  };
+  }
 
   const observer = new IntersectionObserver(
     (entries) => {
@@ -245,15 +224,15 @@ function initKpiCounters() {
         observer.unobserve(entry.target);
       });
     },
-    { threshold: 0.4 }
+    { threshold: 0.35 }
   );
 
   counters.forEach((counter) => observer.observe(counter));
 }
 
 function initRevealAnimations() {
-  const revealBlocks = document.querySelectorAll(".reveal");
-  if (revealBlocks.length === 0) return;
+  const revealItems = document.querySelectorAll(".reveal");
+  if (revealItems.length === 0) return;
 
   const observer = new IntersectionObserver(
     (entries) => {
@@ -266,7 +245,7 @@ function initRevealAnimations() {
     { threshold: 0.14 }
   );
 
-  revealBlocks.forEach((item) => observer.observe(item));
+  revealItems.forEach((item) => observer.observe(item));
 }
 
 function initSectionLinkHighlighting() {
@@ -287,13 +266,13 @@ function initSectionLinkHighlighting() {
         .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
       if (!visible) return;
-      const visibleId = `#${visible.target.id}`;
+      const activeId = `#${visible.target.id}`;
 
       links.forEach((link) => {
-        link.classList.toggle("active", link.getAttribute("href") === visibleId);
+        link.classList.toggle("active", link.getAttribute("href") === activeId);
       });
     },
-    { threshold: 0.35 }
+    { threshold: 0.4 }
   );
 
   sections.forEach((section) => observer.observe(section));
@@ -302,35 +281,34 @@ function initSectionLinkHighlighting() {
 function initHireRequestBuilder() {
   const options = Array.from(document.querySelectorAll(".service-option"));
   const summary = document.getElementById("hireSummary");
-  const link = document.getElementById("hireRequestLink");
-  if (options.length === 0 || !summary || !link) return;
+  const requestLink = document.getElementById("hireRequestLink");
+  if (options.length === 0 || !summary || !requestLink) return;
 
-  const repoIssueBase = "https://github.com/ANIS151993/Notebook-Studio/issues/new";
+  const issueBase = "https://github.com/ANIS151993/Notebook-Studio/issues/new";
 
-  function setService(serviceName) {
-    const title = `Collaboration Request: ${serviceName}`;
-    const body = [
-      "Hello Anis,",
+  function setService(service) {
+    const issueTitle = `Collaboration Request: ${service}`;
+    const issueBody = [
+      "Hello Md Anisur Rahman Chowdhury,",
       "",
-      `I am interested in: ${serviceName}`,
+      `I want to collaborate on: ${service}`,
       "",
-      "Project goals:",
+      "Project scope:",
       "-",
       "",
-      "Expected timeline:",
+      "Timeline:",
       "-",
       "",
       "Budget range:",
       "-",
       "",
-      "Preferred contact method:",
+      "Contact details:",
       "-",
     ].join("\n");
 
-    const url = `${repoIssueBase}?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
-
-    summary.textContent = `Selected service: ${serviceName}`;
-    link.setAttribute("href", url);
+    const url = `${issueBase}?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}`;
+    summary.textContent = `Selected service: ${service}`;
+    requestLink.setAttribute("href", url);
   }
 
   options.forEach((option) => {
@@ -341,25 +319,23 @@ function initHireRequestBuilder() {
     });
   });
 
-  const activeOption = options.find((option) => option.classList.contains("active")) || options[0];
-  const defaultService = activeOption.getAttribute("data-service") || "Data Workflow Automation";
-  setService(defaultService);
+  const defaultOption = options.find((option) => option.classList.contains("active")) || options[0];
+  setService(defaultOption.getAttribute("data-service") || "Data Workflow Automation");
 }
 
 const chartInstances = new Map();
 let chartsInitialized = false;
-let resizeTimerId = null;
+let resizeTimer = null;
 
 function enforceCanvasFrameSize(canvasId) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
+
   const frame = canvas.closest(".chart-frame");
   if (!frame) return;
 
-  const width = Math.max(1, Math.floor(frame.clientWidth));
-  const height = Math.max(1, Math.floor(frame.clientHeight));
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = Math.max(1, Math.floor(frame.clientWidth));
+  canvas.height = Math.max(1, Math.floor(frame.clientHeight));
 }
 
 function createOrReplaceChart(canvasId, config) {
@@ -380,15 +356,12 @@ function makeCharts() {
   if (typeof Chart === "undefined" || chartsInitialized) return;
   chartsInitialized = true;
 
+  const baseGrid = "rgba(145, 173, 201, 0.25)";
+  const baseTicks = "#d8e6f4";
+
   Chart.defaults.responsive = true;
   Chart.defaults.maintainAspectRatio = false;
-  Chart.defaults.animation = {
-    duration: 750,
-    easing: "easeOutQuart",
-  };
-
-  const baseGrid = "rgba(177, 198, 217, 0.24)";
-  const baseTicks = "#d8e5f2";
+  Chart.defaults.animation = { duration: 720, easing: "easeOutQuart" };
 
   createOrReplaceChart("trendChart", {
     type: "line",
@@ -397,17 +370,16 @@ function makeCharts() {
       datasets: [
         {
           label: "Avg Processing Time (minutes)",
-          data: [14.8, 13.5, 11.9, 9.8, 8.6, 7.3, 6.1, 5.2],
-          borderColor: "#46d2ad",
-          backgroundColor: "rgba(70, 210, 173, 0.2)",
+          data: [14.8, 13.4, 11.9, 9.7, 8.6, 7.2, 6.1, 5.1],
+          borderColor: "#29c7a2",
+          backgroundColor: "rgba(41, 199, 162, 0.2)",
           fill: true,
-          tension: 0.3,
+          tension: 0.28,
           borderWidth: 2.3,
         },
       ],
     },
     options: {
-      resizeDelay: 200,
       plugins: { legend: { labels: { color: baseTicks } } },
       scales: {
         x: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
@@ -419,24 +391,23 @@ function makeCharts() {
   createOrReplaceChart("barChart", {
     type: "bar",
     data: {
-      labels: ["Ingestion", "Cleaning", "Validation", "Notebook Prep", "Debug"],
+      labels: ["Ingestion", "Cleaning", "Validation", "Notebook Prep", "Debugging"],
       datasets: [
         {
           label: "Manual Baseline",
           data: [22, 34, 18, 16, 29],
-          backgroundColor: "rgba(250, 173, 84, 0.84)",
+          backgroundColor: "rgba(244, 168, 80, 0.82)",
           borderRadius: 8,
         },
         {
           label: "Notebook Studio",
           data: [7, 10, 6, 5, 9],
-          backgroundColor: "rgba(70, 210, 173, 0.9)",
+          backgroundColor: "rgba(41, 199, 162, 0.9)",
           borderRadius: 8,
         },
       ],
     },
     options: {
-      resizeDelay: 200,
       plugins: { legend: { labels: { color: baseTicks } } },
       scales: {
         x: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
@@ -451,23 +422,22 @@ function makeCharts() {
       labels: ["Completeness", "Consistency", "Uniqueness", "Traceability", "Reusability"],
       datasets: [
         {
-          label: "Before",
-          data: [42, 48, 51, 35, 44],
-          borderColor: "#f3a64a",
-          backgroundColor: "rgba(243, 166, 74, 0.23)",
-          pointBackgroundColor: "#f3a64a",
+          label: "Before Automation",
+          data: [42, 49, 51, 36, 44],
+          borderColor: "#f4a850",
+          backgroundColor: "rgba(244, 168, 80, 0.24)",
+          pointBackgroundColor: "#f4a850",
         },
         {
-          label: "After",
-          data: [86, 89, 92, 80, 88],
-          borderColor: "#46d2ad",
-          backgroundColor: "rgba(70, 210, 173, 0.18)",
-          pointBackgroundColor: "#46d2ad",
+          label: "After Automation",
+          data: [86, 89, 92, 81, 88],
+          borderColor: "#29c7a2",
+          backgroundColor: "rgba(41, 199, 162, 0.2)",
+          pointBackgroundColor: "#29c7a2",
         },
       ],
     },
     options: {
-      resizeDelay: 200,
       plugins: { legend: { labels: { color: baseTicks } } },
       scales: {
         r: {
@@ -487,10 +457,10 @@ function makeCharts() {
         {
           label: "Manual Process",
           data: [
-            { x: 5, y: 21 },
+            { x: 5, y: 22 },
             { x: 10, y: 37 },
-            { x: 20, y: 61 },
-            { x: 30, y: 92 },
+            { x: 20, y: 63 },
+            { x: 30, y: 93 },
           ],
           backgroundColor: "#ff6b6b",
         },
@@ -502,12 +472,11 @@ function makeCharts() {
             { x: 20, y: 19 },
             { x: 30, y: 27 },
           ],
-          backgroundColor: "#46d2ad",
+          backgroundColor: "#29c7a2",
         },
       ],
     },
     options: {
-      resizeDelay: 200,
       plugins: { legend: { labels: { color: baseTicks } } },
       scales: {
         x: {
@@ -527,8 +496,9 @@ function makeCharts() {
 
 window.addEventListener("resize", () => {
   if (chartInstances.size === 0) return;
-  window.clearTimeout(resizeTimerId);
-  resizeTimerId = window.setTimeout(() => {
+
+  window.clearTimeout(resizeTimer);
+  resizeTimer = window.setTimeout(() => {
     chartInstances.forEach((chart, canvasId) => {
       enforceCanvasFrameSize(canvasId);
       chart.resize();
@@ -537,7 +507,7 @@ window.addEventListener("resize", () => {
 });
 
 function initPage() {
-  initArchitectureMap();
+  initArchitectureExplorer();
   initBuildStepExplorer();
   initKpiCounters();
   initRevealAnimations();
