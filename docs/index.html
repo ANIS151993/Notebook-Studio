@@ -27,6 +27,7 @@
         <a href="#evaluation">Evaluation</a>
         <a href="#video">Video Overview</a>
         <a href="#paper">Research Paper</a>
+        <a href="#resources">Resources</a>
         <a href="#contact">Profiles & Contact</a>
       </nav>
       <a class="cta-app" href="https://datamentor.marcbd.site" target="_blank" rel="noopener noreferrer">Open Live App</a>
@@ -316,74 +317,116 @@
       </div>
     </section>
 
-    <section class="panel reveal" id="paper">
-      <div class="section-head">
-        <h2>IEEE Research Paper and Artifacts</h2>
-        <p>First-page preview is visible here. Full research files are stored in encrypted form.</p>
-      </div>
+    <section class="panel reveal section section-alt" id="paper">
+      <div class="container">
+        <p class="section-kicker">Protected Manuscript</p>
+        <h2 class="section-title">Public first-page preview only</h2>
+        <p class="section-subtitle">
+          The site intentionally exposes only the first-page manuscript preview and abstract summary.
+          The full conference PDF and source package are available only as encrypted downloads through the policy gate.
+        </p>
 
-      <div class="paper-portal">
-        <article class="paper-summary-card">
-          <h3>DataMentor: A Reproducible Framework for Serverless CSV Intelligence, Offline Local Language-Model Repair, and Interactive Notebook Analytics</h3>
-          <p>
-            This manuscript presents the full scientific contribution of DataMentor, including architecture,
-            training and deployment details for the local offline model, benchmark methodology, quantitative evaluation,
-            case study analysis, and complete reproducibility artifacts.
-          </p>
-          <ul class="paper-meta-list paper-policy-list">
-            <li><strong>Author:</strong> Md Anisur Rahman Chowdhury</li>
-            <li><strong>Affiliation:</strong> Dept. of Computer and Information Science, Gannon University, USA</li>
-            <li><strong>Protection:</strong> research package is encrypted and inaccessible without the authorized password</li>
-            <li><strong>Policy:</strong> full-document access requires follow + subscribe + password request approval</li>
-          </ul>
-
-          <div class="policy-links">
-            <a class="btn-secondary" href="https://github.com/ANIS151993" target="_blank" rel="noopener noreferrer">Follow on GitHub</a>
-            <a class="btn-secondary" href="https://youtu.be/yN4jibDm8v8" target="_blank" rel="noopener noreferrer">Subscribe on YouTube</a>
-            <a class="btn-secondary" href="mailto:engr.aanis@gmail.com?subject=Password%20Request%20for%20DataMentor%20Research%20Documents&body=Hello%20Md%20Anisur%20Rahman%20Chowdhury%2C%0A%0AI%20have%20followed%20your%20GitHub%20and%20subscribed%20to%20your%20YouTube%20channel.%20Please%20share%20the%20password%20for%20the%20encrypted%20research%20documents.%0A%0AName%3A%0AGitHub%20Profile%3A%0AYouTube%20Profile%3A">Request Password</a>
-          </div>
-
-          <div class="access-card">
-            <h4>Encrypted Download Access</h4>
-            <p>After approval, enter the provided password to unlock encrypted file download.</p>
-            <div class="access-row">
-              <input id="researchPasswordInput" class="access-input" type="password" placeholder="Enter authorized password" autocomplete="off" />
-              <button type="button" class="btn-primary" id="researchUnlockBtn">Unlock</button>
+        <div class="paper-preview-shell">
+          <article class="paper-sheet">
+            <div class="paper-topline">
+              <span>IEEE-ready manuscript package</span>
+              <span>DataMentor</span>
             </div>
-            <p id="researchAccessStatus" class="access-status" aria-live="polite"></p>
-            <div id="researchDownloadZone" class="download-zone" hidden>
-              <a class="btn-secondary" id="researchDownloadBtn" href="#" download>Download Encrypted Research Bundle</a>
-              <p>Decrypt command:</p>
-              <code>openssl enc -d -aes-256-cbc -pbkdf2 -iter 250000 -in datamentor_research_bundle.tar.gz.enc -out datamentor_research_bundle.tar.gz</code>
+            <h3 class="paper-title">DataMentor: A Reproducible Framework for Serverless CSV Intelligence, Offline Local Language-Model Repair, and Interactive Notebook Analytics</h3>
+            <p class="paper-authors"><strong>Md Anisur Rahman Chowdhury</strong></p>
+            <p class="paper-affiliation">Department of Computer and Information Science, Gannon University, USA</p>
+
+            <div class="paper-columns">
+              <div>
+                <h4>Abstract</h4>
+                <p>
+                  DataMentor transforms heterogeneous CSV datasets into reproducible notebook workflows with deterministic preprocessing, in-browser execution, and profile-based analytics evaluation.
+                </p>
+                <p>
+                  The framework combines measurable quality uplift with strong runtime continuity through a rule-first correction pipeline and local-model fallback.
+                </p>
+              </div>
+              <div>
+                <h4>Highlights</h4>
+                <p>
+                  Evaluation reports substantial workflow-time reduction across academic, SME, and enterprise profiles, with robust Python correction performance under offline deployment constraints.
+                </p>
+                <p>
+                  The complete manuscript, benchmark outputs, and source files are protected and distributed only as encrypted archives.
+                </p>
+              </div>
             </div>
-          </div>
-        </article>
 
-        <article class="paper-viewer-card">
-          <h3>In-Page Paper Viewer (First Page Only)</h3>
-          <div class="paper-preview-wrap">
-            <img class="paper-preview-image" src="./papers/datamentor_ieee/datamentor_page1.png" alt="First page preview of DataMentor IEEE research paper" loading="lazy" />
-            <span class="paper-preview-label">Preview Only · Page 1</span>
-          </div>
-          <p class="paper-viewer-note viewer-restriction">
-            Full PDF, LaTeX source, benchmark files, and runtime outputs are encrypted and not publicly readable.
-          </p>
-        </article>
+            <div class="paper-lock">
+              Preview access is intentionally limited to first-page manuscript information. Use the secure download gate to request and unlock the encrypted research bundle.
+            </div>
+          </article>
+
+          <aside class="policy-card">
+            <h3>Download policy</h3>
+            <ol class="policy-list">
+              <li>Follow the author on GitHub.</li>
+              <li>Subscribe to the YouTube channel and review the project video.</li>
+              <li>Send a password request email to the author.</li>
+              <li>Use the authorized password to unlock and download the encrypted archive.</li>
+            </ol>
+            <div class="hero-actions">
+              <button class="btn btn-primary btn-block" type="button" data-open-gate>Open secure download gate</button>
+              <a class="btn btn-secondary btn-block" href="mailto:engr.aanis@gmail.com?subject=Password%20Request%20for%20DataMentor%20Research%20Documents&body=Hello%20Md%20Anisur%20Rahman%20Chowdhury%2C%0A%0AI%20have%20followed%20your%20GitHub%20and%20subscribed%20to%20your%20YouTube%20channel.%20Please%20share%20the%20password%20for%20the%20encrypted%20research%20documents.%0A%0AName%3A%0AGitHub%20Profile%3A%0AYouTube%20Profile%3A">Request password by email</a>
+            </div>
+
+            <div class="access-card" id="paperAccessCard" hidden>
+              <h4>Encrypted Download Access</h4>
+              <p>After approval, enter the provided password to unlock encrypted file download.</p>
+              <div class="access-row">
+                <input id="researchPasswordInput" class="access-input" type="password" placeholder="Enter authorized password" autocomplete="off" />
+                <button type="button" class="btn btn-primary" id="researchUnlockBtn">Unlock</button>
+              </div>
+              <p id="researchAccessStatus" class="access-status" aria-live="polite"></p>
+              <div id="researchDownloadZone" class="download-zone" hidden>
+                <a class="btn btn-secondary" id="researchDownloadBtn" href="#" download>Download Encrypted Research Bundle</a>
+                <p>Decrypt command:</p>
+                <code>openssl enc -d -aes-256-cbc -pbkdf2 -iter 250000 -in datamentor_research_bundle.tar.gz.enc -out datamentor_research_bundle.tar.gz</code>
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
+    </section>
 
-      <div class="paper-assets-grid">
-        <article class="paper-asset-card">
-          <h3>Graph Atlas</h3>
-          <p>Includes trend, cumulative, scalability, quality, repair-distribution, latency, and ablation visual analyses.</p>
-        </article>
-        <article class="paper-asset-card">
-          <h3>Runtime Evidence</h3>
-          <p>Contains real benchmark transcript outputs and stage-level measured timings used in every reported result.</p>
-        </article>
-        <article class="paper-asset-card">
-          <h3>Source Reproducibility</h3>
-          <p>Provides LaTeX manuscript, IEEE class file, bibliography, raw CSV datasets, and Python generation scripts.</p>
-        </article>
+    <section class="panel reveal section" id="resources">
+      <div class="container">
+        <p class="section-kicker">Research Assets</p>
+        <h2 class="section-title">Portal resources</h2>
+        <p class="section-subtitle">
+          This portal provides a protected manuscript workflow with preview-only visibility and encrypted distribution.
+        </p>
+
+        <div class="resource-grid">
+          <article class="resource-card">
+            <div class="resource-meta">
+              <span class="pill">Public page</span>
+              <span class="pill accent">Preview</span>
+            </div>
+            <h3>First-page manuscript preview</h3>
+            <p>
+              Public access is limited to the first page preview image and high-level abstract summary for review context.
+            </p>
+            <a class="btn btn-dark" href="./papers/datamentor_ieee/datamentor_page1.png" target="_blank" rel="noopener noreferrer">Open preview</a>
+          </article>
+
+          <article class="resource-card">
+            <div class="resource-meta">
+              <span class="pill">Encrypted</span>
+              <span class="pill accent">Restricted</span>
+            </div>
+            <h3>Protected research archive</h3>
+            <p>
+              Full manuscript materials are stored as an encrypted package. Access is controlled via password request and secure unlock gate.
+            </p>
+            <a class="btn btn-dark" href="./papers/datamentor_ieee/ENCRYPTED_ACCESS.md" target="_blank" rel="noopener noreferrer">Open decrypt policy</a>
+          </article>
+        </div>
       </div>
     </section>
 

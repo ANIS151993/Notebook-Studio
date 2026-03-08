@@ -332,12 +332,14 @@ async function sha256Hex(text) {
 }
 
 function initResearchAccessPolicy() {
+  const openGateButton = document.querySelector("[data-open-gate]");
+  const accessCard = document.getElementById("paperAccessCard");
   const passwordInput = document.getElementById("researchPasswordInput");
   const unlockButton = document.getElementById("researchUnlockBtn");
   const status = document.getElementById("researchAccessStatus");
   const downloadZone = document.getElementById("researchDownloadZone");
   const downloadButton = document.getElementById("researchDownloadBtn");
-  if (!passwordInput || !unlockButton || !status || !downloadZone || !downloadButton) return;
+  if (!openGateButton || !accessCard || !passwordInput || !unlockButton || !status || !downloadZone || !downloadButton) return;
 
   const expectedHash = "5b484d8b2799daf74779ce686501847d4a08b5e917c1e8395e1da7f7e73bce0d";
   const encodedBundlePath = "Li9wYXBlcnMvZGF0YW1lbnRvcl9pZWVlL2RhdGFtZW50b3JfcmVzZWFyY2hfYnVuZGxlLnRhci5nei5lbmM=";
@@ -381,6 +383,13 @@ function initResearchAccessPolicy() {
     if (event.key !== "Enter") return;
     event.preventDefault();
     verifyPassword();
+  });
+
+  openGateButton.addEventListener("click", () => {
+    accessCard.hidden = false;
+    openGateButton.setAttribute("disabled", "true");
+    openGateButton.textContent = "Secure download gate opened";
+    passwordInput.focus();
   });
 }
 
