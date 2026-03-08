@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
@@ -14,7 +15,7 @@ import { auth, db, firebaseConfigError } from "@/lib/firebase";
 import { replaceWithTransition } from "@/lib/view-transition";
 import { isValidEmail } from "@/lib/validators";
 
-type Status = "idle" | "submitting" | "signupSuccess";
+type Status = "idle" | "submitting" | "signupSuccess" | "resetSent";
 type AuthMode = "signup" | "signin";
 const minimumPasswordLength = 8;
 
@@ -155,6 +156,30 @@ export default function EmailLinkForm() {
     }
   };
 
+  const handlePasswordReset = async () => {
+    if (!auth) {
+      setError(firebaseConfigError ?? "Firebase is not configured correctly.");
+      return;
+    }
+
+    const trimmedEmail = email.trim();
+    if (!isValidEmail(trimmedEmail)) {
+      setError("Enter your email first, then click Forgot password.");
+      return;
+    }
+
+    try {
+      setError(null);
+      setStatus("submitting");
+      await sendPasswordResetEmail(auth, trimmedEmail);
+      setStatus("resetSent");
+    } catch (err: unknown) {
+      console.error(err);
+      setError(getAuthErrorMessage(err));
+      setStatus("idle");
+    }
+  };
+
   return (
     <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
       {firebaseConfigError && (
@@ -275,10 +300,26 @@ export default function EmailLinkForm() {
             : "Log In"}
       </button>
 
+      {mode === "signin" && (
+        <button
+          type="button"
+          onClick={handlePasswordReset}
+          disabled={status === "submitting" || !!firebaseConfigError}
+          className="inline-flex h-11 items-center justify-center rounded-xl border border-[#d4af37]/80 bg-[#16120d] px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f] transition hover:bg-[#d4af37] hover:text-[#0a0a0a] disabled:cursor-not-allowed disabled:border-[#6b5d45] disabled:text-[#6b5d45]"
+        >
+          Forgot Password
+        </button>
+      )}
+
       {status === "signupSuccess" && (
         <div className="rounded-2xl border border-[#d4af37] bg-[#2a2416] p-4 text-sm text-[#ffd700]">
           ✓ Account created. Verification email sent. Verify your email, then switch
           to Log In.
+        </div>
+      )}
+      {status === "resetSent" && (
+        <div className="rounded-2xl border border-[#d4af37] bg-[#2a2416] p-4 text-sm text-[#ffd700]">
+          ✓ Password reset email sent. Check your inbox and set a new password.
         </div>
       )}
       {error && (
