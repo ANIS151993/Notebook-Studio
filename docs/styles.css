@@ -6,8 +6,8 @@
   --panel-soft: #162d43;
   --line: #315170;
   --line-soft: #46698c;
-  --text: #e6f0fb;
-  --muted: #a9bed3;
+  --text: #edf5ff;
+  --muted: #b6c9dc;
   --teal: #29c7a2;
   --gold: #d7b560;
   --orange: #f4a850;
@@ -27,10 +27,17 @@ body {
   margin: 0;
   color: var(--text);
   font-family: "Space Grotesk", sans-serif;
+  line-height: 1.5;
   background:
     radial-gradient(circle at 12% 10%, rgba(215, 181, 96, 0.16), transparent 33%),
     radial-gradient(circle at 86% 20%, rgba(41, 199, 162, 0.12), transparent 35%),
     linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 48%, var(--bg-2) 100%);
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid rgba(115, 233, 205, 0.85);
+  outline-offset: 2px;
 }
 
 body::before {
@@ -72,7 +79,7 @@ a {
   padding: 0.82rem 0;
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 0.9rem;
+  gap: 1rem;
   align-items: center;
 }
 
@@ -87,16 +94,18 @@ a {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.48rem;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .topnav a {
   text-decoration: none;
-  font-size: 0.82rem;
+  font-size: 0.83rem;
   color: var(--muted);
   border: 1px solid transparent;
   border-radius: 999px;
   padding: 0.29rem 0.52rem;
+  white-space: nowrap;
   transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
 }
 
@@ -124,15 +133,15 @@ a {
 
 .site-main {
   width: min(1220px, 93vw);
-  margin: 1.8rem auto 3.2rem;
+  margin: 1.9rem auto 3.3rem;
   display: grid;
-  gap: 1.04rem;
+  gap: 1.14rem;
 }
 
 .panel {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  padding: 1.16rem;
+  padding: clamp(1rem, 1.5vw, 1.24rem);
   background: linear-gradient(160deg, rgba(17, 37, 55, 0.94), rgba(14, 29, 44, 0.95));
   box-shadow: var(--shadow);
 }
@@ -169,14 +178,15 @@ a {
 
 .hero h1 {
   font-family: "IBM Plex Serif", serif;
-  font-size: clamp(1.35rem, 2.4vw, 2.2rem);
-  line-height: 1.2;
+  font-size: clamp(1.4rem, 2.45vw, 2.25rem);
+  line-height: 1.18;
+  max-width: 28ch;
 }
 
 .lead {
   color: var(--muted);
-  font-size: 0.96rem;
-  line-height: 1.62;
+  font-size: 0.99rem;
+  line-height: 1.66;
   max-width: 82ch;
 }
 
@@ -305,18 +315,20 @@ a {
 
 .metrics-grid p {
   color: var(--muted);
-  font-size: 0.81rem;
-  line-height: 1.45;
+  font-size: 0.83rem;
+  line-height: 1.5;
 }
 
 .section-head {
   display: grid;
-  gap: 0.22rem;
-  margin-bottom: 0.84rem;
+  gap: 0.25rem;
+  margin-bottom: 0.92rem;
 }
 
 .section-head h2 {
-  font-size: 1.22rem;
+  font-family: "IBM Plex Serif", serif;
+  font-size: 1.26rem;
+  line-height: 1.25;
 }
 
 .section-head p {
@@ -543,20 +555,20 @@ a {
   border: 1px solid var(--line);
   border-radius: 12px;
   background: rgba(8, 18, 28, 0.8);
-  padding: 0.66rem;
+  padding: 0.74rem;
   display: grid;
   gap: 0.44rem;
 }
 
 .chart-card h3 {
   color: #f1d483;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
 }
 
 .chart-frame {
   position: relative;
   width: 100%;
-  height: 238px;
+  height: 248px;
 }
 
 .chart-frame canvas {
@@ -609,7 +621,7 @@ a {
   border: 1px solid var(--line);
   padding: 0.5rem 0.54rem;
   text-align: left;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   vertical-align: top;
 }
 
@@ -783,10 +795,22 @@ a {
 
 .footer {
   width: min(1220px, 93vw);
-  margin: 0 auto 2.2rem;
+  margin: 0 auto 2.4rem;
   text-align: center;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 1180px) {
+  .topbar-inner {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    padding-bottom: 0.72rem;
+  }
+
+  .topnav {
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 1120px) {
@@ -806,15 +830,6 @@ a {
 }
 
 @media (max-width: 920px) {
-  .topbar-inner {
-    grid-template-columns: 1fr;
-    justify-items: start;
-  }
-
-  .topnav {
-    justify-content: flex-start;
-  }
-
   .science-grid,
   .impact-grid,
   .chart-grid,
@@ -839,7 +854,7 @@ a {
   }
 
   .chart-frame {
-    height: 215px;
+    height: 218px;
   }
 
   .hero h1 {

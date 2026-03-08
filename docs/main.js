@@ -356,12 +356,17 @@ function makeCharts() {
   if (typeof Chart === "undefined" || chartsInitialized) return;
   chartsInitialized = true;
 
-  const baseGrid = "rgba(145, 173, 201, 0.25)";
-  const baseTicks = "#d8e6f4";
+  const baseGrid = "rgba(179, 202, 225, 0.3)";
+  const baseTicks = "#eaf4ff";
 
   Chart.defaults.responsive = true;
   Chart.defaults.maintainAspectRatio = false;
   Chart.defaults.animation = { duration: 720, easing: "easeOutQuart" };
+  Chart.defaults.color = baseTicks;
+  Chart.defaults.font.family = "\"Space Grotesk\", sans-serif";
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+  Chart.defaults.plugins.legend.labels.boxWidth = 10;
+  Chart.defaults.plugins.legend.labels.padding = 14;
 
   createOrReplaceChart("trendChart", {
     type: "line",
@@ -371,11 +376,13 @@ function makeCharts() {
         {
           label: "Avg Processing Time (minutes)",
           data: [14.8, 13.4, 11.9, 9.7, 8.6, 7.2, 6.1, 5.1],
-          borderColor: "#29c7a2",
-          backgroundColor: "rgba(41, 199, 162, 0.2)",
+          borderColor: "#39d9b6",
+          backgroundColor: "rgba(57, 217, 182, 0.24)",
           fill: true,
           tension: 0.28,
-          borderWidth: 2.3,
+          borderWidth: 2.5,
+          pointRadius: 2.8,
+          pointHoverRadius: 4,
         },
       ],
     },
@@ -396,13 +403,17 @@ function makeCharts() {
         {
           label: "Manual Baseline",
           data: [22, 34, 18, 16, 29],
-          backgroundColor: "rgba(244, 168, 80, 0.82)",
+          backgroundColor: "rgba(255, 161, 92, 0.88)",
+          borderColor: "#ffc08a",
+          borderWidth: 1,
           borderRadius: 8,
         },
         {
           label: "Notebook Studio",
           data: [7, 10, 6, 5, 9],
-          backgroundColor: "rgba(41, 199, 162, 0.9)",
+          backgroundColor: "rgba(45, 212, 186, 0.92)",
+          borderColor: "#7cf0db",
+          borderWidth: 1,
           borderRadius: 8,
         },
       ],
@@ -424,16 +435,18 @@ function makeCharts() {
         {
           label: "Before Automation",
           data: [42, 49, 51, 36, 44],
-          borderColor: "#f4a850",
-          backgroundColor: "rgba(244, 168, 80, 0.24)",
-          pointBackgroundColor: "#f4a850",
+          borderColor: "#ffaf67",
+          backgroundColor: "rgba(255, 175, 103, 0.22)",
+          pointBackgroundColor: "#ffaf67",
+          pointRadius: 3.2,
         },
         {
           label: "After Automation",
           data: [86, 89, 92, 81, 88],
-          borderColor: "#29c7a2",
-          backgroundColor: "rgba(41, 199, 162, 0.2)",
-          pointBackgroundColor: "#29c7a2",
+          borderColor: "#33dbb8",
+          backgroundColor: "rgba(51, 219, 184, 0.2)",
+          pointBackgroundColor: "#33dbb8",
+          pointRadius: 3.2,
         },
       ],
     },
@@ -462,7 +475,9 @@ function makeCharts() {
             { x: 20, y: 63 },
             { x: 30, y: 93 },
           ],
-          backgroundColor: "#ff6b6b",
+          backgroundColor: "#ff7b7b",
+          pointRadius: 4.5,
+          pointHoverRadius: 5.2,
         },
         {
           label: "Notebook Studio",
@@ -472,7 +487,9 @@ function makeCharts() {
             { x: 20, y: 19 },
             { x: 30, y: 27 },
           ],
-          backgroundColor: "#29c7a2",
+          backgroundColor: "#33dbb8",
+          pointRadius: 4.5,
+          pointHoverRadius: 5.2,
         },
       ],
     },
