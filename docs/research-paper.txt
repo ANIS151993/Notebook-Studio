@@ -1,0 +1,22 @@
+A Practical, User-Centric Framework for Serverless CSV Intelligence and Interactive Notebook Automation
+
+Author: MD ANISUR RAHMAN CHOWDHURY
+Affiliation: Gannon University
+
+Abstract:
+Notebook Studio is a serverless platform that turns raw CSV files into cleaned datasets and guided interactive notebooks. It combines browser Python execution, cloud auth, resilient storage, and local AI-assisted runtime correction.
+
+Core Contribution:
+- Deterministic CSV cleaning
+- Interactive notebook generation
+- Practical visualization workflows
+- Persistent user workspace
+- Hybrid auto-repair for runtime Python errors
+
+Use Cases:
+- Academic data labs
+- SME analytics operations
+- Fraud/anomaly prep pipelines
+
+Policy:
+Reading and downloading are allowed for academic and non-commercial use with proper citation. Redistribution must preserve attribution. Commercial resale and plagiarism are prohibited.

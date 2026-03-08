@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notebook Studio Research Paper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="./index.html">Notebook Studio Research</a>
+      <nav class="topnav">
+        <a href="./index.html">Home</a>
+        <a href="#paper">Paper</a>
+        <a href="#policy">Policy</a>
+      </nav>
+      <a class="cta-app" href="https://datamentor.marcbd.site" target="_blank" rel="noopener noreferrer">Use Web App</a>
+    </div>
+  </header>
+
+  <main class="paper-layout" id="paper">
+    <article class="paper-shell">
+      <h1>A Practical, User-Centric Framework for Serverless CSV Intelligence and Interactive Notebook Automation</h1>
+      <p><strong>Author:</strong> MD ANISUR RAHMAN CHOWDHURY · <strong>Affiliation:</strong> Gannon University</p>
+
+      <h2>Abstract</h2>
+      <p>
+        This paper presents Notebook Studio, a serverless web platform that transforms raw CSV files into cleaned,
+        analysis-ready datasets and guided interactive notebooks. The system integrates browser-native Python execution,
+        cloud-based authentication, resilient storage, and local AI-assisted runtime correction. The objective is to
+        reduce manual preprocessing effort while improving reproducibility, interpretability, and operational reliability
+        for academic and business data workflows.
+      </p>
+
+      <h2>1. Problem Context</h2>
+      <p>
+        Data users frequently receive inconsistent CSV exports with irregular headers, missing values, duplicates,
+        and unstructured formatting. Traditional cleanup workflows are manual, error-prone, and difficult to document.
+        Notebook Studio addresses this gap by providing deterministic cleaning, notebook generation, and visual analysis
+        in a single, browser-accessible interface.
+      </p>
+
+      <h2>2. System Design</h2>
+      <p>
+        The platform follows a modular architecture: ingestion and normalization pipeline, notebook composition module,
+        browser Python runtime, chart analytics layer, and account-scoped persistence. Runtime resilience is achieved
+        through dual-path state continuity (cloud + local cache) and automatic repair attempts for common Python errors.
+      </p>
+
+      <h2>3. Methodology</h2>
+      <ul>
+        <li>Requirement-driven iteration for deployment stability and user continuity.</li>
+        <li>Progressive enhancement from static cleaning pipeline to intelligent runtime correction.</li>
+        <li>Comparative benchmarking against manual preprocessing baselines.</li>
+        <li>Evaluation through time-to-clean, error resolution latency, and workflow reproducibility indicators.</li>
+      </ul>
+
+      <h2>4. Results and Observations</h2>
+      <p>
+        Experimental usage showed strong reduction in end-to-end preparation time, improved consistency of normalized
+        schemas, and faster debugging cycles through assisted runtime correction. Interactive charts and notebook traces
+        significantly improved transparency for audit and teaching scenarios.
+      </p>
+
+      <h2>5. Real-World Applicability</h2>
+      <ul>
+        <li><strong>Education:</strong> reproducible, guided data-lab workflows for students.</li>
+        <li><strong>SMEs:</strong> low-friction preprocessing without dedicated data engineering teams.</li>
+        <li><strong>Analyst operations:</strong> rapid anomaly/fraud-prep screening before downstream modeling.</li>
+      </ul>
+
+      <h2>6. Limitations and Future Work</h2>
+      <p>
+        No automatic repair framework can guarantee universal correction of all arbitrary logic errors. Future work will
+        include broader domain-aware repair policies, retrieval-augmented technical references, and controlled
+        server-assisted reasoning modes for complex edge cases.
+      </p>
+
+      <h2>7. Conclusion</h2>
+      <p>
+        Notebook Studio demonstrates that a carefully engineered serverless architecture can deliver practical,
+        production-usable data cleaning and notebook intelligence while preserving user accessibility and deployment
+        sustainability.
+      </p>
+
+      <div class="paper-cta">
+        <a class="btn-secondary" href="./research-paper.md" download>Download Markdown</a>
+        <a class="btn-secondary" href="./research-paper.txt" download>Download Text</a>
+        <button class="btn-primary" onclick="window.print()">Print / Save as PDF</button>
+      </div>
+    </article>
+
+    <article class="paper-shell" id="policy">
+      <h2>Reading and Download Policy</h2>
+      <ul>
+        <li>Open reading access is granted for academic, educational, and non-commercial review.</li>
+        <li>Downloads are allowed for personal study, classroom use, and citation-based scholarly referencing.</li>
+        <li>Any redistribution or republication must preserve author attribution and institutional affiliation.</li>
+        <li>Commercial resale or plagiarism of any section is strictly prohibited.</li>
+        <li>Derivative works must include clear citation: <em>MD Anisur Rahman Chowdhury, Gannon University</em>.</li>
+      </ul>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <p>© MD ANISUR RAHMAN CHOWDHURY · Gannon University</p>
+  </footer>
+</body>
+</html>
