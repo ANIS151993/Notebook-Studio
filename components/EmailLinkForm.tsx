@@ -159,7 +159,7 @@ export default function EmailLinkForm() {
         // Do not block sign-in if profile sync fails temporarily.
         console.error("Profile sync failed during sign-in:", profileError);
       }
-      replaceWithTransition(router, "/dashboard");
+      replaceWithTransition(router, "/");
     } catch (err: unknown) {
       console.error(err);
       setError(getAuthErrorMessage(err));

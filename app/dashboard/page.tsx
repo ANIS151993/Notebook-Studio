@@ -6,6 +6,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, Timestamp } from "firebase/firestore";
 import { auth, db, firebaseConfigError } from "@/lib/firebase";
 import { replaceWithTransition } from "@/lib/view-transition";
+import AnimatedLink from "@/components/AnimatedLink";
 
 type Profile = {
   uid: string;
@@ -96,7 +97,7 @@ export default function DashboardPage() {
             Welcome back
           </h1>
           <p className="mt-2 text-sm text-[#c9a961]">
-            Your account details are below.
+            Your account details and quick app access are below.
           </p>
         </header>
 
@@ -153,12 +154,31 @@ export default function DashboardPage() {
             <div className="glass-card hover-lift flex flex-col justify-between gap-6 rounded-3xl bg-[#2a2416]/88 p-8">
               <div>
                 <h2 className="text-lg font-semibold text-[#f4d03f]">
-                  Security
+                  Quick actions
                 </h2>
                 <p className="mt-3 text-sm leading-6 text-[#c9a961]">
-                  This dashboard is protected by Firebase Authentication. Only
-                  signed-in users can access their profile data.
+                  Open your workspace directly after sign-in.
                 </p>
+                <div className="mt-5 grid gap-3">
+                  <AnimatedLink
+                    href="/"
+                    className="tab-pill inline-flex h-11 items-center justify-center rounded-xl border border-[#d4af37] bg-[#15120c] px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f] hover:bg-[#d4af37] hover:text-[#0a0a0a]"
+                  >
+                    Open Notebook Studio
+                  </AnimatedLink>
+                  <AnimatedLink
+                    href="/live"
+                    className="tab-pill inline-flex h-11 items-center justify-center rounded-xl border border-[#d4af37]/70 bg-[#16120d] px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#c9a961] hover:text-[#f4d03f]"
+                  >
+                    Open Live Guide
+                  </AnimatedLink>
+                  <AnimatedLink
+                    href="/admin"
+                    className="tab-pill inline-flex h-11 items-center justify-center rounded-xl border border-[#d4af37]/70 bg-[#16120d] px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#c9a961] hover:text-[#f4d03f]"
+                  >
+                    Open Admin (If Authorized)
+                  </AnimatedLink>
+                </div>
               </div>
               <button
                 type="button"
