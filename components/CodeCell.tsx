@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import AIAssistant from "./AIAssistant";
@@ -28,8 +28,7 @@ export default function CodeCell({
   const [isRunning, setIsRunning] = useState(false);
   const [hasRun, setHasRun] = useState(autoRun);
   const [showExplanation, setShowExplanation] = useState(false);
-  const [autoRunAfterFix, setAutoRunAfterFix] = useState(false);
-  const lastAutoRunCodeRef = useRef<string | null>(null);
+  const [autoRunAfterFix, setAutoRunAfterFix] = useState(true);
 
   const runWithCode = async (codeToRun: string) => {
     if (!onExecute) return;
@@ -57,13 +56,7 @@ export default function CodeCell({
     setCode(nextCode);
     setError(null);
 
-    if (
-      autoRunAfterFix &&
-      onExecute &&
-      !isRunning &&
-      lastAutoRunCodeRef.current !== nextCode
-    ) {
-      lastAutoRunCodeRef.current = nextCode;
+    if (autoRunAfterFix && onExecute && !isRunning) {
       void runWithCode(nextCode);
     }
   };
