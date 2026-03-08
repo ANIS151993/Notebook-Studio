@@ -325,9 +325,8 @@ function initHireRequestBuilder() {
 
 function initVideoOverview() {
   const launch = document.getElementById("videoLaunch");
-  const embedContainer = document.getElementById("videoEmbedContainer");
-  const playNow = document.getElementById("videoPlayNow");
-  if (!launch || !embedContainer) return;
+  const frameShell = document.getElementById("videoFrameShell");
+  if (!launch || !frameShell) return;
 
   let loaded = false;
 
@@ -345,16 +344,12 @@ function initVideoOverview() {
     iframe.referrerPolicy = "strict-origin-when-cross-origin";
     iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
 
-    embedContainer.appendChild(iframe);
-    embedContainer.hidden = false;
-    launch.hidden = true;
+    frameShell.replaceChildren(iframe);
+    frameShell.classList.add("playing");
     loaded = true;
   }
 
   launch.addEventListener("click", loadVideo);
-  if (playNow) {
-    playNow.addEventListener("click", loadVideo);
-  }
 }
 
 const chartInstances = new Map();

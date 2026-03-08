@@ -662,6 +662,8 @@ a {
 
 .video-frame-shell {
   position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(115, 233, 205, 0.34);
@@ -673,13 +675,13 @@ a {
 
 .video-launch {
   width: 100%;
+  height: 100%;
   position: relative;
   display: block;
   padding: 0;
   border: 0;
   cursor: pointer;
   background: transparent;
-  aspect-ratio: 16 / 9;
 }
 
 .video-launch img {
@@ -735,12 +737,6 @@ a {
   border-left: 18px solid #0f1822;
   border-top: 11px solid transparent;
   border-bottom: 11px solid transparent;
-}
-
-.video-embed-container {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: rgba(7, 15, 24, 0.94);
 }
 
 .video-embed {
@@ -830,12 +826,6 @@ a {
 
 .video-signal-grid article:nth-child(3) .video-signal-fill {
   animation-delay: 0.55s;
-}
-
-.video-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.46rem;
 }
 
 @keyframes pulsePlay {
