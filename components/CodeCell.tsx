@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import AIAssistant from "./AIAssistant";
@@ -28,16 +28,10 @@ export default function CodeCell({
   const [isRunning, setIsRunning] = useState(false);
   const [hasRun, setHasRun] = useState(autoRun);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [autoRunAfterFix, setAutoRunAfterFix] = useState(false);
+  const lastAutoRunCodeRef = useRef<string | null>(null);
 
-  const applyAssistantCode = (nextCode: string) => {
-    if (nextCode === code) {
-      return;
-    }
-    setCode(nextCode);
-    setError(null);
-  };
-
-  const handleRun = async () => {
+  const runWithCode = async (codeToRun: string) => {
     if (!onExecute) return;
 
     setIsRunning(true);
@@ -45,7 +39,7 @@ export default function CodeCell({
     setOutput(null);
 
     try {
-      const result = await onExecute(code);
+      const result = await onExecute(codeToRun);
       setOutput(result.output);
       setError(result.error);
       setHasRun(true);
@@ -54,6 +48,28 @@ export default function CodeCell({
     } finally {
       setIsRunning(false);
     }
+  };
+
+  const applyAssistantCode = (nextCode: string) => {
+    if (nextCode === code) {
+      return;
+    }
+    setCode(nextCode);
+    setError(null);
+
+    if (
+      autoRunAfterFix &&
+      onExecute &&
+      !isRunning &&
+      lastAutoRunCodeRef.current !== nextCode
+    ) {
+      lastAutoRunCodeRef.current = nextCode;
+      void runWithCode(nextCode);
+    }
+  };
+
+  const handleRun = async () => {
+    await runWithCode(code);
   };
 
   return (
@@ -101,15 +117,28 @@ export default function CodeCell({
               <span className="text-xs font-semibold uppercase tracking-wider text-[#c9a961]">
                 Code Editor (Editable)
               </span>
-              {onExecute && (
-                <button
-                  onClick={handleRun}
-                  disabled={isRunning}
-                  className="shine-btn inline-flex h-8 items-center justify-center rounded-lg bg-[#d4af37] px-4 text-xs font-semibold text-[#0a0a0a] transition hover:-translate-y-0.5 hover:bg-[#ffd700] disabled:bg-[#6b5d45] disabled:cursor-not-allowed disabled:text-[#3a3420]"
-                >
-                  {isRunning ? "Running..." : "▶ Run"}
-                </button>
-              )}
+              <div className="flex items-center gap-3">
+                {onExecute && (
+                  <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-[#c9a961]">
+                    <input
+                      type="checkbox"
+                      checked={autoRunAfterFix}
+                      onChange={(event) => setAutoRunAfterFix(event.target.checked)}
+                      className="h-3.5 w-3.5 rounded border border-[#d4af37] bg-[#111111] accent-[#d4af37]"
+                    />
+                    Auto-run after AI fix
+                  </label>
+                )}
+                {onExecute && (
+                  <button
+                    onClick={handleRun}
+                    disabled={isRunning}
+                    className="shine-btn inline-flex h-8 items-center justify-center rounded-lg bg-[#d4af37] px-4 text-xs font-semibold text-[#0a0a0a] transition hover:-translate-y-0.5 hover:bg-[#ffd700] disabled:bg-[#6b5d45] disabled:cursor-not-allowed disabled:text-[#3a3420]"
+                  >
+                    {isRunning ? "Running..." : "▶ Run"}
+                  </button>
+                )}
+              </div>
             </div>
             <div className="relative flex">
               {/* Line numbers */}
