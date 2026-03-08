@@ -27,7 +27,6 @@
         <a href="#evaluation">Evaluation</a>
         <a href="#video">Video Overview</a>
         <a href="#paper">Research Paper</a>
-        <a href="#resources">Resources</a>
         <a href="#contact">Profiles & Contact</a>
       </nav>
       <a class="cta-app" href="https://datamentor.marcbd.site" target="_blank" rel="noopener noreferrer">Open Live App</a>
@@ -327,34 +326,42 @@
         </p>
 
         <div class="paper-preview-shell">
-          <article class="paper-sheet">
+          <article class="paper-sheet paper-sheet-preview">
             <div class="paper-topline">
               <span>IEEE-ready manuscript package</span>
-              <span>DataMentor</span>
+              <span>First-page preview</span>
             </div>
             <h3 class="paper-title">DataMentor: A Reproducible Framework for Serverless CSV Intelligence, Offline Local Language-Model Repair, and Interactive Notebook Analytics</h3>
             <p class="paper-authors"><strong>Md Anisur Rahman Chowdhury</strong></p>
             <p class="paper-affiliation">Department of Computer and Information Science, Gannon University, USA</p>
 
-            <div class="paper-columns">
-              <div>
-                <h4>Abstract</h4>
-                <p>
-                  DataMentor transforms heterogeneous CSV datasets into reproducible notebook workflows with deterministic preprocessing, in-browser execution, and profile-based analytics evaluation.
-                </p>
-                <p>
-                  The framework combines measurable quality uplift with strong runtime continuity through a rule-first correction pipeline and local-model fallback.
-                </p>
-              </div>
-              <div>
-                <h4>Highlights</h4>
-                <p>
-                  Evaluation reports substantial workflow-time reduction across academic, SME, and enterprise profiles, with robust Python correction performance under offline deployment constraints.
-                </p>
-                <p>
-                  The complete manuscript, benchmark outputs, and source files are protected and distributed only as encrypted archives.
-                </p>
-              </div>
+            <a
+              class="paper-preview-link"
+              href="./papers/datamentor_ieee/datamentor_page1.png"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open first-page manuscript preview"
+            >
+              <img
+                src="./papers/datamentor_ieee/datamentor_page1.png"
+                alt="First-page preview of the DataMentor IEEE manuscript"
+                loading="lazy"
+              />
+              <span class="paper-preview-overlay" aria-hidden="true">
+                <strong>Interactive First-Page Preview</strong>
+                <span>Move pointer to inspect and click to open full resolution</span>
+              </span>
+            </a>
+
+            <div class="paper-insight-grid">
+              <article>
+                <h4>Public visibility</h4>
+                <p>Only this first page is openly visible in the portal.</p>
+              </article>
+              <article>
+                <h4>Protected assets</h4>
+                <p>Full PDF, LaTeX source, and artifacts remain encrypted.</p>
+              </article>
             </div>
 
             <div class="paper-lock">
@@ -370,7 +377,7 @@
               <li>Send a password request email to the author.</li>
               <li>Use the password to unlock the download gate and extract the encrypted archives.</li>
             </ol>
-            <button class="btn btn-primary btn-block policy-open-btn" id="policyOpenGateBtn" type="button">Open secure download gate</button>
+            <button class="btn btn-primary policy-open-btn" id="policyOpenGateBtn" type="button">Open secure download gate</button>
           </aside>
 
           <div class="policy-modal" id="policyGateModal" hidden>
@@ -435,46 +442,9 @@ Purpose of use:</div>
                 <h4>Encrypted files ready</h4>
                 <p>These files are encrypted zip archives. The same password is still required after download to extract the contents.</p>
                 <a class="policy-action-btn policy-action-btn--primary" id="researchDownloadBtn" href="#" download>Download encrypted conference PDF</a>
-                <a class="policy-action-btn policy-action-btn--secondary" href="report.html">Open public HTML report</a>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel reveal section" id="resources">
-      <div class="container">
-        <p class="section-kicker">Research Assets</p>
-        <h2 class="section-title">Portal resources</h2>
-        <p class="section-subtitle">
-          This portal provides a protected manuscript workflow with preview-only visibility and encrypted distribution.
-        </p>
-
-        <div class="resource-grid">
-          <article class="resource-card">
-            <div class="resource-meta">
-              <span class="pill">Public page</span>
-              <span class="pill accent">Preview</span>
-            </div>
-            <h3>First-page manuscript preview</h3>
-            <p>
-              Public access is limited to the first page preview image and high-level abstract summary for review context.
-            </p>
-            <a class="btn btn-dark" href="./papers/datamentor_ieee/datamentor_page1.png" target="_blank" rel="noopener noreferrer">Open preview</a>
-          </article>
-
-          <article class="resource-card">
-            <div class="resource-meta">
-              <span class="pill">Encrypted</span>
-              <span class="pill accent">Restricted</span>
-            </div>
-            <h3>Protected research archive</h3>
-            <p>
-              Full manuscript materials are stored as an encrypted package. Access is controlled via password request and secure unlock gate.
-            </p>
-            <a class="btn btn-dark" href="./papers/datamentor_ieee/ENCRYPTED_ACCESS.md" target="_blank" rel="noopener noreferrer">Open decrypt policy</a>
-          </article>
         </div>
       </div>
     </section>
