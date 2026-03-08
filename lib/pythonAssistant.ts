@@ -252,6 +252,15 @@ const getRegexIssues = (code: string): AssistantIssue[] => {
         fix: `Example: df[(df["a"] > 0) & (df["b"] < 10)]`,
       });
     }
+
+    if (/^[A-Za-z_][A-Za-z0-9_\.]*\(\s*$/.test(trimmed)) {
+      issues.push({
+        severity: "error",
+        title: `Line ${index + 1}: Incomplete function call`,
+        detail: "Function call is missing closing ')'.",
+        fix: "Close the call, for example: df.head()",
+      });
+    }
   });
 
   return issues;
@@ -512,6 +521,26 @@ export const autoFixPythonCode = (sourceCode: string): AutoFixResult | null => {
     if (line.includes("df[") && /\sand\s|\sor\s/.test(line)) {
       line = line.replace(/\sand\s/g, " & ").replace(/\sor\s/g, " | ");
       addChange("replaced boolean 'and/or' with pandas '&/|' operators");
+    }
+
+    // Common incomplete pandas preview calls: df.head( -> df.head()
+    const incompletePandasPreview = line.match(
+      /^(\s*)df\.(head|tail|info|describe)\(\s*$/,
+    );
+    if (incompletePandasPreview) {
+      const indentation = incompletePandasPreview[1] ?? "";
+      const method = incompletePandasPreview[2] ?? "head";
+      line = `${indentation}df.${method}()`;
+      addChange("closed incomplete pandas function call");
+    }
+
+    // Generic incomplete function call: foo( -> foo()
+    const genericIncompleteCall = line.match(
+      /^(\s*[A-Za-z_][A-Za-z0-9_\.]*)\(\s*$/,
+    );
+    if (genericIncompleteCall && !line.endsWith("()")) {
+      line = `${genericIncompleteCall[1]}()`;
+      addChange("closed incomplete function call");
     }
 
     if (line !== originalLine) {

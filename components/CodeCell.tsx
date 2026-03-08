@@ -61,14 +61,15 @@ export default function CodeCell({
       const fixResult = autoFixPythonCode(code);
       if (!fixResult || fixResult.code === code) {
         setAutoFixStatus("Monitoring...");
+        lastAppliedFixRef.current = null;
         return;
       }
 
-      if (lastAppliedFixRef.current === fixResult.code) {
+      if (lastAppliedFixRef.current === code) {
         return;
       }
 
-      lastAppliedFixRef.current = fixResult.code;
+      lastAppliedFixRef.current = code;
       setCode(fixResult.code);
       setError(null);
 
