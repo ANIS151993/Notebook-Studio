@@ -62,7 +62,13 @@ export default function DashboardPage() {
         }
       } catch (err) {
         console.error(err);
-        setError("Unable to load your profile details.");
+        setProfile({
+          uid: user.uid,
+          email: user.email ?? "Unknown",
+        });
+        setError(
+          "Signed in successfully, but profile details are temporarily unavailable."
+        );
       } finally {
         setLoading(false);
       }

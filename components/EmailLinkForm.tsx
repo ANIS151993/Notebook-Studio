@@ -44,6 +44,12 @@ const getAuthErrorMessage = (
       return "This account is disabled. Contact support.";
     case "auth/too-many-requests":
       return "Too many attempts. Please wait a few minutes and retry.";
+    case "unavailable":
+      return "Firebase service is temporarily unavailable. Try again in a moment.";
+    case "permission-denied":
+      return "Firestore access is denied. Check Firestore rules for /users/{uid}.";
+    case "failed-precondition":
+      return "Firestore may not be initialized yet. Create the Firestore database and publish rules.";
     default:
       return `Firebase error: ${error.code}. Check Firebase settings and environment variables.`;
   }
@@ -147,7 +153,12 @@ export default function EmailLinkForm() {
         return;
       }
 
-      await upsertUserProfile(result.user.uid, result.user.email ?? trimmedEmail);
+      try {
+        await upsertUserProfile(result.user.uid, result.user.email ?? trimmedEmail);
+      } catch (profileError) {
+        // Do not block sign-in if profile sync fails temporarily.
+        console.error("Profile sync failed during sign-in:", profileError);
+      }
       replaceWithTransition(router, "/dashboard");
     } catch (err: unknown) {
       console.error(err);
