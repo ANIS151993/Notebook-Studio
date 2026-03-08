@@ -23,7 +23,7 @@
         <a href="#workflow">Development Steps</a>
         <a href="#architecture">Architecture</a>
         <a href="#evaluation">Evaluation</a>
-        <a href="#paper">Research Brief</a>
+        <a href="#paper">Research Paper</a>
         <a href="#contact">Profiles & Contact</a>
       </nav>
       <a class="cta-app" href="https://datamentor.marcbd.site" target="_blank" rel="noopener noreferrer">Open Live App</a>
@@ -249,89 +249,60 @@
 
     <section class="panel reveal" id="paper">
       <div class="section-head">
-        <h2>Integrated Research Brief (All-in-One)</h2>
-        <p>Abstract, methodology, metrics, findings, limitations, and references in the same page.</p>
+        <h2>IEEE Research Paper and Artifacts</h2>
+        <p>View the full publication-ready manuscript and download the PDF + LaTeX source bundle.</p>
       </div>
 
-      <div class="paper-grid">
-        <article class="paper-card">
-          <h3>Abstract</h3>
+      <div class="paper-portal">
+        <article class="paper-summary-card">
+          <p class="paper-badge">IEEE Conference Ready • 10 Pages</p>
+          <h3>DataMentor: A Reproducible Framework for Serverless CSV Intelligence, Offline Local Language-Model Repair, and Interactive Notebook Analytics</h3>
           <p>
-            Notebook Studio is a production-deployed serverless platform that transforms raw CSV files into cleaned
-            datasets, reproducible notebooks, and interpretable analytics. The system integrates browser-executed Python,
-            cloud authentication, durable persistence, and a hybrid runtime repair strategy.
+            This manuscript presents the full scientific contribution of DataMentor, including architecture,
+            training and deployment details for the local offline model, benchmark methodology, quantitative evaluation,
+            case study analysis, and complete reproducibility artifacts.
           </p>
-
-          <h3>Methodology</h3>
-          <ol>
-            <li>Collect heterogeneous CSV datasets from academic and operational scenarios.</li>
-            <li>Measure manual baseline workflow time by stage.</li>
-            <li>Run equivalent datasets through Notebook Studio automated pipeline.</li>
-            <li>Inject representative Python runtime errors and observe repair behavior.</li>
-            <li>Compare efficiency, quality, and continuity outcomes across conditions.</li>
-          </ol>
-
-          <h3>Evaluation Metrics</h3>
-          <table class="metric-table">
-            <thead>
-              <tr>
-                <th>Metric</th>
-                <th>Definition</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Workflow Time</td>
-                <td>Upload-to-validated-output duration</td>
-              </tr>
-              <tr>
-                <td>Repair Latency</td>
-                <td>Error detection to successful rerun</td>
-              </tr>
-              <tr>
-                <td>Reproducibility</td>
-                <td>Consistency of rerun outputs</td>
-              </tr>
-              <tr>
-                <td>User Continuity</td>
-                <td>State preservation across sessions</td>
-              </tr>
-            </tbody>
-          </table>
+          <ul class="paper-meta-list">
+            <li><strong>Author:</strong> Md Anisur Rahman Chowdhury</li>
+            <li><strong>Affiliation:</strong> Dept. of Computer and Information Science, Gannon University, USA</li>
+            <li><strong>Format:</strong> IEEE conference layout, publication-ready PDF and source package</li>
+            <li><strong>Included:</strong> all graphs, charts, tables, runtime output transcript, and benchmark script</li>
+          </ul>
+          <div class="paper-actions">
+            <a class="btn-primary" href="./papers/datamentor_ieee/datamentor_ieee.pdf" target="_blank" rel="noopener noreferrer">View IEEE PDF</a>
+            <a class="btn-secondary" href="./papers/datamentor_ieee/datamentor_ieee.pdf" download>Download PDF</a>
+            <a class="btn-secondary" href="./papers/datamentor_ieee/datamentor_ieee_latex_source.zip" download>Download LaTeX Source (.zip)</a>
+            <a class="btn-secondary" href="./papers/datamentor_ieee/datamentor_ieee.tex" download>Download .tex</a>
+          </div>
         </article>
 
-        <article class="paper-card">
-          <h3>Findings</h3>
-          <ul>
-            <li>Substantial reduction in repetitive preprocessing effort compared with manual baseline.</li>
-            <li>Higher first-pass data readiness through deterministic cleaning logic.</li>
-            <li>Lower debugging overhead under hybrid rule-first runtime repair.</li>
-            <li>Improved continuity through account-scoped workspace persistence.</li>
-          </ul>
+        <article class="paper-viewer-card">
+          <h3>In-Page Paper Viewer</h3>
+          <iframe
+            class="paper-viewer"
+            src="./papers/datamentor_ieee/datamentor_ieee.pdf#view=FitH"
+            title="DataMentor IEEE Research Paper"
+            loading="lazy"
+          ></iframe>
+          <p class="paper-viewer-note">
+            If embedded preview is blocked by the browser, open the PDF directly using
+            <a href="./papers/datamentor_ieee/datamentor_ieee.pdf" target="_blank" rel="noopener noreferrer">this link</a>.
+          </p>
+        </article>
+      </div>
 
-          <h3>Limitations</h3>
-          <ul>
-            <li>No automated repair strategy can solve all semantic logic errors.</li>
-            <li>Complex domain-specific bugs still require human validation.</li>
-            <li>Local model fallback depends on browser/runtime capability.</li>
-          </ul>
-
-          <h3>References</h3>
-          <ol class="references-list">
-            <li>McKinney, W. (2022). <em>Python for Data Analysis</em> (3rd ed.). O'Reilly Media.</li>
-            <li>Pandas Development Team. (2026). <em>pandas documentation</em>.</li>
-            <li>Pyodide Developers. (2026). <em>Pyodide documentation</em>.</li>
-            <li>Google Firebase. (2026). <em>Firebase documentation</em>.</li>
-            <li>Cloudflare. (2026). <em>Cloudflare Pages documentation</em>.</li>
-            <li>Chart.js Contributors. (2026). <em>Chart.js documentation</em>.</li>
-            <li>Papa Parse Contributors. (2026). <em>Papa Parse documentation</em>.</li>
-            <li>Vercel. (2026). <em>Next.js documentation</em>.</li>
-          </ol>
-
-          <div class="paper-actions">
-            <a class="btn-secondary" href="./research-paper.md" download>Download Markdown</a>
-            <a class="btn-secondary" href="./research-paper.txt" download>Download Text</a>
-          </div>
+      <div class="paper-assets-grid">
+        <article class="paper-asset-card">
+          <h3>Graph Atlas</h3>
+          <p>Includes trend, cumulative, scalability, quality, repair-distribution, latency, and ablation visual analyses.</p>
+        </article>
+        <article class="paper-asset-card">
+          <h3>Runtime Evidence</h3>
+          <p>Contains real benchmark transcript outputs and stage-level measured timings used in every reported result.</p>
+        </article>
+        <article class="paper-asset-card">
+          <h3>Source Reproducibility</h3>
+          <p>Provides LaTeX manuscript, IEEE class file, bibliography, raw CSV datasets, and Python generation scripts.</p>
         </article>
       </div>
     </section>

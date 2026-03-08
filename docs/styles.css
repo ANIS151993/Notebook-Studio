@@ -624,63 +624,79 @@ a {
   height: 100% !important;
 }
 
-.paper-grid {
+.paper-portal {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
   gap: 0.66rem;
 }
 
-.paper-card {
+.paper-summary-card,
+.paper-viewer-card,
+.paper-asset-card {
   border: 1px solid var(--line);
   border-radius: 12px;
   background: rgba(9, 19, 30, 0.8);
   padding: 0.82rem;
+}
+
+.paper-summary-card,
+.paper-viewer-card {
   display: grid;
   gap: 0.46rem;
 }
 
-.paper-card h3 {
+.paper-summary-card h3,
+.paper-viewer-card h3,
+.paper-asset-card h3 {
   color: #f1d483;
   font-size: 0.95rem;
 }
 
-.paper-card p,
-.paper-card li {
+.paper-summary-card p,
+.paper-summary-card li,
+.paper-viewer-note,
+.paper-asset-card p {
   color: var(--muted);
   font-size: 0.84rem;
   line-height: 1.58;
 }
 
-.paper-card ul,
-.paper-card ol {
+.paper-badge {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid rgba(41, 199, 162, 0.44);
+  background: rgba(41, 199, 162, 0.12);
+  color: #c5f8eb;
+  padding: 0.24rem 0.56rem;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.paper-meta-list {
   margin: 0;
   padding-left: 1.08rem;
 }
 
-.metric-table {
+.paper-viewer {
   width: 100%;
-  border-collapse: collapse;
+  min-height: 520px;
+  border: 1px solid rgba(108, 150, 191, 0.42);
+  border-radius: 10px;
+  background: rgba(7, 15, 24, 0.92);
 }
 
-.metric-table th,
-.metric-table td {
-  border: 1px solid var(--line);
-  padding: 0.5rem 0.54rem;
-  text-align: left;
-  font-size: 0.82rem;
-  vertical-align: top;
+.paper-viewer-note a {
+  color: #9deedc;
 }
 
-.metric-table th {
-  color: #f1d483;
-}
-
-.metric-table td {
-  color: var(--muted);
-}
-
-.references-list li {
-  margin-bottom: 0.36rem;
+.paper-assets-grid {
+  margin-top: 0.66rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.66rem;
 }
 
 .paper-actions {
@@ -863,14 +879,15 @@ a {
   .hero-grid,
   .workflow-grid,
   .arch-layout,
-  .paper-grid,
+  .paper-portal,
   .contact-grid {
     grid-template-columns: 1fr;
   }
 
   .science-grid,
   .impact-grid,
-  .chart-grid {
+  .chart-grid,
+  .paper-assets-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -879,6 +896,7 @@ a {
   .science-grid,
   .impact-grid,
   .chart-grid,
+  .paper-assets-grid,
   .profile-grid,
   .service-options {
     grid-template-columns: 1fr;
@@ -901,6 +919,10 @@ a {
 
   .chart-frame {
     height: 218px;
+  }
+
+  .paper-viewer {
+    min-height: 380px;
   }
 
   .hero h1 {
