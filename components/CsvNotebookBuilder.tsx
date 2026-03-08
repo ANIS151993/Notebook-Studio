@@ -1,9 +1,24 @@
 "use client";
 
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import Papa from "papaparse";
+import { onAuthStateChanged } from "firebase/auth";
+import {
+  Timestamp,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import NotebookViewer from "./NotebookViewer";
 import CsvVisualizations from "./CsvVisualizations";
+import { auth, db } from "@/lib/firebase";
+import AnimatedLink from "./AnimatedLink";
 
 type Stats = {
   rows: number;
@@ -11,6 +26,26 @@ type Stats = {
 };
 
 type Tab = "upload" | "notebook" | "visualizations";
+
+type WorkSnapshot = {
+  fileName: string;
+  rawCsvContent: string;
+  cleanedCsv: string;
+  notebook: string;
+  outputName: string;
+  stats: Stats;
+};
+
+type SavedWorkListItem = {
+  id: string;
+  name: string;
+  fileName: string;
+  rows: number;
+  columns: string[];
+  updatedAtLabel: string;
+};
+
+type SyncStatus = "idle" | "saving" | "saved" | "error";
 
 const normalizeHeader = (header: string) =>
   header
@@ -29,8 +64,40 @@ const downloadFile = (content: string, filename: string, type: string) => {
   URL.revokeObjectURL(url);
 };
 
+const parseStats = (raw: unknown): Stats | null => {
+  if (!raw || typeof raw !== "object") {
+    return null;
+  }
+
+  const candidate = raw as { rows?: unknown; columns?: unknown };
+  const rows = typeof candidate.rows === "number" ? candidate.rows : null;
+  const columns = Array.isArray(candidate.columns)
+    ? candidate.columns.filter((value): value is string => typeof value === "string")
+    : null;
+
+  if (rows === null || columns === null) {
+    return null;
+  }
+
+  return { rows, columns };
+};
+
+const formatUpdatedAt = (raw: unknown): string => {
+  if (raw instanceof Timestamp) {
+    return raw.toDate().toLocaleString();
+  }
+
+  return "Unknown time";
+};
+
+const createWorkName = (fileName: string) => {
+  const baseName = fileName.replace(/\.[^/.]+$/, "");
+  const timestamp = new Date().toLocaleString();
+  return `${baseName} (${timestamp})`;
+};
+
 export default function CsvNotebookBuilder() {
-  const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
   const [cleanedCsv, setCleanedCsv] = useState<string | null>(null);
   const [rawCsvContent, setRawCsvContent] = useState<string | null>(null);
   const [notebook, setNotebook] = useState<string | null>(null);
@@ -40,6 +107,223 @@ export default function CsvNotebookBuilder() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("upload");
 
+  const [authUserId, setAuthUserId] = useState<string | null>(null);
+  const [authEmail, setAuthEmail] = useState<string | null>(null);
+  const [savedWorks, setSavedWorks] = useState<SavedWorkListItem[]>([]);
+  const [selectedWorkId, setSelectedWorkId] = useState("");
+  const [loadingWorks, setLoadingWorks] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle");
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+
+  const canSaveCurrentWork = useMemo(
+    () =>
+      Boolean(
+        authUserId &&
+          rawCsvContent &&
+          cleanedCsv &&
+          notebook &&
+          outputName &&
+          stats,
+      ),
+    [authUserId, cleanedCsv, notebook, outputName, rawCsvContent, stats],
+  );
+
+  const loadSavedWorks = async (uid: string) => {
+    if (!db) {
+      return;
+    }
+
+    setLoadingWorks(true);
+    try {
+      const worksRef = collection(db, "users", uid, "works");
+      const worksQuery = query(worksRef, orderBy("updatedAt", "desc"), limit(25));
+      const snapshot = await getDocs(worksQuery);
+
+      const items: SavedWorkListItem[] = snapshot.docs
+        .map((workDoc) => {
+          const data = workDoc.data() as {
+            name?: unknown;
+            fileName?: unknown;
+            stats?: unknown;
+            updatedAt?: unknown;
+          };
+
+          const parsedStats = parseStats(data.stats);
+          if (!parsedStats) {
+            return null;
+          }
+
+          return {
+            id: workDoc.id,
+            name:
+              typeof data.name === "string" && data.name.trim().length > 0
+                ? data.name
+                : "Untitled work",
+            fileName:
+              typeof data.fileName === "string" && data.fileName.trim().length > 0
+                ? data.fileName
+                : "data.csv",
+            rows: parsedStats.rows,
+            columns: parsedStats.columns,
+            updatedAtLabel: formatUpdatedAt(data.updatedAt),
+          };
+        })
+        .filter((item): item is SavedWorkListItem => item !== null);
+
+      setSavedWorks(items);
+
+      if (items.length > 0) {
+        setSelectedWorkId((current) => current || items[0].id);
+      } else {
+        setSelectedWorkId("");
+      }
+    } catch (loadError) {
+      console.error(loadError);
+      setSyncStatus("error");
+      setSyncMessage("Could not load saved works from your account.");
+    } finally {
+      setLoadingWorks(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!auth) {
+      setAuthUserId(null);
+      setAuthEmail(null);
+      setSavedWorks([]);
+      setSelectedWorkId("");
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        setAuthUserId(null);
+        setAuthEmail(null);
+        setSavedWorks([]);
+        setSelectedWorkId("");
+        return;
+      }
+
+      setAuthUserId(user.uid);
+      setAuthEmail(user.email ?? null);
+      void loadSavedWorks(user.uid);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const saveWorkSnapshot = async (snapshot: WorkSnapshot, suggestedFileName: string) => {
+    if (!db || !authUserId) {
+      return;
+    }
+
+    setSyncStatus("saving");
+    setSyncMessage("Saving work to your account...");
+
+    try {
+      const workRef = doc(collection(db, "users", authUserId, "works"));
+      await setDoc(workRef, {
+        ...snapshot,
+        name: createWorkName(suggestedFileName),
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      setSyncStatus("saved");
+      setSyncMessage("Work saved to your account.");
+      setSelectedWorkId(workRef.id);
+      await loadSavedWorks(authUserId);
+    } catch (saveError) {
+      console.error(saveError);
+      setSyncStatus("error");
+      setSyncMessage("Could not save work. Please try again.");
+    }
+  };
+
+  const saveCurrentWork = async () => {
+    if (!fileName || !rawCsvContent || !cleanedCsv || !notebook || !outputName || !stats) {
+      setSyncStatus("error");
+      setSyncMessage("Process a CSV first, then save your work.");
+      return;
+    }
+
+    await saveWorkSnapshot(
+      {
+        fileName,
+        rawCsvContent,
+        cleanedCsv,
+        notebook,
+        outputName,
+        stats,
+      },
+      fileName,
+    );
+  };
+
+  const loadSelectedWork = async () => {
+    if (!db || !authUserId || !selectedWorkId) {
+      return;
+    }
+
+    setLoadingWorks(true);
+    setSyncMessage(null);
+
+    try {
+      const workRef = doc(db, "users", authUserId, "works", selectedWorkId);
+      const snapshot = await getDoc(workRef);
+
+      if (!snapshot.exists()) {
+        setError("That saved work does not exist anymore.");
+        return;
+      }
+
+      const data = snapshot.data() as {
+        fileName?: unknown;
+        rawCsvContent?: unknown;
+        cleanedCsv?: unknown;
+        notebook?: unknown;
+        outputName?: unknown;
+        stats?: unknown;
+      };
+
+      const savedFileName =
+        typeof data.fileName === "string" && data.fileName.trim().length > 0
+          ? data.fileName
+          : "data.csv";
+      const savedRaw =
+        typeof data.rawCsvContent === "string" ? data.rawCsvContent : null;
+      const savedCleaned =
+        typeof data.cleanedCsv === "string" ? data.cleanedCsv : null;
+      const savedNotebook = typeof data.notebook === "string" ? data.notebook : null;
+      const savedOutputName =
+        typeof data.outputName === "string" ? data.outputName : null;
+      const savedStats = parseStats(data.stats);
+
+      if (!savedRaw || !savedCleaned || !savedNotebook || !savedOutputName || !savedStats) {
+        setError("Saved work is incomplete and cannot be loaded.");
+        return;
+      }
+
+      setFileName(savedFileName);
+      setRawCsvContent(savedRaw);
+      setCleanedCsv(savedCleaned);
+      setNotebook(savedNotebook);
+      setOutputName(savedOutputName);
+      setStats(savedStats);
+      setActiveTab("upload");
+      setError(null);
+      setSyncStatus("saved");
+      setSyncMessage("Saved work loaded from your account.");
+    } catch (loadError) {
+      console.error(loadError);
+      setError("Could not load selected work.");
+      setSyncStatus("error");
+      setSyncMessage("Could not load selected work.");
+    } finally {
+      setLoadingWorks(false);
+    }
+  };
+
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const selected = event.target.files?.[0] ?? null;
     if (!selected) {
@@ -48,7 +332,7 @@ export default function CsvNotebookBuilder() {
 
     setProcessing(true);
     setError(null);
-    setFile(selected);
+    setFileName(selected.name);
     setCleanedCsv(null);
     setRawCsvContent(null);
     setNotebook(null);
@@ -56,7 +340,6 @@ export default function CsvNotebookBuilder() {
     setOutputName(null);
 
     try {
-      // Read raw CSV content for notebook viewer
       const rawContent = await selected.text();
       setRawCsvContent(rawContent);
 
@@ -125,11 +408,12 @@ export default function CsvNotebookBuilder() {
       }
 
       const csvOutput = Papa.unparse(deduped);
-      setCleanedCsv(csvOutput);
-      setStats({
+      const nextStats: Stats = {
         rows: deduped.length,
         columns: Object.keys(deduped[0] ?? {}),
-      });
+      };
+      setCleanedCsv(csvOutput);
+      setStats(nextStats);
 
       const templateResponse = await fetch("/clean_csv_template.ipynb");
       if (!templateResponse.ok) {
@@ -138,18 +422,32 @@ export default function CsvNotebookBuilder() {
       const templateText = await templateResponse.text();
 
       const safeName = selected.name.replace(/\s+/g, "_");
-      const outputName = safeName.toLowerCase().endsWith(".csv")
+      const nextOutputName = safeName.toLowerCase().endsWith(".csv")
         ? `clean_${safeName}`
         : `clean_${safeName}.csv`;
 
       const notebookText = templateText
         .replaceAll("{{INPUT_FILE}}", safeName)
-        .replaceAll("{{OUTPUT_FILE}}", outputName);
+        .replaceAll("{{OUTPUT_FILE}}", nextOutputName);
 
       setNotebook(notebookText);
-      setOutputName(outputName);
-    } catch (err) {
-      console.error(err);
+      setOutputName(nextOutputName);
+
+      if (authUserId) {
+        void saveWorkSnapshot(
+          {
+            fileName: selected.name,
+            rawCsvContent: rawContent,
+            cleanedCsv: csvOutput,
+            notebook: notebookText,
+            outputName: nextOutputName,
+            stats: nextStats,
+          },
+          selected.name,
+        );
+      }
+    } catch (processError) {
+      console.error(processError);
       setError("We could not process that CSV file.");
     } finally {
       setProcessing(false);
@@ -172,7 +470,78 @@ export default function CsvNotebookBuilder() {
         </p>
       </div>
 
-      {/* Tab Navigation */}
+      {authUserId ? (
+        <div className="glass-card rounded-2xl p-5 text-sm text-[#c9a961]">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f]">
+            Account workspace
+          </p>
+          <p className="mt-2">
+            Signed in as <span className="text-[#f4d03f]">{authEmail ?? "User"}</span>.
+            Your processed work can be saved and restored from your account.
+          </p>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto_auto]">
+            <select
+              className="h-11 rounded-xl border border-[#d4af37]/70 bg-[#111111] px-3 text-sm text-[#f4d03f] outline-none focus:border-[#ffd700]"
+              value={selectedWorkId}
+              onChange={(event) => setSelectedWorkId(event.target.value)}
+              disabled={loadingWorks || savedWorks.length === 0}
+            >
+              {savedWorks.length === 0 && (
+                <option value="">No saved works yet</option>
+              )}
+              {savedWorks.map((work) => (
+                <option key={work.id} value={work.id}>
+                  {work.name} - {work.rows} rows - {work.updatedAtLabel}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              onClick={() => {
+                void loadSelectedWork();
+              }}
+              disabled={loadingWorks || !selectedWorkId}
+              className="tab-pill inline-flex h-11 items-center justify-center rounded-xl border border-[#d4af37]/70 bg-[#16120d] px-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f] hover:bg-[#d4af37] hover:text-[#0a0a0a] disabled:cursor-not-allowed disabled:border-[#6b5d45] disabled:text-[#6b5d45]"
+            >
+              Load Work
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                void saveCurrentWork();
+              }}
+              disabled={!canSaveCurrentWork || syncStatus === "saving"}
+              className="shine-btn inline-flex h-11 items-center justify-center rounded-xl bg-[#d4af37] px-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#0a0a0a] transition hover:bg-[#ffd700] disabled:cursor-not-allowed disabled:bg-[#6b5d45] disabled:text-[#3a3420]"
+            >
+              {syncStatus === "saving" ? "Saving..." : "Save Current Work"}
+            </button>
+          </div>
+
+          {syncMessage && (
+            <p className="mt-3 text-xs text-[#ffd700]">{syncMessage}</p>
+          )}
+        </div>
+      ) : (
+        <div className="glass-card rounded-2xl p-5 text-sm text-[#c9a961]">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f]">
+            Guest mode
+          </p>
+          <p className="mt-2">
+            Sign in to save work into your account and continue later from any
+            login session.
+          </p>
+          <AnimatedLink
+            href="/login"
+            className="mt-4 inline-flex h-10 items-center justify-center rounded-xl border border-[#d4af37] bg-[#15120c] px-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f] hover:bg-[#d4af37] hover:text-[#0a0a0a]"
+          >
+            Sign Up / Sign In
+          </AnimatedLink>
+        </div>
+      )}
+
       <div className="glass-card flex flex-wrap gap-2 rounded-2xl p-2">
         <button
           onClick={() => setActiveTab("upload")}
@@ -210,14 +579,13 @@ export default function CsvNotebookBuilder() {
         </button>
       </div>
 
-      {/* Upload Tab */}
       {activeTab === "upload" && (
         <div className="panel-enter flex flex-col gap-6">
           <label className="glass-card hover-lift flex cursor-pointer flex-col gap-3 rounded-2xl border border-dashed border-[#d4af37] bg-[#2a2416]/85 p-6 text-sm text-[#c9a961] transition hover:border-[#ffd700]">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c9a961]">
               Upload CSV
             </span>
-            <span>{file ? file.name : "Choose a .csv file to upload."}</span>
+            <span>{fileName ?? "Choose a .csv file to upload."}</span>
             <input
               type="file"
               accept=".csv,text/csv"
@@ -270,13 +638,13 @@ export default function CsvNotebookBuilder() {
             </button>
             <button
               type="button"
-              disabled={!notebook || !file}
+              disabled={!notebook || !fileName}
               onClick={() =>
                 notebook &&
-                file &&
+                fileName &&
                 downloadFile(
                   notebook,
-                  `${file.name.replace(/\s+/g, "_")}.ipynb`,
+                  `${fileName.replace(/\s+/g, "_")}.ipynb`,
                   "application/x-ipynb+json",
                 )
               }
@@ -309,14 +677,12 @@ export default function CsvNotebookBuilder() {
         </div>
       )}
 
-      {/* Interactive Notebook Tab */}
       {activeTab === "notebook" && rawCsvContent && (
         <div className="panel-enter">
-          <NotebookViewer csvContent={rawCsvContent} fileName={file?.name ?? "data.csv"} />
+          <NotebookViewer csvContent={rawCsvContent} fileName={fileName ?? "data.csv"} />
         </div>
       )}
 
-      {/* Visualizations Tab */}
       {activeTab === "visualizations" && cleanedCsv && stats && (
         <div className="panel-enter">
           <CsvVisualizations cleanedCsv={cleanedCsv} stats={stats} />

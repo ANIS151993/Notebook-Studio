@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc, Timestamp } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc, Timestamp } from "firebase/firestore";
 import { auth, db, firebaseConfigError } from "@/lib/firebase";
 import { replaceWithTransition } from "@/lib/view-transition";
 import AnimatedLink from "@/components/AnimatedLink";
@@ -11,6 +11,9 @@ import AnimatedLink from "@/components/AnimatedLink";
 type Profile = {
   uid: string;
   email: string;
+  fullName?: string;
+  organization?: string;
+  contactNumber?: string;
   createdAt?: Timestamp;
   lastLoginAt?: Timestamp;
 };
@@ -25,7 +28,12 @@ const formatTimestamp = (value?: Timestamp) => {
 export default function DashboardPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [fullName, setFullName] = useState("");
+  const [organization, setOrganization] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
   const [loading, setLoading] = useState(true);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,20 +57,32 @@ export default function DashboardPage() {
 
         if (snapshot.exists()) {
           const data = snapshot.data() as Profile;
-          setProfile({
-            uid: data.uid,
-            email: data.email,
+          const loadedProfile: Profile = {
+            uid: data.uid ?? user.uid,
+            email: data.email ?? user.email ?? "Unknown",
+            fullName: data.fullName ?? "",
+            organization: data.organization ?? "",
+            contactNumber: data.contactNumber ?? "",
             createdAt: data.createdAt,
             lastLoginAt: data.lastLoginAt,
-          });
+          };
+
+          setProfile(loadedProfile);
+          setFullName(loadedProfile.fullName ?? "");
+          setOrganization(loadedProfile.organization ?? "");
+          setContactNumber(loadedProfile.contactNumber ?? "");
         } else {
-          setProfile({
+          const fallbackProfile: Profile = {
             uid: user.uid,
             email: user.email ?? "Unknown",
-          });
+          };
+          setProfile(fallbackProfile);
+          setFullName("");
+          setOrganization("");
+          setContactNumber("");
         }
-      } catch (err) {
-        console.error(err);
+      } catch (loadError) {
+        console.error(loadError);
         setProfile({
           uid: user.uid,
           email: user.email ?? "Unknown",
@@ -86,9 +106,57 @@ export default function DashboardPage() {
     replaceWithTransition(router, "/");
   };
 
+  const handleSaveProfile = async () => {
+    if (!auth || !db || !profile || !auth.currentUser) {
+      setSaveMessage("Cannot save profile right now.");
+      return;
+    }
+
+    const nextFullName = fullName.trim();
+    const nextOrganization = organization.trim();
+    const nextContactNumber = contactNumber.trim();
+
+    setSavingProfile(true);
+    setSaveMessage(null);
+
+    try {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      await setDoc(
+        userRef,
+        {
+          uid: auth.currentUser.uid,
+          email: auth.currentUser.email ?? profile.email,
+          fullName: nextFullName,
+          organization: nextOrganization,
+          contactNumber: nextContactNumber,
+          ...(profile.createdAt ? {} : { createdAt: serverTimestamp() }),
+          lastLoginAt: serverTimestamp(),
+        },
+        { merge: true },
+      );
+
+      setProfile((current) =>
+        current
+          ? {
+              ...current,
+              fullName: nextFullName,
+              organization: nextOrganization,
+              contactNumber: nextContactNumber,
+            }
+          : current,
+      );
+      setSaveMessage("Profile saved successfully.");
+    } catch (saveError) {
+      console.error(saveError);
+      setSaveMessage("Could not save profile. Please try again.");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
   return (
     <div className="min-h-screen px-6 py-16">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <header className="glass-card reveal-up rounded-3xl p-8">
           <p className="text-xs font-medium uppercase tracking-[0.3em] text-[#c9a961]">
             Dashboard
@@ -97,7 +165,7 @@ export default function DashboardPage() {
             Welcome back
           </h1>
           <p className="mt-2 text-sm text-[#c9a961]">
-            Your account details and quick app access are below.
+            Manage your profile and continue your work.
           </p>
         </header>
 
@@ -114,7 +182,7 @@ export default function DashboardPage() {
         )}
 
         {profile && (
-          <section className="grid gap-6 panel-enter lg:grid-cols-[1.1fr_0.9fr]">
+          <section className="grid gap-6 panel-enter lg:grid-cols-[1.2fr_0.8fr]">
             <div className="glass-card hover-lift rounded-3xl p-8">
               <h2 className="text-lg font-semibold text-[#f4d03f]">
                 Account summary
@@ -149,6 +217,59 @@ export default function DashboardPage() {
                   <dd className="mt-1">{formatTimestamp(profile.lastLoginAt)}</dd>
                 </div>
               </dl>
+
+              <div className="mt-8 rounded-2xl border border-[#d4af37]/50 bg-[#171717]/80 p-5">
+                <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-[#f4d03f]">
+                  Profile details
+                </h3>
+                <div className="mt-4 grid gap-4">
+                  <label className="grid gap-2 text-sm text-[#c9a961]">
+                    <span>Full name</span>
+                    <input
+                      type="text"
+                      value={fullName}
+                      onChange={(event) => setFullName(event.target.value)}
+                      placeholder="Your full name"
+                      className="h-11 rounded-xl border border-[#d4af37]/60 bg-[#0f0f0f] px-3 text-[#f4d03f] outline-none focus:border-[#ffd700]"
+                    />
+                  </label>
+
+                  <label className="grid gap-2 text-sm text-[#c9a961]">
+                    <span>Organization</span>
+                    <input
+                      type="text"
+                      value={organization}
+                      onChange={(event) => setOrganization(event.target.value)}
+                      placeholder="Your organization"
+                      className="h-11 rounded-xl border border-[#d4af37]/60 bg-[#0f0f0f] px-3 text-[#f4d03f] outline-none focus:border-[#ffd700]"
+                    />
+                  </label>
+
+                  <label className="grid gap-2 text-sm text-[#c9a961]">
+                    <span>Contact number</span>
+                    <input
+                      type="tel"
+                      value={contactNumber}
+                      onChange={(event) => setContactNumber(event.target.value)}
+                      placeholder="Phone number"
+                      className="h-11 rounded-xl border border-[#d4af37]/60 bg-[#0f0f0f] px-3 text-[#f4d03f] outline-none focus:border-[#ffd700]"
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveProfile}
+                    disabled={savingProfile}
+                    className="shine-btn inline-flex h-11 items-center justify-center rounded-xl bg-[#d4af37] px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#0a0a0a] transition hover:bg-[#ffd700] disabled:cursor-not-allowed disabled:bg-[#6b5d45] disabled:text-[#3a3420]"
+                  >
+                    {savingProfile ? "Saving..." : "Save Profile"}
+                  </button>
+
+                  {saveMessage && (
+                    <p className="text-xs text-[#ffd700]">{saveMessage}</p>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="glass-card hover-lift flex flex-col justify-between gap-6 rounded-3xl bg-[#2a2416]/88 p-8">
@@ -157,7 +278,7 @@ export default function DashboardPage() {
                   Quick actions
                 </h2>
                 <p className="mt-3 text-sm leading-6 text-[#c9a961]">
-                  Open your workspace directly after sign-in.
+                  Open your workspace and continue your saved work.
                 </p>
                 <div className="mt-5 grid gap-3">
                   <AnimatedLink

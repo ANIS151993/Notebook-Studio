@@ -1,11 +1,42 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import AnimatedLink from "@/components/AnimatedLink";
 import CsvNotebookBuilder from "@/components/CsvNotebookBuilder";
+import { auth } from "@/lib/firebase";
+import { replaceWithTransition } from "@/lib/view-transition";
 
 export default function Home() {
+  const router = useRouter();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!auth) {
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUserEmail(user?.email ?? null);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    if (!auth) {
+      return;
+    }
+
+    await signOut(auth);
+    replaceWithTransition(router, "/");
+  };
+
   return (
     <div className="min-h-screen">
       <nav className="sticky top-0 z-30 border-b border-[#d4af37]/70 bg-[#0f0f0f]/82 px-6 py-4 backdrop-blur-xl reveal-up">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4">
           <div>
             <h1 className="text-xl font-semibold text-[#f4d03f]">
               Notebook Studio
@@ -14,19 +45,38 @@ export default function Home() {
               CSV Cleaner & Jupyter Notebook Generator
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <AnimatedLink
               href="/live"
               className="tab-pill inline-flex h-10 items-center justify-center rounded-xl border border-[#d4af37]/70 bg-[#16120d] px-4 text-sm font-semibold text-[#c9a961] hover:text-[#f4d03f]"
             >
               Live Guide
             </AnimatedLink>
-            <AnimatedLink
-              href="/login"
-              className="tab-pill shine-btn inline-flex h-10 items-center justify-center rounded-xl border border-[#d4af37] bg-[#15120c] px-5 text-sm font-semibold text-[#f4d03f] hover:bg-[#d4af37] hover:text-[#0a0a0a]"
-            >
-              Sign Up / Sign In
-            </AnimatedLink>
+
+            {userEmail ? (
+              <>
+                <AnimatedLink
+                  href="/dashboard"
+                  className="tab-pill inline-flex h-10 items-center justify-center rounded-xl border border-[#d4af37]/70 bg-[#15120c] px-4 text-sm font-semibold text-[#f4d03f] hover:bg-[#d4af37] hover:text-[#0a0a0a]"
+                >
+                  Dashboard
+                </AnimatedLink>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="tab-pill inline-flex h-10 items-center justify-center rounded-xl border border-[#d4af37]/70 bg-[#1a1a1a]/70 px-4 text-sm font-semibold text-[#c9a961] hover:border-[#d4af37] hover:text-[#f4d03f]"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <AnimatedLink
+                href="/login"
+                className="tab-pill shine-btn inline-flex h-10 items-center justify-center rounded-xl border border-[#d4af37] bg-[#15120c] px-5 text-sm font-semibold text-[#f4d03f] hover:bg-[#d4af37] hover:text-[#0a0a0a]"
+              >
+                Sign Up / Sign In
+              </AnimatedLink>
+            )}
           </div>
         </div>
       </nav>
@@ -45,6 +95,11 @@ export default function Home() {
             Jupyter-style notebook where you can run Python code directly in the
             browser.
           </p>
+          {userEmail && (
+            <p className="mt-3 text-sm text-[#ffd700]">
+              Signed in as {userEmail}. Your work can be saved to your account.
+            </p>
+          )}
         </div>
 
         <div className="glass-card hover-lift reveal-up delay-2 rounded-3xl p-8">
@@ -76,8 +131,8 @@ export default function Home() {
           </ol>
           <div className="mt-4 rounded-xl border border-[#d4af37]/70 bg-[#1a1a1a]/80 p-4 transition-colors duration-300 hover:border-[#ffd700]">
             <p className="text-sm text-[#ffd700]">
-              <strong>New:</strong> The interactive notebook runs Python in your
-              browser with WebAssembly. No server required.
+              <strong>New:</strong> Signed-in users can save and reload their work
+              from account storage.
             </p>
           </div>
         </div>
