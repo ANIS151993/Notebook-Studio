@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import AIAssistant from "./AIAssistant";
-import { autoFixPythonCode } from "@/lib/pythonAssistant";
+import { autoFixPythonCodeWithRuntimeError } from "@/lib/pythonAssistant";
 
 type CodeCellProps = {
   initialCode: string;
@@ -58,7 +58,7 @@ export default function CodeCell({
     }
 
     const timer = window.setTimeout(() => {
-      const fixResult = autoFixPythonCode(code);
+      const fixResult = autoFixPythonCodeWithRuntimeError(code, error);
       if (!fixResult || fixResult.code === code) {
         setAutoFixStatus("Monitoring...");
         lastAppliedFixRef.current = null;
@@ -87,7 +87,7 @@ export default function CodeCell({
     return () => {
       window.clearTimeout(timer);
     };
-  }, [code, isEditable, autoRunAfterFix, onExecute, isRunning, runWithCode]);
+  }, [code, error, isEditable, autoRunAfterFix, onExecute, isRunning, runWithCode]);
 
   const handleRun = async () => {
     await runWithCode(code);

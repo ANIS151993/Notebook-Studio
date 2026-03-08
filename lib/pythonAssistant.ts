@@ -558,3 +558,145 @@ export const autoFixPythonCode = (sourceCode: string): AutoFixResult | null => {
     changes,
   };
 };
+
+const parseErrorLine = (runtimeError: string): number | null => {
+  const match = runtimeError.match(/line\s+(\d+)/i);
+  if (!match) {
+    return null;
+  }
+
+  const lineNumber = Number.parseInt(match[1] ?? "", 10);
+  if (Number.isNaN(lineNumber) || lineNumber < 1) {
+    return null;
+  }
+
+  return lineNumber - 1;
+};
+
+const ensureImport = (
+  codeLines: string[],
+  statement: string,
+  alreadyPresentPattern: RegExp,
+): boolean => {
+  if (codeLines.some((line) => alreadyPresentPattern.test(line.trim()))) {
+    return false;
+  }
+  codeLines.unshift(statement);
+  return true;
+};
+
+export const autoFixPythonCodeWithRuntimeError = (
+  sourceCode: string,
+  runtimeError: string | null,
+): AutoFixResult | null => {
+  const baseFix = autoFixPythonCode(sourceCode);
+  const startingCode = baseFix ? baseFix.code : sourceCode;
+
+  if (!runtimeError) {
+    return baseFix;
+  }
+
+  const normalizedError = runtimeError.toLowerCase();
+  const codeLines = startingCode.replace(/\r\n/g, "\n").split("\n");
+  const changes = baseFix ? [...baseFix.changes] : [];
+  const addChange = (message: string) => {
+    if (!changes.includes(message)) {
+      changes.push(message);
+    }
+  };
+
+  const lineIndex = parseErrorLine(runtimeError);
+
+  if (normalizedError.includes("syntaxerror")) {
+    if (normalizedError.includes("expected ':'") && lineIndex !== null && codeLines[lineIndex]) {
+      const targetLine = codeLines[lineIndex] ?? "";
+      if (!targetLine.trim().endsWith(":")) {
+        codeLines[lineIndex] = `${targetLine}:`;
+        addChange("runtime repair: added missing ':' reported by SyntaxError");
+      }
+    }
+
+    if (
+      (normalizedError.includes("was never closed") ||
+        normalizedError.includes("unexpected eof while parsing")) &&
+      lineIndex !== null &&
+      codeLines[lineIndex]
+    ) {
+      const targetLine = codeLines[lineIndex] ?? "";
+      const openParen = (targetLine.match(/\(/g) || []).length;
+      const closeParen = (targetLine.match(/\)/g) || []).length;
+      if (openParen > closeParen) {
+        codeLines[lineIndex] = `${targetLine}${")".repeat(openParen - closeParen)}`;
+        addChange("runtime repair: closed missing ')'");
+      }
+
+      const singleQuotes = (targetLine.match(/'/g) || []).length;
+      const doubleQuotes = (targetLine.match(/"/g) || []).length;
+      if (singleQuotes % 2 === 1) {
+        codeLines[lineIndex] = `${codeLines[lineIndex] ?? ""}'`;
+        addChange("runtime repair: closed missing single quote");
+      } else if (doubleQuotes % 2 === 1) {
+        codeLines[lineIndex] = `${codeLines[lineIndex] ?? ""}"`;
+        addChange("runtime repair: closed missing double quote");
+      }
+    }
+  }
+
+  if (normalizedError.includes("indentationerror") && lineIndex !== null) {
+    const targetLine = codeLines[lineIndex] ?? "";
+    if (normalizedError.includes("unexpected indent")) {
+      codeLines[lineIndex] = targetLine.replace(/^ {4}/, "");
+      addChange("runtime repair: removed unexpected indentation");
+    } else if (normalizedError.includes("expected an indented block")) {
+      const nextLineIndex = lineIndex + 1;
+      if (codeLines[nextLineIndex] && !/^\s+/.test(codeLines[nextLineIndex] ?? "")) {
+        codeLines[nextLineIndex] = `    ${codeLines[nextLineIndex] ?? ""}`;
+        addChange("runtime repair: added required indentation");
+      }
+    }
+  }
+
+  if (normalizedError.includes("nameerror")) {
+    const nameMatch = runtimeError.match(/name '([^']+)' is not defined/i);
+    const missingName = (nameMatch?.[1] ?? "").trim();
+
+    if (missingName === "pd") {
+      if (ensureImport(codeLines, "import pandas as pd", /^import\s+pandas\s+as\s+pd$/)) {
+        addChange("runtime repair: inserted missing pandas import");
+      }
+    } else if (missingName === "np") {
+      if (ensureImport(codeLines, "import numpy as np", /^import\s+numpy\s+as\s+np$/)) {
+        addChange("runtime repair: inserted missing numpy import");
+      }
+    } else if (missingName === "df") {
+      const hasDfAssignment = codeLines.some((line) => /^\s*df\s*=/.test(line));
+      const hasDfOriginal = codeLines.some((line) => line.includes("df_original"));
+      if (!hasDfAssignment && hasDfOriginal) {
+        codeLines.unshift("df = df_original.copy()");
+        addChange("runtime repair: created df from df_original");
+      }
+    }
+  }
+
+  if (normalizedError.includes("keyerror")) {
+    const hasNormalization = codeLines.some((line) =>
+      line.includes("df.columns") && line.includes("lower()"),
+    );
+    if (!hasNormalization) {
+      codeLines.unshift(
+        'df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]',
+      );
+      addChange("runtime repair: normalized dataframe column names for KeyError");
+    }
+  }
+
+  const updatedCode = codeLines.join("\n");
+  if (updatedCode === sourceCode && !baseFix) {
+    return null;
+  }
+
+  return {
+    code: updatedCode,
+    changes,
+  };
+};
