@@ -640,20 +640,6 @@ a {
   gap: 0.46rem;
 }
 
-.video-badge {
-  display: inline-flex;
-  width: fit-content;
-  border-radius: 999px;
-  border: 1px solid rgba(41, 199, 162, 0.44);
-  background: rgba(41, 199, 162, 0.12);
-  color: #c5f8eb;
-  padding: 0.24rem 0.56rem;
-  font-size: 0.73rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 .video-player-card h3,
 .video-description-card h3 {
   color: #f1d483;
