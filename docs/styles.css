@@ -962,17 +962,79 @@ a {
   font-size: 0.96rem;
 }
 
-.policy-list {
-  margin: 0;
-  padding-left: 1.08rem;
+.policy-step {
   display: grid;
-  gap: 0.3rem;
+  gap: 0.42rem;
 }
 
-.policy-list li {
+.policy-step[hidden] {
+  display: none !important;
+}
+
+.policy-step-title {
+  margin: 0;
+  color: #f1d483;
+  font-size: 0.92rem;
+  line-height: 1.44;
+  font-weight: 700;
+}
+
+.policy-step-text {
+  margin: 0;
   color: var(--muted);
   font-size: 0.83rem;
   line-height: 1.56;
+}
+
+.policy-task {
+  margin: 0;
+  color: #d8ecff;
+  font-size: 0.82rem;
+  line-height: 1.54;
+  padding: 0.34rem 0.46rem;
+  border-radius: 8px;
+  border: 1px solid rgba(108, 150, 191, 0.42);
+  background: rgba(8, 18, 28, 0.75);
+}
+
+.policy-check {
+  display: flex;
+  align-items: center;
+  gap: 0.46rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.policy-check input {
+  width: 15px;
+  height: 15px;
+  accent-color: #29c7a2;
+}
+
+.policy-template {
+  width: 100%;
+  min-height: 230px;
+  border: 1px solid rgba(108, 150, 191, 0.52);
+  border-radius: 10px;
+  background: rgba(7, 15, 24, 0.94);
+  color: #cde9ff;
+  font: 500 0.78rem/1.5 "Space Grotesk", sans-serif;
+  padding: 0.58rem 0.62rem;
+  resize: vertical;
+}
+
+.policy-template-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.42rem;
+}
+
+.policy-note {
+  margin: 0;
+  color: #cde9ff;
+  font-size: 0.79rem;
+  line-height: 1.5;
 }
 
 .btn {
@@ -1346,6 +1408,7 @@ a {
   .chart-grid,
   .paper-columns,
   .resource-grid,
+  .policy-template-actions,
   .profile-grid,
   .service-options {
     grid-template-columns: 1fr;

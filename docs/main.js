@@ -332,17 +332,73 @@ async function sha256Hex(text) {
 }
 
 function initResearchAccessPolicy() {
-  const openGateButton = document.querySelector("[data-open-gate]");
-  const accessCard = document.getElementById("paperAccessCard");
+  const step1 = document.getElementById("policyStep1");
+  const step2 = document.getElementById("policyStep2");
+  const step3 = document.getElementById("policyStep3");
+  const step1Github = document.getElementById("policyStep1Github");
+  const step1Youtube = document.getElementById("policyStep1Youtube");
+  const step1Next = document.getElementById("policyStep1Next");
+  const emailTemplate = document.getElementById("policyEmailTemplate");
+  const copyTemplate = document.getElementById("policyCopyTemplate");
+  const step2Sent = document.getElementById("policyStep2Sent");
+  const step2Next = document.getElementById("policyStep2Next");
   const passwordInput = document.getElementById("researchPasswordInput");
   const unlockButton = document.getElementById("researchUnlockBtn");
   const status = document.getElementById("researchAccessStatus");
   const downloadZone = document.getElementById("researchDownloadZone");
   const downloadButton = document.getElementById("researchDownloadBtn");
-  if (!openGateButton || !accessCard || !passwordInput || !unlockButton || !status || !downloadZone || !downloadButton) return;
+  if (
+    !step1 ||
+    !step2 ||
+    !step3 ||
+    !step1Github ||
+    !step1Youtube ||
+    !step1Next ||
+    !emailTemplate ||
+    !copyTemplate ||
+    !step2Sent ||
+    !step2Next ||
+    !passwordInput ||
+    !unlockButton ||
+    !status ||
+    !downloadZone ||
+    !downloadButton
+  ) {
+    return;
+  }
 
   const expectedHash = "5b484d8b2799daf74779ce686501847d4a08b5e917c1e8395e1da7f7e73bce0d";
   const encodedBundlePath = "Li9wYXBlcnMvZGF0YW1lbnRvcl9pZWVlL2RhdGFtZW50b3JfcmVzZWFyY2hfYnVuZGxlLnRhci5nei5lbmM=";
+  const steps = [step1, step2, step3];
+
+  function showStep(stepNumber) {
+    steps.forEach((step, index) => {
+      step.hidden = index + 1 !== stepNumber;
+    });
+  }
+
+  function refreshStep1() {
+    step1Next.disabled = !(step1Github.checked && step1Youtube.checked);
+  }
+
+  function refreshStep2() {
+    step2Next.disabled = !step2Sent.checked;
+  }
+
+  async function copyTemplateText() {
+    const text = emailTemplate.value;
+    const previous = copyTemplate.textContent || "📋 Copy Email Template";
+    try {
+      await navigator.clipboard.writeText(text);
+      copyTemplate.textContent = "✅ Copied";
+    } catch (error) {
+      copyTemplate.textContent = "❌ Copy failed";
+    } finally {
+      window.setTimeout(() => {
+        copyTemplate.textContent = previous;
+      }, 1400);
+    }
+  }
 
   async function verifyPassword() {
     const password = passwordInput.value.trim();
@@ -385,12 +441,23 @@ function initResearchAccessPolicy() {
     verifyPassword();
   });
 
-  openGateButton.addEventListener("click", () => {
-    accessCard.hidden = false;
-    openGateButton.setAttribute("disabled", "true");
-    openGateButton.textContent = "Secure download gate opened";
+  step1Github.addEventListener("change", refreshStep1);
+  step1Youtube.addEventListener("change", refreshStep1);
+  step1Next.addEventListener("click", () => {
+    showStep(2);
+    step2Sent.focus();
+  });
+
+  copyTemplate.addEventListener("click", copyTemplateText);
+  step2Sent.addEventListener("change", refreshStep2);
+  step2Next.addEventListener("click", () => {
+    showStep(3);
     passwordInput.focus();
   });
+
+  showStep(1);
+  refreshStep1();
+  refreshStep2();
 }
 
 function initVideoOverview() {
