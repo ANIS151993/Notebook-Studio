@@ -323,6 +323,36 @@ function initHireRequestBuilder() {
   setService(defaultOption.getAttribute("data-service") || "Data Workflow Automation");
 }
 
+function initVideoOverview() {
+  const launch = document.getElementById("videoLaunch");
+  const embedContainer = document.getElementById("videoEmbedContainer");
+  if (!launch || !embedContainer) return;
+
+  let loaded = false;
+
+  function loadVideo() {
+    if (loaded) return;
+    const videoId = launch.getAttribute("data-video-id");
+    if (!videoId) return;
+
+    const iframe = document.createElement("iframe");
+    iframe.className = "video-embed";
+    iframe.title = "DataMentor Video Overview";
+    iframe.loading = "lazy";
+    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.allowFullscreen = true;
+    iframe.referrerPolicy = "strict-origin-when-cross-origin";
+    iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+
+    embedContainer.appendChild(iframe);
+    embedContainer.hidden = false;
+    launch.hidden = true;
+    loaded = true;
+  }
+
+  launch.addEventListener("click", loadVideo);
+}
+
 const chartInstances = new Map();
 let chartsInitialized = false;
 let resizeTimer = null;
@@ -665,6 +695,7 @@ function initPage() {
   initKpiCounters();
   initRevealAnimations();
   initSectionLinkHighlighting();
+  initVideoOverview();
   initHireRequestBuilder();
   makeCharts();
 }

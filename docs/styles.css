@@ -624,6 +624,187 @@ a {
   height: 100% !important;
 }
 
+.video-overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 0.66rem;
+}
+
+.video-stage-card,
+.video-insight-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(9, 19, 30, 0.8);
+  padding: 0.82rem;
+}
+
+.video-stage-card {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.video-frame-shell {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(115, 233, 205, 0.34);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(41, 199, 162, 0.3), transparent 35%),
+    radial-gradient(circle at 85% 90%, rgba(215, 181, 96, 0.22), transparent 40%),
+    rgba(7, 15, 24, 0.94);
+}
+
+.video-launch {
+  width: 100%;
+  position: relative;
+  display: block;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+  aspect-ratio: 16 / 9;
+}
+
+.video-launch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform 260ms ease, filter 260ms ease;
+}
+
+.video-launch:hover img {
+  transform: scale(1.06);
+  filter: saturate(1.1);
+}
+
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(3, 9, 15, 0.14), rgba(3, 9, 15, 0.7)),
+    radial-gradient(circle at center, rgba(41, 199, 162, 0.2), transparent 52%);
+}
+
+.video-launch-cta {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.46rem;
+  color: #f3f8ff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+}
+
+.video-play-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f0d78f, #d7b560);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 0 rgba(215, 181, 96, 0.5);
+  animation: pulsePlay 2s ease-out infinite;
+  position: relative;
+}
+
+.video-play-icon::before {
+  content: "";
+  position: absolute;
+  left: 28px;
+  top: 22px;
+  border-left: 18px solid #0f1822;
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
+}
+
+.video-embed-container {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: rgba(7, 15, 24, 0.94);
+}
+
+.video-embed {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.video-caption {
+  color: var(--muted);
+  font-size: 0.83rem;
+  line-height: 1.55;
+}
+
+.video-insight-card {
+  display: grid;
+  gap: 0.56rem;
+}
+
+.video-insight-card h3 {
+  color: #f1d483;
+  font-size: 0.98rem;
+}
+
+.video-detail-list {
+  margin: 0;
+  padding-left: 1.06rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.video-detail-list li {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.56;
+}
+
+.video-quick-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.42rem;
+}
+
+.video-quick-stats article {
+  border: 1px solid rgba(108, 150, 191, 0.42);
+  border-radius: 10px;
+  background: rgba(8, 18, 28, 0.8);
+  padding: 0.52rem;
+}
+
+.video-quick-stats h4 {
+  margin: 0 0 0.2rem;
+  color: #f1d483;
+  font-size: 0.77rem;
+}
+
+.video-quick-stats p {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.48;
+}
+
+.video-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.46rem;
+}
+
+@keyframes pulsePlay {
+  0% {
+    box-shadow: 0 0 0 0 rgba(215, 181, 96, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(215, 181, 96, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(215, 181, 96, 0);
+  }
+}
+
 .paper-portal {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
@@ -879,6 +1060,7 @@ a {
   .hero-grid,
   .workflow-grid,
   .arch-layout,
+  .video-overview-grid,
   .paper-portal,
   .contact-grid {
     grid-template-columns: 1fr;
@@ -887,6 +1069,7 @@ a {
   .science-grid,
   .impact-grid,
   .chart-grid,
+  .video-quick-stats,
   .paper-assets-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -896,6 +1079,7 @@ a {
   .science-grid,
   .impact-grid,
   .chart-grid,
+  .video-quick-stats,
   .paper-assets-grid,
   .profile-grid,
   .service-options {
@@ -923,6 +1107,23 @@ a {
 
   .paper-viewer {
     min-height: 380px;
+  }
+
+  .video-launch-cta {
+    font-size: 0.84rem;
+  }
+
+  .video-play-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .video-play-icon::before {
+    left: 25px;
+    top: 20px;
+    border-left-width: 16px;
+    border-top-width: 10px;
+    border-bottom-width: 10px;
   }
 
   .hero h1 {
