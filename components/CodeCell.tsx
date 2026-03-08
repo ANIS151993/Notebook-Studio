@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import AIAssistant from "./AIAssistant";
+import { autoFixPythonCode } from "@/lib/pythonAssistant";
 
 type CodeCellProps = {
   initialCode: string;
@@ -29,8 +30,10 @@ export default function CodeCell({
   const [hasRun, setHasRun] = useState(autoRun);
   const [showExplanation, setShowExplanation] = useState(false);
   const [autoRunAfterFix, setAutoRunAfterFix] = useState(true);
+  const [autoFixStatus, setAutoFixStatus] = useState("Monitoring...");
+  const lastAppliedFixRef = useRef<string | null>(null);
 
-  const runWithCode = async (codeToRun: string) => {
+  const runWithCode = useCallback(async (codeToRun: string) => {
     if (!onExecute) return;
 
     setIsRunning(true);
@@ -47,19 +50,43 @@ export default function CodeCell({
     } finally {
       setIsRunning(false);
     }
-  };
+  }, [onExecute]);
 
-  const applyAssistantCode = (nextCode: string) => {
-    if (nextCode === code) {
+  useEffect(() => {
+    if (!isEditable) {
       return;
     }
-    setCode(nextCode);
-    setError(null);
 
-    if (autoRunAfterFix && onExecute && !isRunning) {
-      void runWithCode(nextCode);
-    }
-  };
+    const timer = window.setTimeout(() => {
+      const fixResult = autoFixPythonCode(code);
+      if (!fixResult || fixResult.code === code) {
+        setAutoFixStatus("Monitoring...");
+        return;
+      }
+
+      if (lastAppliedFixRef.current === fixResult.code) {
+        return;
+      }
+
+      lastAppliedFixRef.current = fixResult.code;
+      setCode(fixResult.code);
+      setError(null);
+
+      if (autoRunAfterFix && onExecute && !isRunning) {
+        void runWithCode(fixResult.code);
+      }
+
+      const detail =
+        fixResult.changes.length > 0
+          ? fixResult.changes.join("; ")
+          : "basic correction";
+      setAutoFixStatus(`Applied: ${detail}`);
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [code, isEditable, autoRunAfterFix, onExecute, isRunning, runWithCode]);
 
   const handleRun = async () => {
     await runWithCode(code);
@@ -95,11 +122,7 @@ export default function CodeCell({
 
       {/* AI Assistant */}
       {isEditable && (
-        <AIAssistant
-          code={code}
-          error={error}
-          onApplyCode={applyAssistantCode}
-        />
+        <AIAssistant code={code} error={error} />
       )}
 
       {/* Code Editor/Display */}
@@ -122,6 +145,7 @@ export default function CodeCell({
                     Auto-run after AI fix
                   </label>
                 )}
+                <span className="text-[10px] text-[#a5b4c4]">{autoFixStatus}</span>
                 {onExecute && (
                   <button
                     onClick={handleRun}

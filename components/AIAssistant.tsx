@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   analyzePythonCode,
   answerPythonQuestion,
-  autoFixPythonCode,
   type AssistantAnswer,
 } from "@/lib/pythonAssistant";
 import { askLocalPythonModel, loadLocalPythonModel } from "@/lib/localPythonLlm";
@@ -12,7 +11,6 @@ import { askLocalPythonModel, loadLocalPythonModel } from "@/lib/localPythonLlm"
 type AIAssistantProps = {
   code: string;
   error: string | null;
-  onApplyCode?: (nextCode: string) => void;
 };
 
 type ModelState = "idle" | "loading" | "ready" | "error";
@@ -30,7 +28,24 @@ const issueStyle = {
   tip: "border-[#4dabf7] bg-[#1a2a3a]",
 } as const;
 
-export default function AIAssistant({ code, error, onApplyCode }: AIAssistantProps) {
+const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number): Promise<T> =>
+  new Promise<T>((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      reject(new Error("Model response timeout"));
+    }, timeoutMs);
+
+    promise
+      .then((value) => {
+        window.clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((error) => {
+        window.clearTimeout(timer);
+        reject(error);
+      });
+  });
+
+export default function AIAssistant({ code, error }: AIAssistantProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [question, setQuestion] = useState("");
   const [ruleAnswer, setRuleAnswer] = useState<AssistantAnswer | null>(null);
@@ -38,9 +53,6 @@ export default function AIAssistant({ code, error, onApplyCode }: AIAssistantPro
   const [modelState, setModelState] = useState<ModelState>("idle");
   const [modelMessage, setModelMessage] = useState(
     "Model will auto-load and stay cached in your browser.",
-  );
-  const [autoFixMessage, setAutoFixMessage] = useState(
-    "Always-on auto-fix is monitoring editable code.",
   );
   const [isAsking, setIsAsking] = useState(false);
 
@@ -81,31 +93,6 @@ export default function AIAssistant({ code, error, onApplyCode }: AIAssistantPro
     }
   }, [loadModel, modelState]);
 
-  useEffect(() => {
-    if (!onApplyCode) {
-      setAutoFixMessage("Auto-fix is available only in editable code cells.");
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      const fixResult = autoFixPythonCode(code);
-      if (!fixResult || fixResult.code === code) {
-        return;
-      }
-
-      onApplyCode(fixResult.code);
-      const details =
-        fixResult.changes.length > 0
-          ? fixResult.changes.join("; ")
-          : "basic syntax adjustments";
-      setAutoFixMessage(`Auto-fix applied: ${details}.`);
-    }, 350);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [code, onApplyCode]);
-
   const handleAsk = async (input: string) => {
     const trimmed = input.trim();
     if (!trimmed) {
@@ -114,33 +101,37 @@ export default function AIAssistant({ code, error, onApplyCode }: AIAssistantPro
       return;
     }
 
-    setIsAsking(true);
-    setRuleAnswer(null);
+    setRuleAnswer(answerPythonQuestion(trimmed, code, error));
     setModelAnswer(null);
+    setIsAsking(true);
 
     try {
-      let canUseModel = modelState === "ready";
-      if (!canUseModel) {
-        canUseModel = await loadModel();
+      if (modelState === "idle") {
+        void loadModel();
+        setModelMessage(
+          "Neural model is loading in background. Showing offline expert answer now.",
+        );
+        return;
       }
 
-      if (canUseModel) {
-        const generated = await askLocalPythonModel({
+      if (modelState !== "ready") {
+        return;
+      }
+
+      const generated = await withTimeout(
+        askLocalPythonModel({
           question: trimmed,
           code,
           runtimeError: error,
-        });
-        setModelAnswer(generated);
-      } else {
-        setRuleAnswer(answerPythonQuestion(trimmed, code, error));
-      }
+        }),
+        15000,
+      );
+      setModelAnswer(generated);
     } catch (askError) {
       console.error(askError);
-      setModelState("error");
       setModelMessage(
-        "Neural model response failed for this request. Falling back to offline expert engine.",
+        "Neural model unavailable for this request. Offline expert answer is shown.",
       );
-      setRuleAnswer(answerPythonQuestion(trimmed, code, error));
     } finally {
       setIsAsking(false);
     }
@@ -175,7 +166,6 @@ export default function AIAssistant({ code, error, onApplyCode }: AIAssistantPro
         <p className="mt-1 text-xs text-[#c9d7e8]">
           Model auto-load: enabled (first download cached by browser).
         </p>
-        <p className="mt-2 text-xs text-[#c9d7e8]">{autoFixMessage}</p>
       </div>
 
       <div className="mt-4 rounded-lg border border-[#4dabf7]/30 bg-[#111a26] p-3">
