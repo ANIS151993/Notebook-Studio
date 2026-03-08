@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Component, useMemo, useState, type ErrorInfo, type ReactNode } from "react";
 import Papa from "papaparse";
 import {
   Chart as ChartJS,
@@ -90,6 +90,46 @@ type StandardChartData = {
   telecommuting?: ReturnType<typeof chartProcessor.countOccurrences>;
   fraudRateByType?: ReturnType<typeof chartProcessor.calculateFraudRateByCategory>;
 };
+
+type ChartErrorBoundaryProps = {
+  children: ReactNode;
+};
+
+type ChartErrorBoundaryState = {
+  hasError: boolean;
+};
+
+class ChartErrorBoundary extends Component<
+  ChartErrorBoundaryProps,
+  ChartErrorBoundaryState
+> {
+  constructor(props: ChartErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): ChartErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown, info: ErrorInfo) {
+    console.error("Standard chart render failed:", error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="rounded-xl border border-[#d4af37] bg-[#1a1a1a] p-6">
+          <p className="text-sm text-[#c9a961]">
+            This standard chart could not be rendered. Use Custom mode for this dataset.
+          </p>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
   // State for switching between standard and custom views
@@ -210,10 +250,18 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
     if (!parsedData.length || !columnAnalysis.length) return [];
 
     const specs: ChartSpec[] = [];
-    const numericColumns = columnAnalysis.filter(c => c.type === 'numeric');
-    const categoricalColumns = columnAnalysis.filter(c => c.type === 'categorical' && c.uniqueCount <= 20);
-    const booleanColumns = columnAnalysis.filter(c => c.type === 'boolean');
-    const dateColumns = columnAnalysis.filter(c => c.type === 'datetime');
+    const numericColumns = columnAnalysis
+      .filter((column) => column.type === "numeric")
+      .slice(0, 6);
+    const categoricalColumns = columnAnalysis
+      .filter((column) => column.type === "categorical" && column.uniqueCount > 1)
+      .slice(0, 8);
+    const booleanColumns = columnAnalysis
+      .filter((column) => column.type === "boolean")
+      .slice(0, 4);
+    const dateColumns = columnAnalysis
+      .filter((column) => column.type === "datetime")
+      .slice(0, 3);
 
     // 1. Histograms for numeric columns
     numericColumns.forEach(col => {
@@ -509,35 +557,51 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
           {hasCharts ? (
             <div className="grid gap-6 md:grid-cols-2">
               {chartData.missingValues && chartData.missingValues.length > 0 && (
-                <MissingValuesChart data={chartData.missingValues} />
+                <ChartErrorBoundary>
+                  <MissingValuesChart data={chartData.missingValues} />
+                </ChartErrorBoundary>
               )}
 
               {chartData.fraudDistribution && chartData.fraudDistribution.length > 0 && (
-                <FraudDistributionChart data={chartData.fraudDistribution} />
+                <ChartErrorBoundary>
+                  <FraudDistributionChart data={chartData.fraudDistribution} />
+                </ChartErrorBoundary>
               )}
 
               {chartData.topIndustries && chartData.topIndustries.length > 0 && (
-                <TopIndustriesChart data={chartData.topIndustries} />
+                <ChartErrorBoundary>
+                  <TopIndustriesChart data={chartData.topIndustries} />
+                </ChartErrorBoundary>
               )}
 
               {chartData.geographic && chartData.geographic.length > 0 && (
-                <GeographicDistributionChart data={chartData.geographic} />
+                <ChartErrorBoundary>
+                  <GeographicDistributionChart data={chartData.geographic} />
+                </ChartErrorBoundary>
               )}
 
               {chartData.experience && chartData.experience.length > 0 && (
-                <ExperienceDistributionChart data={chartData.experience} />
+                <ChartErrorBoundary>
+                  <ExperienceDistributionChart data={chartData.experience} />
+                </ChartErrorBoundary>
               )}
 
               {chartData.salary && chartData.salary.length > 0 && (
-                <SalaryHistogramChart data={chartData.salary} />
+                <ChartErrorBoundary>
+                  <SalaryHistogramChart data={chartData.salary} />
+                </ChartErrorBoundary>
               )}
 
               {chartData.telecommuting && chartData.telecommuting.length > 0 && (
-                <TelecommutingChart data={chartData.telecommuting} />
+                <ChartErrorBoundary>
+                  <TelecommutingChart data={chartData.telecommuting} />
+                </ChartErrorBoundary>
               )}
 
 	              {chartData.fraudRateByType && chartData.fraudRateByType.length > 0 && (
-                <FraudRateByTypeChart data={chartData.fraudRateByType} />
+                <ChartErrorBoundary>
+                  <FraudRateByTypeChart data={chartData.fraudRateByType} />
+                </ChartErrorBoundary>
               )}
             </div>
           ) : customChartSpecs.length > 0 ? (

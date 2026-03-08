@@ -43,6 +43,13 @@ type SavedWorkListItem = {
   rows: number;
   columns: string[];
   updatedAtLabel: string;
+  source: "cloud" | "local";
+};
+
+type LocalWorkRecord = WorkSnapshot & {
+  id: string;
+  name: string;
+  updatedAtIso: string;
 };
 
 type SyncStatus = "idle" | "saving" | "saved" | "error";
@@ -105,6 +112,106 @@ const getErrorCode = (error: unknown): string | null => {
   return typeof rawCode === "string" ? rawCode : null;
 };
 
+const localWorksStoragePrefix = "notebook_studio_local_works_v1_";
+const localWorkIdPrefix = "local:";
+
+const isLocalWorkId = (workId: string) => workId.startsWith(localWorkIdPrefix);
+
+const getLocalWorksStorageKey = (uid: string) => `${localWorksStoragePrefix}${uid}`;
+
+const readLocalWorks = (uid: string): LocalWorkRecord[] => {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const raw = window.localStorage.getItem(getLocalWorksStorageKey(uid));
+    if (!raw) {
+      return [];
+    }
+
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed
+      .map((entry): LocalWorkRecord | null => {
+        if (!entry || typeof entry !== "object") {
+          return null;
+        }
+
+        const candidate = entry as Partial<LocalWorkRecord>;
+        const parsedStats = parseStats(candidate.stats);
+        if (
+          typeof candidate.id !== "string" ||
+          !candidate.id.startsWith(localWorkIdPrefix) ||
+          typeof candidate.name !== "string" ||
+          typeof candidate.fileName !== "string" ||
+          typeof candidate.rawCsvContent !== "string" ||
+          typeof candidate.cleanedCsv !== "string" ||
+          typeof candidate.notebook !== "string" ||
+          typeof candidate.outputName !== "string" ||
+          !parsedStats ||
+          typeof candidate.updatedAtIso !== "string"
+        ) {
+          return null;
+        }
+
+        return {
+          id: candidate.id,
+          name: candidate.name,
+          fileName: candidate.fileName,
+          rawCsvContent: candidate.rawCsvContent,
+          cleanedCsv: candidate.cleanedCsv,
+          notebook: candidate.notebook,
+          outputName: candidate.outputName,
+          stats: parsedStats,
+          updatedAtIso: candidate.updatedAtIso,
+        };
+      })
+      .filter((entry): entry is LocalWorkRecord => entry !== null);
+  } catch (error) {
+    console.error("Failed to read local works:", error);
+    return [];
+  }
+};
+
+const writeLocalWorks = (uid: string, works: LocalWorkRecord[]) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(getLocalWorksStorageKey(uid), JSON.stringify(works.slice(0, 20)));
+};
+
+const upsertLocalWork = (
+  uid: string,
+  snapshot: WorkSnapshot,
+  suggestedFileName: string,
+): string => {
+  const allWorks = readLocalWorks(uid);
+  const localId = `${localWorkIdPrefix}${Date.now()}`;
+  const entry: LocalWorkRecord = {
+    ...snapshot,
+    id: localId,
+    name: createWorkName(suggestedFileName),
+    updatedAtIso: new Date().toISOString(),
+  };
+  writeLocalWorks(uid, [entry, ...allWorks]);
+  return localId;
+};
+
+const mapLocalRecordToListItem = (record: LocalWorkRecord): SavedWorkListItem => ({
+  id: record.id,
+  name: record.name,
+  fileName: record.fileName,
+  rows: record.stats.rows,
+  columns: record.stats.columns,
+  updatedAtLabel: new Date(record.updatedAtIso).toLocaleString(),
+  source: "local",
+});
+
 export default function CsvNotebookBuilder() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [cleanedCsv, setCleanedCsv] = useState<string | null>(null);
@@ -138,11 +245,22 @@ export default function CsvNotebookBuilder() {
   );
 
   const loadSavedWorks = async (uid: string) => {
+    setLoadingWorks(true);
+    const localItems = readLocalWorks(uid).map(mapLocalRecordToListItem);
+
     if (!db) {
+      setSavedWorks(localItems);
+      setSelectedWorkId((current) => current || localItems[0]?.id || "");
+      if (localItems.length > 0) {
+        setSyncStatus("saved");
+        setSyncMessage(
+          "Cloud database is unavailable. Loaded local works saved in this browser.",
+        );
+      }
+      setLoadingWorks(false);
       return;
     }
 
-    setLoadingWorks(true);
     try {
       const worksRef = collection(db, "users", uid, "works");
       const worksQuery = query(worksRef, orderBy("updatedAt", "desc"), limit(25));
@@ -175,26 +293,47 @@ export default function CsvNotebookBuilder() {
             rows: parsedStats.rows,
             columns: parsedStats.columns,
             updatedAtLabel: formatUpdatedAt(data.updatedAt),
+            source: "cloud",
           };
         })
         .filter((item): item is SavedWorkListItem => item !== null);
 
-      setSavedWorks(items);
+      const visibleItems = items.length > 0 ? items : localItems;
+      setSavedWorks(visibleItems);
 
-      if (items.length > 0) {
-        setSelectedWorkId((current) => current || items[0].id);
+      if (visibleItems.length > 0) {
+        setSelectedWorkId((current) => current || visibleItems[0].id);
       } else {
         setSelectedWorkId("");
       }
+
+      if (items.length === 0 && localItems.length > 0) {
+        setSyncStatus("saved");
+        setSyncMessage(
+          "No cloud works found yet. Showing local works saved in this browser.",
+        );
+      }
     } catch (loadError) {
       console.error(loadError);
-      setSyncStatus("error");
       const errorCode = getErrorCode(loadError);
-      setSyncMessage(
-        errorCode
-          ? `Could not load saved works (${errorCode}). Check Firestore rules.`
-          : "Could not load saved works from your account.",
-      );
+
+      if (localItems.length > 0) {
+        setSavedWorks(localItems);
+        setSelectedWorkId((current) => current || localItems[0].id);
+        setSyncStatus("saved");
+        setSyncMessage(
+          errorCode
+            ? `Cloud load unavailable (${errorCode}). Loaded local works from this browser.`
+            : "Cloud load unavailable. Loaded local works from this browser.",
+        );
+      } else {
+        setSyncStatus("error");
+        setSyncMessage(
+          errorCode
+            ? `Could not load saved works (${errorCode}). Check Firestore rules.`
+            : "Could not load saved works from your account.",
+        );
+      }
     } finally {
       setLoadingWorks(false);
     }
@@ -227,12 +366,32 @@ export default function CsvNotebookBuilder() {
   }, []);
 
   const saveWorkSnapshot = async (snapshot: WorkSnapshot, suggestedFileName: string) => {
-    if (!db || !authUserId) {
+    if (!authUserId) {
       return;
     }
 
     setSyncStatus("saving");
     setSyncMessage("Saving work to your account...");
+
+    let localWorkId: string | null = null;
+    try {
+      localWorkId = upsertLocalWork(authUserId, snapshot, suggestedFileName);
+    } catch (localSaveError) {
+      console.error("Local fallback save failed:", localSaveError);
+    }
+
+    if (!db) {
+      if (localWorkId) {
+        setSyncStatus("saved");
+        setSelectedWorkId(localWorkId);
+        setSyncMessage("Cloud save unavailable. Work saved locally in this browser.");
+        await loadSavedWorks(authUserId);
+      } else {
+        setSyncStatus("error");
+        setSyncMessage("Could not save work. Check browser storage permissions.");
+      }
+      return;
+    }
 
     try {
       const workRef = doc(collection(db, "users", authUserId, "works"));
@@ -249,13 +408,24 @@ export default function CsvNotebookBuilder() {
       await loadSavedWorks(authUserId);
     } catch (saveError) {
       console.error(saveError);
-      setSyncStatus("error");
       const errorCode = getErrorCode(saveError);
-      setSyncMessage(
-        errorCode
-          ? `Could not save work (${errorCode}). Check Firestore rules.`
-          : "Could not save work. Please try again.",
-      );
+      if (localWorkId) {
+        setSyncStatus("saved");
+        setSelectedWorkId(localWorkId);
+        setSyncMessage(
+          errorCode
+            ? `Cloud save unavailable (${errorCode}). Work saved locally in this browser.`
+            : "Cloud save unavailable. Work saved locally in this browser.",
+        );
+        await loadSavedWorks(authUserId);
+      } else {
+        setSyncStatus("error");
+        setSyncMessage(
+          errorCode
+            ? `Could not save work (${errorCode}). Check Firestore rules.`
+            : "Could not save work. Please try again.",
+        );
+      }
     }
   };
 
@@ -280,12 +450,46 @@ export default function CsvNotebookBuilder() {
   };
 
   const loadSelectedWork = async () => {
-    if (!db || !authUserId || !selectedWorkId) {
+    if (!authUserId || !selectedWorkId) {
       return;
     }
 
     setLoadingWorks(true);
     setSyncMessage(null);
+
+    if (isLocalWorkId(selectedWorkId)) {
+      try {
+        const localWork = readLocalWorks(authUserId).find(
+          (record) => record.id === selectedWorkId,
+        );
+
+        if (!localWork) {
+          setError("That local saved work was not found in this browser.");
+          return;
+        }
+
+        setFileName(localWork.fileName);
+        setRawCsvContent(localWork.rawCsvContent);
+        setCleanedCsv(localWork.cleanedCsv);
+        setNotebook(localWork.notebook);
+        setOutputName(localWork.outputName);
+        setStats(localWork.stats);
+        setActiveTab("upload");
+        setError(null);
+        setSyncStatus("saved");
+        setSyncMessage("Local saved work loaded.");
+      } finally {
+        setLoadingWorks(false);
+      }
+      return;
+    }
+
+    if (!db) {
+      setLoadingWorks(false);
+      setSyncStatus("error");
+      setSyncMessage("Cloud database is unavailable. Select a local saved work.");
+      return;
+    }
 
     try {
       const workRef = doc(db, "users", authUserId, "works", selectedWorkId);
@@ -516,7 +720,7 @@ export default function CsvNotebookBuilder() {
               )}
               {savedWorks.map((work) => (
                 <option key={work.id} value={work.id}>
-                  {work.name} - {work.rows} rows - {work.updatedAtLabel}
+                  [{work.source}] {work.name} - {work.rows} rows - {work.updatedAtLabel}
                 </option>
               ))}
             </select>

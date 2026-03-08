@@ -18,6 +18,13 @@ type Profile = {
   lastLoginAt?: Timestamp;
 };
 
+type LocalProfile = {
+  fullName: string;
+  organization: string;
+  contactNumber: string;
+  updatedAtIso: string;
+};
+
 const getErrorCode = (error: unknown): string | null => {
   if (typeof error !== "object" || error === null || !("code" in error)) {
     return null;
@@ -34,6 +41,56 @@ const formatTimestamp = (value?: Timestamp) => {
   return value.toDate().toLocaleString();
 };
 
+const localProfileStoragePrefix = "notebook_studio_local_profile_v1_";
+
+const getLocalProfileStorageKey = (uid: string) =>
+  `${localProfileStoragePrefix}${uid}`;
+
+const readLocalProfile = (uid: string): LocalProfile | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(getLocalProfileStorageKey(uid));
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw) as Partial<LocalProfile>;
+    if (
+      typeof parsed.fullName !== "string" ||
+      typeof parsed.organization !== "string" ||
+      typeof parsed.contactNumber !== "string" ||
+      typeof parsed.updatedAtIso !== "string"
+    ) {
+      return null;
+    }
+
+    return {
+      fullName: parsed.fullName,
+      organization: parsed.organization,
+      contactNumber: parsed.contactNumber,
+      updatedAtIso: parsed.updatedAtIso,
+    };
+  } catch (error) {
+    console.error("Failed to read local profile:", error);
+    return null;
+  }
+};
+
+const writeLocalProfile = (uid: string, profile: Omit<LocalProfile, "updatedAtIso">) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const payload: LocalProfile = {
+    ...profile,
+    updatedAtIso: new Date().toISOString(),
+  };
+  window.localStorage.setItem(getLocalProfileStorageKey(uid), JSON.stringify(payload));
+};
+
 export default function DashboardPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -48,8 +105,8 @@ export default function DashboardPage() {
   useEffect(() => {
     const firebaseAuth = auth;
     const firestoreDb = db;
-    if (!firebaseAuth || !firestoreDb) {
-      setError(firebaseConfigError ?? "Firebase is not configured.");
+    if (!firebaseAuth) {
+      setError(firebaseConfigError ?? "Firebase Auth is not configured.");
       setLoading(false);
       return;
     }
@@ -57,6 +114,25 @@ export default function DashboardPage() {
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (user) => {
       if (!user) {
         replaceWithTransition(router, "/");
+        return;
+      }
+
+      const localProfile = readLocalProfile(user.uid);
+
+      if (!firestoreDb) {
+        const fallbackProfile: Profile = {
+          uid: user.uid,
+          email: user.email ?? "Unknown",
+          fullName: localProfile?.fullName ?? "",
+          organization: localProfile?.organization ?? "",
+          contactNumber: localProfile?.contactNumber ?? "",
+        };
+        setProfile(fallbackProfile);
+        setFullName(fallbackProfile.fullName ?? "");
+        setOrganization(fallbackProfile.organization ?? "");
+        setContactNumber(fallbackProfile.contactNumber ?? "");
+        setError("Cloud profile database unavailable. Using local profile data.");
+        setLoading(false);
         return;
       }
 
@@ -69,9 +145,9 @@ export default function DashboardPage() {
           const loadedProfile: Profile = {
             uid: data.uid ?? user.uid,
             email: data.email ?? user.email ?? "Unknown",
-            fullName: data.fullName ?? "",
-            organization: data.organization ?? "",
-            contactNumber: data.contactNumber ?? "",
+            fullName: data.fullName ?? localProfile?.fullName ?? "",
+            organization: data.organization ?? localProfile?.organization ?? "",
+            contactNumber: data.contactNumber ?? localProfile?.contactNumber ?? "",
             createdAt: data.createdAt,
             lastLoginAt: data.lastLoginAt,
           };
@@ -84,20 +160,30 @@ export default function DashboardPage() {
           const fallbackProfile: Profile = {
             uid: user.uid,
             email: user.email ?? "Unknown",
+            fullName: localProfile?.fullName ?? "",
+            organization: localProfile?.organization ?? "",
+            contactNumber: localProfile?.contactNumber ?? "",
           };
           setProfile(fallbackProfile);
-          setFullName("");
-          setOrganization("");
-          setContactNumber("");
+          setFullName(fallbackProfile.fullName ?? "");
+          setOrganization(fallbackProfile.organization ?? "");
+          setContactNumber(fallbackProfile.contactNumber ?? "");
         }
       } catch (loadError) {
         console.error(loadError);
-        setProfile({
+        const fallbackProfile: Profile = {
           uid: user.uid,
           email: user.email ?? "Unknown",
-        });
+          fullName: localProfile?.fullName ?? "",
+          organization: localProfile?.organization ?? "",
+          contactNumber: localProfile?.contactNumber ?? "",
+        };
+        setProfile(fallbackProfile);
+        setFullName(fallbackProfile.fullName ?? "");
+        setOrganization(fallbackProfile.organization ?? "");
+        setContactNumber(fallbackProfile.contactNumber ?? "");
         setError(
-          "Signed in successfully, but profile details are temporarily unavailable."
+          "Signed in successfully, but cloud profile sync is temporarily unavailable."
         );
       } finally {
         setLoading(false);
@@ -116,7 +202,7 @@ export default function DashboardPage() {
   };
 
   const handleSaveProfile = async () => {
-    if (!auth || !db || !profile || !auth.currentUser) {
+    if (!auth || !profile || !auth.currentUser) {
       setSaveMessage("Cannot save profile right now.");
       return;
     }
@@ -127,6 +213,32 @@ export default function DashboardPage() {
 
     setSavingProfile(true);
     setSaveMessage(null);
+
+    try {
+      writeLocalProfile(auth.currentUser.uid, {
+        fullName: nextFullName,
+        organization: nextOrganization,
+        contactNumber: nextContactNumber,
+      });
+    } catch (localSaveError) {
+      console.error("Local profile save failed:", localSaveError);
+    }
+
+    if (!db) {
+      setProfile((current) =>
+        current
+          ? {
+              ...current,
+              fullName: nextFullName,
+              organization: nextOrganization,
+              contactNumber: nextContactNumber,
+            }
+          : current,
+      );
+      setSaveMessage("Cloud save unavailable. Profile saved locally in this browser.");
+      setSavingProfile(false);
+      return;
+    }
 
     try {
       const userRef = doc(db, "users", auth.currentUser.uid);
@@ -160,8 +272,8 @@ export default function DashboardPage() {
       const errorCode = getErrorCode(saveError);
       setSaveMessage(
         errorCode
-          ? `Could not save profile (${errorCode}). Check Firestore rules.`
-          : "Could not save profile. Please try again.",
+          ? `Cloud save unavailable (${errorCode}). Profile saved locally in this browser.`
+          : "Cloud save unavailable. Profile saved locally in this browser.",
       );
     } finally {
       setSavingProfile(false);
