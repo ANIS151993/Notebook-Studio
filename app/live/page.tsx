@@ -29,7 +29,7 @@ const userSteps = [
   {
     title: "Use Secure Sign-In",
     description:
-      "Access protected features through passwordless email-link authentication with Firebase.",
+      "Access protected features through verified email/password authentication with Firebase.",
   },
 ];
 
@@ -108,9 +108,9 @@ const workflowGuide = [
   },
   {
     step: "6",
-    action: "Sign in with passwordless email link.",
+    action: "Sign up or sign in with email and password.",
     result: "Access protected dashboard/admin routes.",
-    tip: "Use the same email device or confirm email on `/finish`.",
+    tip: "New users must verify email before first login.",
   },
 ];
 
@@ -140,9 +140,9 @@ const stackByLayer = [
   },
   {
     layer: "Auth and Database",
-    tools: "Firebase Auth (email link), Firestore",
+    tools: "Firebase Auth (email/password + email verification), Firestore",
     reason:
-      "Secure passwordless login plus user profile persistence and protected routes.",
+      "Secure verified accounts plus user profile persistence and protected routes.",
   },
   {
     layer: "Data Visualization",
@@ -161,8 +161,8 @@ const faqs = [
     a: "No. Notebook code execution runs client-side in WebAssembly through Pyodide.",
   },
   {
-    q: "What if my email link opens on another device?",
-    a: "The `/finish` page prompts for your email and completes sign-in securely.",
+    q: "Do users need email verification?",
+    a: "Yes. On Sign Up, a verification email is sent. Users verify first, then log in with email and password.",
   },
   {
     q: "Why do some charts not appear?",
@@ -197,7 +197,7 @@ export default function LiveGuidePage() {
               href="/login"
               className="shine-btn inline-flex h-11 items-center justify-center rounded-xl border border-[#d4af37] bg-[#1a1a1a]/70 px-5 text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f] transition hover:-translate-y-0.5 hover:bg-[#d4af37] hover:text-[#0a0a0a]"
             >
-              Sign In
+              Sign Up / Sign In
             </AnimatedLink>
           </div>
         </section>

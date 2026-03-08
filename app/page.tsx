@@ -25,7 +25,7 @@ export default function Home() {
               href="/login"
               className="tab-pill shine-btn inline-flex h-10 items-center justify-center rounded-xl border border-[#d4af37] bg-[#15120c] px-5 text-sm font-semibold text-[#f4d03f] hover:bg-[#d4af37] hover:text-[#0a0a0a]"
             >
-              Sign In
+              Sign Up / Sign In
             </AnimatedLink>
           </div>
         </div>

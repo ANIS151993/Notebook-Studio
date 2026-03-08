@@ -23,14 +23,14 @@ export default function LoginPage() {
         <div className="mb-8 text-center reveal-up delay-1">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#d4af37]/70 bg-[#20190f]/80 px-3 py-1.5 text-[11px] uppercase tracking-[0.25em] text-[#f4d03f]">
             <span className="status-pulse inline-block h-2 w-2 rounded-full bg-[#ffd700]" />
-            Secure passwordless access
+            Secure account access
           </div>
           <h2 className="text-3xl font-semibold text-[#f4d03f] md:text-4xl">
             Sign Up / Log In
           </h2>
           <p className="mt-2 text-sm text-[#c9a961]">
-            First-time users can sign up, and existing users can log in using the same
-            secure email-link flow.
+            Create an account with email and password, verify your email, then log in
+            securely.
           </p>
         </div>
 
@@ -39,11 +39,11 @@ export default function LoginPage() {
         </div>
 
         <div className="glass-card hover-lift reveal-up delay-3 mt-6 rounded-2xl bg-[#2a2416]/85 p-6">
-          <h3 className="text-sm font-semibold text-[#f4d03f]">Why passwordless?</h3>
+          <h3 className="text-sm font-semibold text-[#f4d03f]">Why this auth flow?</h3>
           <ul className="mt-3 space-y-2 text-sm text-[#c9a961]">
             <li>• Fast and secure authentication</li>
-            <li>• New users are created automatically on first successful link</li>
-            <li>• No passwords to remember</li>
+            <li>• New users verify email before first login</li>
+            <li>• Protected account access with password</li>
             <li>• Access your account from any device</li>
           </ul>
         </div>
