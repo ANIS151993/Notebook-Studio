@@ -560,17 +560,49 @@ export const autoFixPythonCode = (sourceCode: string): AutoFixResult | null => {
 };
 
 const parseErrorLine = (runtimeError: string): number | null => {
-  const match = runtimeError.match(/line\s+(\d+)/i);
-  if (!match) {
+  // Prefer user-code frame, not internal Pyodide stack frames.
+  const execFrameMatch = runtimeError.match(/<exec>",\s*line\s+(\d+)/i);
+  if (execFrameMatch) {
+    const execLineNumber = Number.parseInt(execFrameMatch[1] ?? "", 10);
+    if (!Number.isNaN(execLineNumber) && execLineNumber > 0) {
+      return execLineNumber - 1;
+    }
+  }
+
+  // Fallback: use the last reported "line N" (usually closest to root cause).
+  const allLineMatches = Array.from(runtimeError.matchAll(/line\s+(\d+)/gi));
+  if (allLineMatches.length === 0) {
     return null;
   }
 
-  const lineNumber = Number.parseInt(match[1] ?? "", 10);
+  const lastMatch = allLineMatches[allLineMatches.length - 1];
+  const lineNumber = Number.parseInt(lastMatch?.[1] ?? "", 10);
   if (Number.isNaN(lineNumber) || lineNumber < 1) {
     return null;
   }
 
   return lineNumber - 1;
+};
+
+const getSafeTargetLineIndex = (
+  codeLines: string[],
+  preferredIndex: number | null,
+): number | null => {
+  if (
+    preferredIndex !== null &&
+    preferredIndex >= 0 &&
+    preferredIndex < codeLines.length
+  ) {
+    return preferredIndex;
+  }
+
+  for (let index = codeLines.length - 1; index >= 0; index -= 1) {
+    if ((codeLines[index] ?? "").trim().length > 0) {
+      return index;
+    }
+  }
+
+  return null;
 };
 
 const ensureImport = (
@@ -605,7 +637,8 @@ export const autoFixPythonCodeWithRuntimeError = (
     }
   };
 
-  const lineIndex = parseErrorLine(runtimeError);
+  const parsedLineIndex = parseErrorLine(runtimeError);
+  const lineIndex = getSafeTargetLineIndex(codeLines, parsedLineIndex);
 
   if (normalizedError.includes("syntaxerror")) {
     if (normalizedError.includes("expected ':'") && lineIndex !== null && codeLines[lineIndex]) {
@@ -638,6 +671,24 @@ export const autoFixPythonCodeWithRuntimeError = (
       } else if (doubleQuotes % 2 === 1) {
         codeLines[lineIndex] = `${codeLines[lineIndex] ?? ""}"`;
         addChange("runtime repair: closed missing double quote");
+      }
+
+      const openBracket = (targetLine.match(/\[/g) || []).length;
+      const closeBracket = (targetLine.match(/\]/g) || []).length;
+      if (openBracket > closeBracket) {
+        codeLines[lineIndex] = `${codeLines[lineIndex] ?? ""}${"]".repeat(
+          openBracket - closeBracket,
+        )}`;
+        addChange("runtime repair: closed missing ']'");
+      }
+
+      const openBrace = (targetLine.match(/\{/g) || []).length;
+      const closeBrace = (targetLine.match(/\}/g) || []).length;
+      if (openBrace > closeBrace) {
+        codeLines[lineIndex] = `${codeLines[lineIndex] ?? ""}${"}".repeat(
+          openBrace - closeBrace,
+        )}`;
+        addChange("runtime repair: closed missing '}'");
       }
     }
   }
