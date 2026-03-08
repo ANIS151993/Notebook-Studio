@@ -26,10 +26,11 @@ export default function LoginPage() {
             Secure passwordless access
           </div>
           <h2 className="text-3xl font-semibold text-[#f4d03f] md:text-4xl">
-            Sign in
+            Sign Up / Log In
           </h2>
           <p className="mt-2 text-sm text-[#c9a961]">
-            We&apos;ll email you a secure sign-in link. No password required.
+            First-time users can sign up, and existing users can log in using the same
+            secure email-link flow.
           </p>
         </div>
 
@@ -41,6 +42,7 @@ export default function LoginPage() {
           <h3 className="text-sm font-semibold text-[#f4d03f]">Why passwordless?</h3>
           <ul className="mt-3 space-y-2 text-sm text-[#c9a961]">
             <li>• Fast and secure authentication</li>
+            <li>• New users are created automatically on first successful link</li>
             <li>• No passwords to remember</li>
             <li>• Access your account from any device</li>
           </ul>

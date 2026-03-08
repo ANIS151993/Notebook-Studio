@@ -16,7 +16,7 @@ const jetBrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Notebook Studio",
-  description: "Passwordless email link sign-in with a clean dashboard.",
+  description: "CSV cleaning, notebook generation, visualizations, and secure authentication.",
 };
 
 export default function RootLayout({
@@ -30,7 +30,17 @@ export default function RootLayout({
         className={`${spaceGrotesk.variable} ${jetBrainsMono.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        {children}
+        <div className="flex min-h-screen flex-col">
+          <div className="flex-1">{children}</div>
+          <footer className="border-t border-[#d4af37]/35 bg-[#0f0f0f] px-6 py-4 text-center">
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#f4d03f]">
+              Copyright MD ANISUR RAHMAN CHOWDHURY
+            </p>
+            <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-[#c9a961]">
+              Gannon UNIVERSITY
+            </p>
+          </footer>
+        </div>
       </body>
     </html>
   );
