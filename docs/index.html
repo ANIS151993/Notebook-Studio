@@ -10,6 +10,8 @@
   />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.youtube-nocookie.com" />
+  <link rel="preconnect" href="https://img.youtube.com" />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Serif:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
@@ -254,8 +256,10 @@
         <p>Watch a guided walkthrough of the platform flow, technical design, and practical results.</p>
       </div>
 
-      <div class="video-overview-grid">
-        <article class="video-stage-card">
+      <div class="video-portal">
+        <article class="video-player-card">
+          <p class="video-badge">In-Site Playback • One-Click Start</p>
+          <h3>Project Walkthrough Video</h3>
           <div class="video-frame-shell">
             <button
               type="button"
@@ -278,13 +282,16 @@
             <div id="videoEmbedContainer" class="video-embed-container" hidden></div>
           </div>
           <p class="video-caption">
-            This overview demonstrates the complete DataMentor lifecycle: CSV ingestion, deterministic cleaning,
-            notebook execution, analytics interpretation, and reliability-focused correction.
+            Single click starts playback instantly in this section. No new tab is required.
           </p>
         </article>
 
-        <aside class="video-insight-card">
-          <h3>What This Video Covers</h3>
+        <aside class="video-description-card">
+          <h3>What You Will Learn from This Overview</h3>
+          <p class="video-description-lead">
+            This walkthrough explains how DataMentor converts raw tabular data into reproducible notebook analytics
+            with technical transparency, scientific traceability, and reliability-focused execution.
+          </p>
           <ul class="video-detail-list">
             <li>End-to-end workflow from raw CSV to reproducible notebook analytics.</li>
             <li>How interactive charts and profile switching support evidence-driven decisions.</li>
@@ -292,23 +299,23 @@
             <li>Why DataMentor improves continuity for research, classroom, and operations teams.</li>
           </ul>
 
-          <div class="video-quick-stats">
+          <div class="video-signal-grid" aria-hidden="true">
             <article>
-              <h4>Focus</h4>
-              <p>Scientific + Technical Demonstration</p>
+              <div class="video-signal-row"><h4>Architecture Coverage</h4><span>100%</span></div>
+              <div class="video-signal-track"><span class="video-signal-fill" style="--fill: 100%;"></span></div>
             </article>
             <article>
-              <h4>Audience</h4>
-              <p>Researchers, Students, and Analytics Teams</p>
+              <div class="video-signal-row"><h4>Pipeline Demonstration</h4><span>95%</span></div>
+              <div class="video-signal-track"><span class="video-signal-fill" style="--fill: 95%;"></span></div>
             </article>
             <article>
-              <h4>Outcome</h4>
-              <p>Fast understanding of architecture and practical impact</p>
+              <div class="video-signal-row"><h4>Research Alignment</h4><span>98%</span></div>
+              <div class="video-signal-track"><span class="video-signal-fill" style="--fill: 98%;"></span></div>
             </article>
           </div>
 
           <div class="video-actions">
-            <a class="btn-primary" href="https://youtu.be/yN4jibDm8v8" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+            <button type="button" class="btn-primary" id="videoPlayNow">Play Video in This Section</button>
             <a class="btn-secondary" href="#paper">Read Full Research Paper</a>
           </div>
         </aside>

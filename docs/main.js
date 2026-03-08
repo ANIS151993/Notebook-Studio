@@ -326,6 +326,7 @@ function initHireRequestBuilder() {
 function initVideoOverview() {
   const launch = document.getElementById("videoLaunch");
   const embedContainer = document.getElementById("videoEmbedContainer");
+  const playNow = document.getElementById("videoPlayNow");
   if (!launch || !embedContainer) return;
 
   let loaded = false;
@@ -351,6 +352,9 @@ function initVideoOverview() {
   }
 
   launch.addEventListener("click", loadVideo);
+  if (playNow) {
+    playNow.addEventListener("click", loadVideo);
+  }
 }
 
 const chartInstances = new Map();
