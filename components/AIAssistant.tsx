@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   analyzePythonCode,
   answerPythonQuestion,
+  autoFixPythonCode,
   type AssistantAnswer,
 } from "@/lib/pythonAssistant";
 import { askLocalPythonModel, loadLocalPythonModel } from "@/lib/localPythonLlm";
@@ -11,9 +12,16 @@ import { askLocalPythonModel, loadLocalPythonModel } from "@/lib/localPythonLlm"
 type AIAssistantProps = {
   code: string;
   error: string | null;
+  onApplyCode?: (nextCode: string) => void;
 };
 
 type ModelState = "idle" | "loading" | "ready" | "error";
+
+const storageKeys = {
+  useNeuralModel: "nb_ai_use_neural_model_v1",
+  autoLoadModel: "nb_ai_auto_load_model_v1",
+  autoFixEnabled: "nb_ai_auto_fix_enabled_v1",
+} as const;
 
 const quickPrompts = [
   "Why am I getting this error?",
@@ -28,23 +36,71 @@ const issueStyle = {
   tip: "border-[#4dabf7] bg-[#1a2a3a]",
 } as const;
 
-export default function AIAssistant({ code, error }: AIAssistantProps) {
+const readStoredBoolean = (key: string, fallback: boolean): boolean => {
+  if (typeof window === "undefined") {
+    return fallback;
+  }
+  const value = window.localStorage.getItem(key);
+  if (value === "true") {
+    return true;
+  }
+  if (value === "false") {
+    return false;
+  }
+  return fallback;
+};
+
+const writeStoredBoolean = (key: string, value: boolean) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+  window.localStorage.setItem(key, String(value));
+};
+
+export default function AIAssistant({ code, error, onApplyCode }: AIAssistantProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [question, setQuestion] = useState("");
   const [ruleAnswer, setRuleAnswer] = useState<AssistantAnswer | null>(null);
   const [modelAnswer, setModelAnswer] = useState<string | null>(null);
   const [modelState, setModelState] = useState<ModelState>("idle");
   const [modelMessage, setModelMessage] = useState(
-    "Model not loaded. First load may take several minutes.",
+    "Model will auto-load once and stay cached in your browser.",
   );
-  const [useNeuralModel, setUseNeuralModel] = useState(false);
+  const [useNeuralModel, setUseNeuralModel] = useState(true);
+  const [autoLoadModel, setAutoLoadModel] = useState(true);
+  const [autoFixEnabled, setAutoFixEnabled] = useState(true);
+  const [autoFixMessage, setAutoFixMessage] = useState(
+    "Auto-fix is monitoring your editable code.",
+  );
   const [isAsking, setIsAsking] = useState(false);
+  const lastAutoAppliedCodeRef = useRef<string | null>(null);
 
   const issues = useMemo(() => analyzePythonCode(code, error), [code, error]);
 
-  const loadModel = async () => {
+  useEffect(() => {
+    setUseNeuralModel(readStoredBoolean(storageKeys.useNeuralModel, true));
+    setAutoLoadModel(readStoredBoolean(storageKeys.autoLoadModel, true));
+    setAutoFixEnabled(readStoredBoolean(storageKeys.autoFixEnabled, true));
+  }, []);
+
+  useEffect(() => {
+    writeStoredBoolean(storageKeys.useNeuralModel, useNeuralModel);
+  }, [useNeuralModel]);
+
+  useEffect(() => {
+    writeStoredBoolean(storageKeys.autoLoadModel, autoLoadModel);
+  }, [autoLoadModel]);
+
+  useEffect(() => {
+    writeStoredBoolean(storageKeys.autoFixEnabled, autoFixEnabled);
+  }, [autoFixEnabled]);
+
+  const loadModel = useCallback(async (): Promise<boolean> => {
     if (modelState === "loading") {
-      return;
+      return false;
+    }
+    if (modelState === "ready") {
+      return true;
     }
 
     setModelState("loading");
@@ -57,14 +113,62 @@ export default function AIAssistant({ code, error }: AIAssistantProps) {
       setModelMessage(
         `Model ready (${result.modelId}) on ${result.runtime.toUpperCase()} runtime.`,
       );
+      return true;
     } catch (loadError) {
       console.error(loadError);
       setModelState("error");
       setModelMessage(
-        "Could not load neural model. You can still use the built-in offline expert engine.",
+        "Could not load neural model. Offline expert engine remains active.",
       );
+      return false;
     }
-  };
+  }, [modelState]);
+
+  useEffect(() => {
+    if (!autoLoadModel || !useNeuralModel || modelState !== "idle") {
+      return;
+    }
+    void loadModel();
+  }, [autoLoadModel, useNeuralModel, modelState, loadModel]);
+
+  useEffect(() => {
+    if (!autoFixEnabled || !onApplyCode) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      const fixResult = autoFixPythonCode(code);
+      if (!fixResult || fixResult.code === code) {
+        return;
+      }
+
+      if (lastAutoAppliedCodeRef.current === fixResult.code) {
+        return;
+      }
+
+      lastAutoAppliedCodeRef.current = fixResult.code;
+      onApplyCode(fixResult.code);
+      const details =
+        fixResult.changes.length > 0
+          ? fixResult.changes.join("; ")
+          : "basic syntax adjustments";
+      setAutoFixMessage(`Auto-fix applied: ${details}.`);
+    }, 500);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [autoFixEnabled, code, onApplyCode]);
+
+  useEffect(() => {
+    if (!autoFixEnabled) {
+      setAutoFixMessage("Auto-fix is off.");
+    } else if (!onApplyCode) {
+      setAutoFixMessage("Auto-fix unavailable in read-only cells.");
+    } else if (!autoFixMessage) {
+      setAutoFixMessage("Auto-fix is monitoring your editable code.");
+    }
+  }, [autoFixEnabled, onApplyCode, autoFixMessage]);
 
   const handleAsk = async (input: string) => {
     const trimmed = input.trim();
@@ -79,7 +183,12 @@ export default function AIAssistant({ code, error }: AIAssistantProps) {
     setModelAnswer(null);
 
     try {
-      if (useNeuralModel && modelState === "ready") {
+      let canUseModel = useNeuralModel && modelState === "ready";
+      if (useNeuralModel && modelState !== "ready") {
+        canUseModel = await loadModel();
+      }
+
+      if (canUseModel) {
         const generated = await askLocalPythonModel({
           question: trimmed,
           code,
@@ -112,7 +221,7 @@ export default function AIAssistant({ code, error }: AIAssistantProps) {
             Python AI Assistant (Offline)
           </h4>
           <p className="mt-1 text-xs text-[#a5b4c4]">
-            Local expert engine + optional on-device 0.5B neural Python model.
+            Always-on auto-check for editable code, with local neural model support.
           </p>
         </div>
         <span className="rounded-full border border-[#4dabf7]/60 bg-[#101b29] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8ec5ff]">
@@ -122,22 +231,51 @@ export default function AIAssistant({ code, error }: AIAssistantProps) {
 
       <div className="mt-4 rounded-lg border border-[#4dabf7]/30 bg-[#111a26] p-3">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8ec5ff]">
-          Neural Model (Optional)
+          Automation
+        </p>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setAutoFixEnabled((current) => !current)}
+            className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em] ${
+              autoFixEnabled
+                ? "bg-[#4dabf7] text-[#0a0a0a]"
+                : "border border-[#4dabf7]/70 bg-[#132236] text-[#bcdcff]"
+            }`}
+          >
+            {autoFixEnabled ? "Auto-Fix On" : "Auto-Fix Off"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAutoLoadModel((current) => !current)}
+            className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em] ${
+              autoLoadModel
+                ? "bg-[#4dabf7] text-[#0a0a0a]"
+                : "border border-[#4dabf7]/70 bg-[#132236] text-[#bcdcff]"
+            }`}
+          >
+            {autoLoadModel ? "Auto-Load Model On" : "Auto-Load Model Off"}
+          </button>
+        </div>
+
+        <p className="mt-2 text-xs text-[#c9d7e8]">{autoFixMessage}</p>
+      </div>
+
+      <div className="mt-4 rounded-lg border border-[#4dabf7]/30 bg-[#111a26] p-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8ec5ff]">
+          Neural Model
         </p>
         <p className="mt-1 text-xs text-[#c9d7e8]">
-          Model: <span className="text-[#d9ecff]">Qwen2.5-Coder 0.5B</span> (downloaded once, then cached in browser).
+          Model: <span className="text-[#d9ecff]">Qwen2.5-Coder 0.5B</span> (first download cached by browser).
         </p>
         <p className="mt-1 text-xs text-[#c9d7e8]">{modelMessage}</p>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => {
-              if (!useNeuralModel && modelState !== "ready") {
-                setModelMessage("Enable neural mode, then click Load Model.");
-              }
-              setUseNeuralModel((current) => !current);
-            }}
+            onClick={() => setUseNeuralModel((current) => !current)}
             className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em] ${
               useNeuralModel
                 ? "bg-[#4dabf7] text-[#0a0a0a]"

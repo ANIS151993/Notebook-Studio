@@ -16,6 +16,11 @@ export type AssistantAnswer = {
   matchedTopics: string[];
 };
 
+export type AutoFixResult = {
+  code: string;
+  changes: string[];
+};
+
 type KnowledgeTopic = {
   id: string;
   keywords: string[];
@@ -452,5 +457,75 @@ export const answerPythonQuestion = (
       "I will return a minimal corrected snippet.",
     ],
     matchedTopics: ["general"],
+  };
+};
+
+export const autoFixPythonCode = (sourceCode: string): AutoFixResult | null => {
+  const normalizedCode = sourceCode.replace(/\r\n/g, "\n");
+  const originalLines = normalizedCode.split("\n");
+  const updatedLines = [...originalLines];
+  const changes: string[] = [];
+
+  const addChange = (message: string) => {
+    if (!changes.includes(message)) {
+      changes.push(message);
+    }
+  };
+
+  for (let index = 0; index < updatedLines.length; index += 1) {
+    let line = updatedLines[index];
+    const originalLine = line;
+
+    if (/^\t+/.test(line)) {
+      line = line.replace(/^\t+/, (match) => "    ".repeat(match.length));
+      addChange("converted leading tabs to 4-space indentation");
+    }
+
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      updatedLines[index] = line;
+      continue;
+    }
+
+    if (
+      /^(if|for|while|def|class|try|except|with)\s+.*[^:]$/.test(trimmed) &&
+      !trimmed.endsWith(")") &&
+      !trimmed.endsWith(":")
+    ) {
+      line = `${line}:`;
+      addChange("added missing ':' in control statements");
+    }
+
+    if (
+      /^(\s*)df\.(drop|dropna|drop_duplicates|rename|fillna|replace|sort_values|astype)\(/.test(
+        line,
+      ) &&
+      !line.includes("inplace=True") &&
+      !/^\s*df\s*=/.test(line)
+    ) {
+      const indentation = (line.match(/^(\s*)/) || [""])[0];
+      const expression = line.trim();
+      line = `${indentation}df = ${expression}`;
+      addChange("assigned pandas dataframe operations back to df");
+    }
+
+    if (line.includes("df[") && /\sand\s|\sor\s/.test(line)) {
+      line = line.replace(/\sand\s/g, " & ").replace(/\sor\s/g, " | ");
+      addChange("replaced boolean 'and/or' with pandas '&/|' operators");
+    }
+
+    if (line !== originalLine) {
+      updatedLines[index] = line;
+    }
+  }
+
+  const updatedCode = updatedLines.join("\n");
+  if (updatedCode === normalizedCode) {
+    return null;
+  }
+
+  return {
+    code: updatedCode,
+    changes,
   };
 };

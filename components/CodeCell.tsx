@@ -29,6 +29,14 @@ export default function CodeCell({
   const [hasRun, setHasRun] = useState(autoRun);
   const [showExplanation, setShowExplanation] = useState(false);
 
+  const applyAssistantCode = (nextCode: string) => {
+    if (nextCode === code) {
+      return;
+    }
+    setCode(nextCode);
+    setError(null);
+  };
+
   const handleRun = async () => {
     if (!onExecute) return;
 
@@ -77,7 +85,13 @@ export default function CodeCell({
       )}
 
       {/* AI Assistant */}
-      {isEditable && <AIAssistant code={code} error={error} />}
+      {isEditable && (
+        <AIAssistant
+          code={code}
+          error={error}
+          onApplyCode={applyAssistantCode}
+        />
+      )}
 
       {/* Code Editor/Display */}
       <div className="glass-card hover-lift overflow-hidden rounded-xl">
