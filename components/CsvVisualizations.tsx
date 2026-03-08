@@ -410,6 +410,57 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
     setSelectedCharts(prev => prev.filter(chart => chart.id !== chartId));
   };
 
+  const renderUniversalChart = (spec: ChartSpec) => {
+    switch (spec.type) {
+      case 'histogram':
+        return (
+          <UniversalHistogram
+            title={spec.title}
+            description={spec.description}
+            data={spec.data}
+          />
+        );
+      case 'bar':
+        return (
+          <UniversalBarChart
+            title={spec.title}
+            description={spec.description}
+            data={spec.data}
+          />
+        );
+      case 'pie':
+        return (
+          <UniversalPieChart
+            title={spec.title}
+            description={spec.description}
+            data={spec.data}
+          />
+        );
+      case 'scatter':
+        return (
+          <UniversalScatterChart
+            title={spec.title}
+            description={spec.description}
+            data={spec.data}
+            xLabel={spec.columns[0]}
+            yLabel={spec.columns[1]}
+          />
+        );
+      case 'line':
+        return (
+          <UniversalLineChart
+            title={spec.title}
+            description={spec.description}
+            data={spec.data}
+            xLabel={spec.columns[0]}
+            yLabel={spec.columns[1]}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Header section with view toggle */}
@@ -452,7 +503,7 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
         </div>
       </div>
 
-      {/* Standard Charts View */}
+	      {/* Standard Charts View */}
       {viewMode === 'standard' && (
         <>
           {hasCharts ? (
@@ -485,9 +536,21 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
                 <TelecommutingChart data={chartData.telecommuting} />
               )}
 
-              {chartData.fraudRateByType && chartData.fraudRateByType.length > 0 && (
+	              {chartData.fraudRateByType && chartData.fraudRateByType.length > 0 && (
                 <FraudRateByTypeChart data={chartData.fraudRateByType} />
               )}
+            </div>
+          ) : customChartSpecs.length > 0 ? (
+            <div className="space-y-4">
+              <div className="rounded-xl border border-[#d4af37] bg-[#1a1a1a] p-4 text-sm text-[#c9a961]">
+                Standard preset charts were not detected for this dataset. Showing smart
+                standard charts generated from your columns.
+              </div>
+              <div className="grid gap-6 md:grid-cols-2">
+                {customChartSpecs.slice(0, 4).map((spec) => (
+                  <div key={spec.id}>{renderUniversalChart(spec)}</div>
+                ))}
+              </div>
             </div>
           ) : (
             <div className="rounded-xl border border-[#d4af37] bg-[#1a1a1a] p-8 text-center">
@@ -595,65 +658,9 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
           {selectedCharts.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2">
               {selectedCharts.map(spec => {
-                const chartComponent = (() => {
-                  switch (spec.type) {
-                    case 'histogram':
-                      return (
-                        <UniversalHistogram
-                          key={spec.id}
-                          title={spec.title}
-                          description={spec.description}
-                          data={spec.data}
-                        />
-                      );
-                    case 'bar':
-                      return (
-                        <UniversalBarChart
-                          key={spec.id}
-                          title={spec.title}
-                          description={spec.description}
-                          data={spec.data}
-                        />
-                      );
-                    case 'pie':
-                      return (
-                        <UniversalPieChart
-                          key={spec.id}
-                          title={spec.title}
-                          description={spec.description}
-                          data={spec.data}
-                        />
-                      );
-                    case 'scatter':
-                      return (
-                        <UniversalScatterChart
-                          key={spec.id}
-                          title={spec.title}
-                          description={spec.description}
-                          data={spec.data}
-                          xLabel={spec.columns[0]}
-                          yLabel={spec.columns[1]}
-                        />
-                      );
-                    case 'line':
-                      return (
-                        <UniversalLineChart
-                          key={spec.id}
-                          title={spec.title}
-                          description={spec.description}
-                          data={spec.data}
-                          xLabel={spec.columns[0]}
-                          yLabel={spec.columns[1]}
-                        />
-                      );
-                    default:
-                      return null;
-                  }
-                })();
-
                 return (
                   <div key={spec.id} className="relative">
-                    {chartComponent}
+                    {renderUniversalChart(spec)}
                     <button
                       onClick={() => handleRemoveChart(spec.id)}
                       className="absolute right-2 top-2 rounded-lg bg-[#2a2416] p-2 text-xs text-[#ff6b6b] transition hover:bg-[#3a3420]"

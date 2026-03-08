@@ -96,6 +96,15 @@ const createWorkName = (fileName: string) => {
   return `${baseName} (${timestamp})`;
 };
 
+const getErrorCode = (error: unknown): string | null => {
+  if (typeof error !== "object" || error === null || !("code" in error)) {
+    return null;
+  }
+
+  const rawCode = (error as { code: unknown }).code;
+  return typeof rawCode === "string" ? rawCode : null;
+};
+
 export default function CsvNotebookBuilder() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [cleanedCsv, setCleanedCsv] = useState<string | null>(null);
@@ -180,7 +189,12 @@ export default function CsvNotebookBuilder() {
     } catch (loadError) {
       console.error(loadError);
       setSyncStatus("error");
-      setSyncMessage("Could not load saved works from your account.");
+      const errorCode = getErrorCode(loadError);
+      setSyncMessage(
+        errorCode
+          ? `Could not load saved works (${errorCode}). Check Firestore rules.`
+          : "Could not load saved works from your account.",
+      );
     } finally {
       setLoadingWorks(false);
     }
@@ -236,7 +250,12 @@ export default function CsvNotebookBuilder() {
     } catch (saveError) {
       console.error(saveError);
       setSyncStatus("error");
-      setSyncMessage("Could not save work. Please try again.");
+      const errorCode = getErrorCode(saveError);
+      setSyncMessage(
+        errorCode
+          ? `Could not save work (${errorCode}). Check Firestore rules.`
+          : "Could not save work. Please try again.",
+      );
     }
   };
 
@@ -318,7 +337,12 @@ export default function CsvNotebookBuilder() {
       console.error(loadError);
       setError("Could not load selected work.");
       setSyncStatus("error");
-      setSyncMessage("Could not load selected work.");
+      const errorCode = getErrorCode(loadError);
+      setSyncMessage(
+        errorCode
+          ? `Could not load selected work (${errorCode}).`
+          : "Could not load selected work.",
+      );
     } finally {
       setLoadingWorks(false);
     }

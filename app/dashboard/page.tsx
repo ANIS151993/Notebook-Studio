@@ -18,6 +18,15 @@ type Profile = {
   lastLoginAt?: Timestamp;
 };
 
+const getErrorCode = (error: unknown): string | null => {
+  if (typeof error !== "object" || error === null || !("code" in error)) {
+    return null;
+  }
+
+  const rawCode = (error as { code: unknown }).code;
+  return typeof rawCode === "string" ? rawCode : null;
+};
+
 const formatTimestamp = (value?: Timestamp) => {
   if (!value) {
     return "Not available";
@@ -148,7 +157,12 @@ export default function DashboardPage() {
       setSaveMessage("Profile saved successfully.");
     } catch (saveError) {
       console.error(saveError);
-      setSaveMessage("Could not save profile. Please try again.");
+      const errorCode = getErrorCode(saveError);
+      setSaveMessage(
+        errorCode
+          ? `Could not save profile (${errorCode}). Check Firestore rules.`
+          : "Could not save profile. Please try again.",
+      );
     } finally {
       setSavingProfile(false);
     }
