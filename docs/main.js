@@ -326,6 +326,76 @@ function initHireRequestBuilder() {
 const chartInstances = new Map();
 let chartsInitialized = false;
 let resizeTimer = null;
+let activeChartProfile = "academic";
+
+const chartProfiles = {
+  academic: {
+    trend: [14.8, 13.4, 11.9, 9.7, 8.6, 7.2, 6.1, 5.1],
+    stageManual: [22, 34, 18, 16, 29],
+    stageAuto: [7, 10, 6, 5, 9],
+    radarBefore: [42, 49, 51, 36, 44],
+    radarAfter: [86, 89, 92, 81, 88],
+    scatterManual: [
+      { x: 5, y: 22 },
+      { x: 10, y: 37 },
+      { x: 20, y: 63 },
+      { x: 30, y: 93 },
+    ],
+    scatterAuto: [
+      { x: 5, y: 8 },
+      { x: 10, y: 12 },
+      { x: 20, y: 19 },
+      { x: 30, y: 27 },
+    ],
+    cumulativeManual: [22, 56, 74, 90, 119],
+    cumulativeAuto: [7, 17, 23, 28, 37],
+    recoveryDistribution: [68, 22, 10],
+  },
+  sme: {
+    trend: [18.2, 16.9, 15.7, 13.8, 12.4, 11.0, 9.9, 8.8],
+    stageManual: [28, 41, 24, 22, 35],
+    stageAuto: [10, 14, 9, 8, 12],
+    radarBefore: [38, 45, 48, 32, 40],
+    radarAfter: [80, 84, 87, 76, 82],
+    scatterManual: [
+      { x: 8, y: 31 },
+      { x: 15, y: 49 },
+      { x: 25, y: 76 },
+      { x: 35, y: 108 },
+    ],
+    scatterAuto: [
+      { x: 8, y: 11 },
+      { x: 15, y: 16 },
+      { x: 25, y: 24 },
+      { x: 35, y: 33 },
+    ],
+    cumulativeManual: [28, 69, 93, 115, 150],
+    cumulativeAuto: [10, 24, 33, 41, 53],
+    recoveryDistribution: [62, 25, 13],
+  },
+  enterprise: {
+    trend: [24.6, 22.8, 20.9, 18.7, 16.4, 14.6, 13.2, 11.9],
+    stageManual: [35, 52, 31, 27, 42],
+    stageAuto: [13, 18, 12, 10, 16],
+    radarBefore: [34, 40, 44, 29, 36],
+    radarAfter: [76, 81, 85, 73, 79],
+    scatterManual: [
+      { x: 10, y: 38 },
+      { x: 20, y: 61 },
+      { x: 30, y: 89 },
+      { x: 45, y: 126 },
+    ],
+    scatterAuto: [
+      { x: 10, y: 14 },
+      { x: 20, y: 21 },
+      { x: 30, y: 29 },
+      { x: 45, y: 41 },
+    ],
+    cumulativeManual: [35, 87, 118, 145, 187],
+    cumulativeAuto: [13, 31, 43, 53, 69],
+    recoveryDistribution: [57, 29, 14],
+  },
+};
 
 function enforceCanvasFrameSize(canvasId) {
   const canvas = document.getElementById(canvasId);
@@ -352,21 +422,11 @@ function createOrReplaceChart(canvasId, config) {
   chartInstances.set(canvasId, chart);
 }
 
-function makeCharts() {
-  if (typeof Chart === "undefined" || chartsInitialized) return;
-  chartsInitialized = true;
-
+function renderChartsForProfile(profileKey) {
+  if (typeof Chart === "undefined") return;
+  const profile = chartProfiles[profileKey] || chartProfiles.academic;
   const baseGrid = "rgba(179, 202, 225, 0.3)";
   const baseTicks = "#eaf4ff";
-
-  Chart.defaults.responsive = true;
-  Chart.defaults.maintainAspectRatio = false;
-  Chart.defaults.animation = { duration: 720, easing: "easeOutQuart" };
-  Chart.defaults.color = baseTicks;
-  Chart.defaults.font.family = "\"Space Grotesk\", sans-serif";
-  Chart.defaults.plugins.legend.labels.usePointStyle = true;
-  Chart.defaults.plugins.legend.labels.boxWidth = 10;
-  Chart.defaults.plugins.legend.labels.padding = 14;
 
   createOrReplaceChart("trendChart", {
     type: "line",
@@ -375,7 +435,7 @@ function makeCharts() {
       datasets: [
         {
           label: "Avg Processing Time (minutes)",
-          data: [14.8, 13.4, 11.9, 9.7, 8.6, 7.2, 6.1, 5.1],
+          data: profile.trend,
           borderColor: "#39d9b6",
           backgroundColor: "rgba(57, 217, 182, 0.24)",
           fill: true,
@@ -402,7 +462,7 @@ function makeCharts() {
       datasets: [
         {
           label: "Manual Baseline",
-          data: [22, 34, 18, 16, 29],
+          data: profile.stageManual,
           backgroundColor: "rgba(255, 161, 92, 0.88)",
           borderColor: "#ffc08a",
           borderWidth: 1,
@@ -410,7 +470,7 @@ function makeCharts() {
         },
         {
           label: "Notebook Studio",
-          data: [7, 10, 6, 5, 9],
+          data: profile.stageAuto,
           backgroundColor: "rgba(45, 212, 186, 0.92)",
           borderColor: "#7cf0db",
           borderWidth: 1,
@@ -434,7 +494,7 @@ function makeCharts() {
       datasets: [
         {
           label: "Before Automation",
-          data: [42, 49, 51, 36, 44],
+          data: profile.radarBefore,
           borderColor: "#ffaf67",
           backgroundColor: "rgba(255, 175, 103, 0.22)",
           pointBackgroundColor: "#ffaf67",
@@ -442,7 +502,7 @@ function makeCharts() {
         },
         {
           label: "After Automation",
-          data: [86, 89, 92, 81, 88],
+          data: profile.radarAfter,
           borderColor: "#33dbb8",
           backgroundColor: "rgba(51, 219, 184, 0.2)",
           pointBackgroundColor: "#33dbb8",
@@ -469,24 +529,14 @@ function makeCharts() {
       datasets: [
         {
           label: "Manual Process",
-          data: [
-            { x: 5, y: 22 },
-            { x: 10, y: 37 },
-            { x: 20, y: 63 },
-            { x: 30, y: 93 },
-          ],
+          data: profile.scatterManual,
           backgroundColor: "#ff7b7b",
           pointRadius: 4.5,
           pointHoverRadius: 5.2,
         },
         {
           label: "Notebook Studio",
-          data: [
-            { x: 5, y: 8 },
-            { x: 10, y: 12 },
-            { x: 20, y: 19 },
-            { x: 30, y: 27 },
-          ],
+          data: profile.scatterAuto,
           backgroundColor: "#33dbb8",
           pointRadius: 4.5,
           pointHoverRadius: 5.2,
@@ -509,6 +559,92 @@ function makeCharts() {
       },
     },
   });
+
+  createOrReplaceChart("areaChart", {
+    type: "line",
+    data: {
+      labels: ["Ingestion", "Cleaning", "Validation", "Notebook Prep", "Debugging"],
+      datasets: [
+        {
+          label: "Manual Cumulative Minutes",
+          data: profile.cumulativeManual,
+          borderColor: "#ff9e61",
+          backgroundColor: "rgba(255, 158, 97, 0.2)",
+          fill: true,
+          tension: 0.24,
+          borderWidth: 2.2,
+          pointRadius: 2.6,
+        },
+        {
+          label: "DataMentor Cumulative Minutes",
+          data: profile.cumulativeAuto,
+          borderColor: "#3de0bc",
+          backgroundColor: "rgba(61, 224, 188, 0.24)",
+          fill: true,
+          tension: 0.24,
+          borderWidth: 2.2,
+          pointRadius: 2.6,
+        },
+      ],
+    },
+    options: {
+      plugins: { legend: { labels: { color: baseTicks } } },
+      scales: {
+        x: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
+        y: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
+      },
+    },
+  });
+
+  createOrReplaceChart("doughnutChart", {
+    type: "doughnut",
+    data: {
+      labels: ["Auto-resolved", "Retry-resolved", "Manual intervention"],
+      datasets: [
+        {
+          data: profile.recoveryDistribution,
+          backgroundColor: ["#32ddb9", "#f5b25e", "#ff7d7d"],
+          borderColor: "#081522",
+          borderWidth: 2,
+          hoverOffset: 7,
+        },
+      ],
+    },
+    options: {
+      plugins: { legend: { labels: { color: baseTicks } } },
+    },
+  });
+}
+
+function initChartProfileControls() {
+  const profileButtons = Array.from(document.querySelectorAll(".profile-btn"));
+  if (profileButtons.length === 0) return;
+
+  profileButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const profileKey = button.getAttribute("data-profile") || "academic";
+      activeChartProfile = profileKey;
+      profileButtons.forEach((item) => item.classList.toggle("active", item === button));
+      renderChartsForProfile(activeChartProfile);
+    });
+  });
+}
+
+function makeCharts() {
+  if (typeof Chart === "undefined" || chartsInitialized) return;
+  chartsInitialized = true;
+
+  Chart.defaults.responsive = true;
+  Chart.defaults.maintainAspectRatio = false;
+  Chart.defaults.animation = { duration: 720, easing: "easeOutQuart" };
+  Chart.defaults.color = "#eaf4ff";
+  Chart.defaults.font.family = "\"Space Grotesk\", sans-serif";
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+  Chart.defaults.plugins.legend.labels.boxWidth = 10;
+  Chart.defaults.plugins.legend.labels.padding = 14;
+
+  initChartProfileControls();
+  renderChartsForProfile(activeChartProfile);
 }
 
 window.addEventListener("resize", () => {

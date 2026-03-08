@@ -1,289 +1,178 @@
-# Notebook Studio
+# DataMentor
 
-Interactive CSV cleaning + in-browser Python notebook + passwordless authentication + dynamic data visualizations.
+DataMentor is a scientific and technical web portal for reproducible CSV intelligence, interactive notebook automation, and analytics evaluation.
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-149eca?logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org/)
-[![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-ffca28?logo=firebase)](https://firebase.google.com/)
+Live website:
+- https://anis151993.github.io/Notebook-Studio/
+- Overview anchor: https://anis151993.github.io/Notebook-Studio/index.html#overview
 
-GitHub repo: **https://github.com/ANIS151993/Notebook-Studio.git**
+Live application:
+- https://datamentor.marcbd.site
 
-## Live User Guide Page
+Repository:
+- https://github.com/ANIS151993/Notebook-Studio
 
-This project includes a built-in user-facing guide page:
+## 1) What This Website Includes (Single-Page)
 
-- Open: `/live`
-- Purpose: step-by-step instructions for users, feature walkthrough, and technology overview
+The website is designed as one integrated technical document with:
+- Overview and research motivation
+- Scientific basis and hypotheses
+- Step-by-step development workflow explorer
+- Interactive architecture explorer
+- Experimental evaluation with interactive charts
+- Integrated research brief (methodology, findings, limitations, references)
+- Professional profiles and collaboration section
 
----
+Primary source files:
+- `docs/index.html`
+- `docs/styles.css`
+- `docs/main.js`
 
-## Table of Contents
+## 2) Core Scientific Framing
 
-1. [What This App Does](#what-this-app-does)
-2. [How This Project Was Completed](#how-this-project-was-completed)
-3. [User Journey (Step by Step)](#user-journey-step-by-step)
-4. [Technology Stack](#technology-stack)
-5. [Architecture](#architecture)
-6. [Local Setup](#local-setup)
-7. [Environment Variables](#environment-variables)
-8. [Run, Build, Lint](#run-build-lint)
-9. [Deployment Guidance](#deployment-guidance)
-10. [Project Structure](#project-structure)
-11. [Troubleshooting](#troubleshooting)
+### Problem
+Manual CSV workflows are often slow, inconsistent, and difficult to reproduce.
 
----
+### Hypothesis
+A deterministic, automation-first pipeline with browser-native execution and hybrid runtime repair can improve:
+- preprocessing speed,
+- output reproducibility,
+- runtime reliability.
 
-## What This App Does
+### Objectives
+- Build deterministic CSV cleaning + notebook generation.
+- Compare manual baseline vs DataMentor pipeline performance.
+- Evaluate hybrid runtime repair behavior for notebook failures.
 
-Notebook Studio helps users:
+## 3) Step-by-Step Development Model
 
-- Upload raw CSV files
-- Auto-clean headers/rows/duplicates
-- Download cleaned CSV + generated `.ipynb`
-- Run Python notebook cells directly in browser (Pyodide)
-- Build visualizations from cleaned data
-- Sign in via secure passwordless email link (Firebase)
+The website includes an interactive stage explorer with these phases:
+1. Problem Discovery
+2. Data Cleaning Engine
+3. Notebook Orchestration
+4. Authentication + Persistence
+5. Visual Analytics
+6. AI Reliability Layer
 
----
+Each stage shows:
+- engineering goal,
+- implemented component,
+- measurable outcome.
 
-## How This Project Was Completed
+## 4) Interactive Architecture Modules
 
-### Phase 1: Core CSV + Notebook Experience
+Interactive architecture coverage in the site:
+- CSV Ingestion
+- Cleaning Engine
+- Notebook Builder
+- Pyodide Runtime
+- Firebase Auth
+- Workspace Storage
+- User Dashboard
+- AI Repair Assistant
 
-- Built CSV upload and parsing flow using `PapaParse`
-- Added cleaning pipeline:
-  - normalize headers
-  - trim values
-  - remove empty rows
-  - deduplicate rows
-- Generated downloadable cleaned CSV + notebook template output
+Each module exposes:
+- inputs,
+- outputs,
+- reliability strategy.
 
-### Phase 2: Interactive In-Browser Notebook
+## 5) Full Graph and Chart Suite
 
-- Integrated Pyodide runtime in the browser
-- Added runnable code cells with:
-  - execution output
-  - error handling
-  - editable/non-editable modes
-  - cell-level explanations and AI helper panel
+DataMentor now includes all evaluation charts in one interactive analytics block.
 
-### Phase 3: Authentication + Protected Areas
+### Interactive profile switching
+Users can dynamically switch chart profile contexts:
+- Academic Labs
+- SME Operations
+- Enterprise Analytics
 
-- Implemented Firebase email-link login
-- Added `/finish` link-completion route
-- Synced users to Firestore (`createdAt`, `lastLoginAt`)
-- Protected `/dashboard` and `/admin` flows
+Switching updates all charts together for scenario-based evaluation.
 
-### Phase 4: Visual Analytics + UX Upgrade
+### Chart inventory
+| Chart | Purpose | Canvas ID |
+|---|---|---|
+| Processing Time Trend (Line) | Monthly processing-time evolution | `trendChart` |
+| Manual vs Automated Stage Time (Bar) | Stage-level time comparison | `barChart` |
+| Data Quality Radar (Radar) | Multi-metric quality shift | `radarChart` |
+| Scalability Profile (Scatter) | Size vs processing-time behavior | `scatterChart` |
+| Cumulative Workflow Savings (Area/Line Fill) | End-to-end cumulative time differences | `areaChart` |
+| Error Recovery Distribution (Doughnut) | Repair outcome composition | `doughnutChart` |
 
-- Added chart components and chart configuration layer
-- Introduced interactive visuals tab
-- Applied global UI system for:
-  - glass cards
-  - animated reveal transitions
-  - hover lift effects
-  - shimmer actions
-  - route/page transitions
+### Graphical interactivity
+- Animated chart rendering
+- Scenario-aware dataset updates
+- Responsive chart resizing
+- Improved legend readability and contrast
+- Hover-friendly point and segment emphasis
 
----
-
-## User Journey (Step by Step)
-
-1. Open home page (`/`)
-2. Upload a CSV file
-3. Wait for processing summary
-4. Download:
-   - cleaned CSV
-   - generated notebook file
-5. Open the Interactive Notebook tab
-6. Run and edit Python cells
-7. Explore Visualizations tab
-8. Sign in with email link for protected dashboard/admin experiences
-
-<details>
-<summary><strong>Detailed User Flow (expand)</strong></summary>
-
-- User selects `.csv`
-- CSV is parsed and cleaned in client flow
-- Cleaned dataset is available for:
-  - downloads
-  - notebook use
-  - charts
-- Pyodide loads and exposes Python runtime in-browser
-- Users execute notebook cells incrementally
-- Optional sign-in grants profile/dashboard/admin routes
-
-</details>
-
----
-
-## Technology Stack
-
-| Layer | Tech |
-|---|---|
-| Frontend | Next.js App Router, React 19, TypeScript |
-| Styling | Tailwind CSS 4 + custom animation utilities |
-| CSV Parsing | PapaParse |
-| In-Browser Python | Pyodide |
-| Auth | Firebase Authentication (email link) |
-| Database | Firestore |
-| Charts | Chart.js + react-chartjs-2 |
-| Tooling | ESLint, TypeScript, Next build pipeline |
-
----
-
-## Architecture
+## 6) System Architecture (Conceptual)
 
 ```mermaid
 flowchart TD
-    A[User Uploads CSV] --> B[PapaParse]
-    B --> C[Cleaning Pipeline]
-    C --> D[Cleaned CSV Download]
-    C --> E[Notebook Template Output]
-    C --> F[Visualizations]
-    C --> G[Pyodide Runtime]
-    G --> H[Interactive Code Cells]
+    A[CSV Upload] --> B[Schema Parsing]
+    B --> C[Deterministic Cleaning Engine]
+    C --> D[Notebook Builder]
+    D --> E[Pyodide Runtime]
+    E --> F[Interactive Analytics]
 
-    I[Email Link Sign-In] --> J[Firebase Auth]
-    J --> K[Firestore User Profile]
-    K --> L[Dashboard/Admin Access]
+    G[Firebase Auth] --> H[User Session]
+    H --> I[Workspace Storage]
+    I --> J[Dashboard Continuity]
+
+    E --> K[Runtime Error Trace]
+    K --> L[Rule-based Repair]
+    L --> M[Local Model Fallback]
+    M --> E
 ```
 
----
+## 7) Technology Stack
 
-## Local Setup
+- Next.js 16 (App Router)
+- React 19
+- TypeScript
+- Chart.js
+- Firebase Authentication + Firestore
+- Pyodide (in-browser Python)
+- Papa Parse
 
-1. Clone repo
+## 8) Local Development
 
 ```bash
 git clone https://github.com/ANIS151993/Notebook-Studio.git
 cd Notebook-Studio
-```
-
-2. Create env file
-
-```bash
-cp .env.local.example .env.local
-```
-
-3. Install dependencies
-
-```bash
 npm install
-```
-
-4. Run development server
-
-```bash
 npm run dev
 ```
 
-5. Open app
-
-- Home: `http://localhost:3000`
-- Live guide page: `http://localhost:3000/live`
-
----
-
-## Environment Variables
-
-Set these in `.env.local`:
-
-- `NEXT_PUBLIC_FIREBASE_API_KEY`
-- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
-- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
-- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
-- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
-- `NEXT_PUBLIC_FIREBASE_APP_ID`
-- `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` (optional)
-- `NEXT_PUBLIC_APP_URL` (example: `http://localhost:3000`)
-
----
-
-## Run, Build, Lint
+Build and lint:
 
 ```bash
-npm run dev
 npm run lint
 npm run build
 ```
 
-Optional static preview after build:
+## 9) GitHub Pages / Docs Deployment Notes
 
-```bash
-npx serve out
-```
+This repository serves the portal from `docs/` for GitHub Pages.
 
----
+Update flow:
+1. Edit `docs/index.html`, `docs/styles.css`, and `docs/main.js`.
+2. Commit and push to `main`.
+3. GitHub Pages publishes updated portal.
 
-## Deployment Guidance
+## 10) Professional Profile
 
-### Option A: Cloudflare Pages (Recommended)
+Md Anisur Rahman Chowdhury  
+Master's of Information Technology  
+Dept. of Computer and Information Science, Gannon University, USA
 
-1. Connect your GitHub repo to Cloudflare Pages
-2. Build command: `npm run build`
-3. Build output directory: `out`
-4. Add all required `NEXT_PUBLIC_*` environment variables
-5. Deploy
-6. Attach your custom domain (for example: `marcb.site`)
+Email:
+- engr.aanis@gmail.com
+- chowdhur014@gannon.edu
 
-### Option B: Vercel
-
-- Import repo in Vercel
-- Set environment variables
-- Deploy
-
----
-
-## Project Structure
-
-```txt
-app/
-  page.tsx
-  live/page.tsx
-  login/page.tsx
-  finish/page.tsx
-  dashboard/page.tsx
-  admin/page.tsx
-components/
-  CsvNotebookBuilder.tsx
-  NotebookViewer.tsx
-  CodeCell.tsx
-  CsvVisualizations.tsx
-  charts/*
-public/
-  clean_csv_template.ipynb
-hooks/
-  usePyodide.ts
-lib/
-  firebase.ts
-  chartConfig.ts
-  chartDataProcessor.ts
-  ...
-```
-
----
-
-## Troubleshooting
-
-### Firebase config errors
-
-- Ensure all required `NEXT_PUBLIC_FIREBASE_*` values exist
-- Restart dev server after env updates
-
-### Pyodide load issues
-
-- Check browser/network policy for CDN access
-- Refresh page after first load; initial runtime download can be slower
-
-### Charts not appearing
-
-- Confirm cleaned CSV has valid rows and typed columns
-- Check browser console for data-shape issues
-
----
-
-## License
-
-Use your preferred project license (MIT recommended).
+Profiles:
+- LinkedIn: https://linkedin.com/in/md-anisur-rahman-chowdhury-15862420a
+- GitHub: https://github.com/ANIS151993
+- Google Scholar: https://scholar.google.com/citations?user=NQyywPoAAAAJ
+- ResearchGate: https://researchgate.net/profile/Md-Anisur-Rahman-Chowdhury
+- Portfolio: https://marcbd.com

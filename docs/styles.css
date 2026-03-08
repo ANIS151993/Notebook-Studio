@@ -545,9 +545,55 @@ a {
   line-height: 1.5;
 }
 
+.chart-toolbar {
+  margin-bottom: 0.66rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(8, 18, 28, 0.78);
+  padding: 0.64rem;
+  display: grid;
+  gap: 0.42rem;
+}
+
+.toolbar-title {
+  color: #d5e9fb;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.profile-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.profile-btn {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(9, 19, 30, 0.84);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.34rem 0.62rem;
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
+}
+
+.profile-btn:hover {
+  color: var(--text);
+  border-color: var(--line-soft);
+}
+
+.profile-btn.active {
+  color: #092018;
+  border-color: #74e8cd;
+  background: linear-gradient(120deg, #74e8cd, #2ac8a3);
+}
+
 .chart-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.66rem;
 }
 

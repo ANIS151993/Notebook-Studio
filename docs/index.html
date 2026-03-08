@@ -6,7 +6,7 @@
   <title>Notebook Studio: DataMentor</title>
   <meta
     name="description"
-    content="Single-page scientific and technical portal for Notebook Studio: architecture, methodology, evaluation, development steps, and professional profile."
+    content="Single-page scientific and technical portal for DataMentor: architecture, methodology, evaluation, development steps, and professional profile."
   />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -35,7 +35,7 @@
       <div class="hero-grid">
         <article class="hero-copy">
           <p class="eyebrow">Integrated Technical + Scientific Documentation</p>
-          <h1>Notebook Studio: A Reproducible Framework for Serverless CSV Intelligence and Notebook Automation</h1>
+          <h1>DataMentor: A Reproducible Framework for Serverless CSV Intelligence and Notebook Automation</h1>
           <p class="lead">
             This single website includes everything in one place: product overview, step-by-step development,
             system architecture, evaluation metrics, methodology, references, and professional profile.
@@ -210,6 +210,15 @@
         </article>
       </div>
 
+      <div class="chart-toolbar">
+        <p class="toolbar-title">Interactive Chart Profile</p>
+        <div class="profile-switch" role="listbox" aria-label="Evaluation profile selector">
+          <button type="button" class="profile-btn active" data-profile="academic">Academic Labs</button>
+          <button type="button" class="profile-btn" data-profile="sme">SME Operations</button>
+          <button type="button" class="profile-btn" data-profile="enterprise">Enterprise Analytics</button>
+        </div>
+      </div>
+
       <div class="chart-grid">
         <article class="chart-card">
           <h3>Processing Time Trend</h3>
@@ -226,6 +235,14 @@
         <article class="chart-card">
           <h3>Scalability Profile</h3>
           <div class="chart-frame"><canvas id="scatterChart"></canvas></div>
+        </article>
+        <article class="chart-card">
+          <h3>Cumulative Workflow Savings</h3>
+          <div class="chart-frame"><canvas id="areaChart"></canvas></div>
+        </article>
+        <article class="chart-card">
+          <h3>Error Recovery Distribution</h3>
+          <div class="chart-frame"><canvas id="doughnutChart"></canvas></div>
         </article>
       </div>
     </section>
