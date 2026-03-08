@@ -881,35 +881,139 @@ a {
   line-height: 1.58;
 }
 
-.paper-badge {
-  display: inline-flex;
-  width: fit-content;
-  border-radius: 999px;
-  border: 1px solid rgba(41, 199, 162, 0.44);
-  background: rgba(41, 199, 162, 0.12);
-  color: #c5f8eb;
-  padding: 0.24rem 0.56rem;
-  font-size: 0.73rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 .paper-meta-list {
   margin: 0;
   padding-left: 1.08rem;
 }
 
-.paper-viewer {
+.paper-preview-wrap {
+  position: relative;
   width: 100%;
   min-height: 520px;
   border: 1px solid rgba(108, 150, 191, 0.42);
   border-radius: 10px;
   background: rgba(7, 15, 24, 0.92);
+  overflow: hidden;
+}
+
+.paper-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: linear-gradient(180deg, rgba(4, 10, 16, 0.9), rgba(8, 18, 28, 0.96));
+}
+
+.paper-preview-label {
+  position: absolute;
+  right: 0.62rem;
+  top: 0.62rem;
+  border-radius: 999px;
+  border: 1px solid rgba(215, 181, 96, 0.5);
+  background: rgba(15, 25, 36, 0.88);
+  color: #f2dc9f;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 0.26rem 0.54rem;
+}
+
+.paper-policy-list li + li {
+  margin-top: 0.24rem;
+}
+
+.policy-links {
+  margin-top: 0.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.46rem;
+}
+
+.access-card {
+  margin-top: 0.28rem;
+  border: 1px solid rgba(115, 233, 205, 0.32);
+  border-radius: 10px;
+  background: rgba(8, 18, 28, 0.78);
+  padding: 0.64rem;
+  display: grid;
+  gap: 0.42rem;
+}
+
+.access-card h4 {
+  margin: 0;
+  color: #f1d483;
+  font-size: 0.9rem;
+}
+
+.access-card p {
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.52;
+}
+
+.access-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.42rem;
+}
+
+.access-row .btn-primary {
+  white-space: nowrap;
+}
+
+.access-input {
+  width: 100%;
+  border: 1px solid rgba(108, 150, 191, 0.5);
+  border-radius: 9px;
+  background: rgba(7, 15, 24, 0.92);
+  color: #e8f3ff;
+  font: inherit;
+  font-size: 0.84rem;
+  padding: 0.52rem 0.62rem;
+}
+
+.access-input::placeholder {
+  color: #95afc7;
+}
+
+.access-status {
+  min-height: 1.18rem;
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.access-status.error {
+  color: #ff8d8d;
+}
+
+.access-status.success {
+  color: #9af0dc;
 }
 
 .paper-viewer-note a {
   color: #9deedc;
+}
+
+.viewer-restriction {
+  margin-top: 0.34rem;
+}
+
+.download-zone {
+  display: grid;
+  gap: 0.34rem;
+  padding: 0.46rem;
+  border-radius: 9px;
+  border: 1px solid rgba(108, 150, 191, 0.45);
+  background: rgba(7, 15, 24, 0.86);
+}
+
+.download-zone code {
+  display: block;
+  color: #cde9ff;
+  font-size: 0.75rem;
+  line-height: 1.48;
+  overflow-wrap: anywhere;
 }
 
 .paper-assets-grid {
@@ -1142,8 +1246,12 @@ a {
     height: 218px;
   }
 
-  .paper-viewer {
+  .paper-preview-wrap {
     min-height: 380px;
+  }
+
+  .access-row {
+    grid-template-columns: 1fr;
   }
 
   .video-launch-cta {

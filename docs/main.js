@@ -323,6 +323,67 @@ function initHireRequestBuilder() {
   setService(defaultOption.getAttribute("data-service") || "Data Workflow Automation");
 }
 
+async function sha256Hex(text) {
+  const data = new TextEncoder().encode(text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((value) => value.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function initResearchAccessPolicy() {
+  const passwordInput = document.getElementById("researchPasswordInput");
+  const unlockButton = document.getElementById("researchUnlockBtn");
+  const status = document.getElementById("researchAccessStatus");
+  const downloadZone = document.getElementById("researchDownloadZone");
+  const downloadButton = document.getElementById("researchDownloadBtn");
+  if (!passwordInput || !unlockButton || !status || !downloadZone || !downloadButton) return;
+
+  const expectedHash = "5b484d8b2799daf74779ce686501847d4a08b5e917c1e8395e1da7f7e73bce0d";
+  const encodedBundlePath = "Li9wYXBlcnMvZGF0YW1lbnRvcl9pZWVlL2RhdGFtZW50b3JfcmVzZWFyY2hfYnVuZGxlLnRhci5nei5lbmM=";
+
+  async function verifyPassword() {
+    const password = passwordInput.value.trim();
+    status.className = "access-status";
+    downloadZone.hidden = true;
+    downloadButton.setAttribute("href", "#");
+
+    if (!password) {
+      status.textContent = "Enter the authorized password to continue.";
+      status.classList.add("error");
+      return;
+    }
+
+    unlockButton.disabled = true;
+    status.textContent = "Verifying password...";
+
+    try {
+      const providedHash = await sha256Hex(password);
+      if (providedHash === expectedHash) {
+        downloadButton.setAttribute("href", atob(encodedBundlePath));
+        status.textContent = "Access granted. You can now download the encrypted research bundle.";
+        status.classList.add("success");
+        downloadZone.hidden = false;
+      } else {
+        status.textContent = "Incorrect password. Request access from Md Anisur Rahman Chowdhury.";
+        status.classList.add("error");
+      }
+    } catch (error) {
+      status.textContent = "Verification failed in this browser. Please retry.";
+      status.classList.add("error");
+    } finally {
+      unlockButton.disabled = false;
+    }
+  }
+
+  unlockButton.addEventListener("click", verifyPassword);
+  passwordInput.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    verifyPassword();
+  });
+}
+
 function initVideoOverview() {
   const launch = document.getElementById("videoLaunch");
   const frameShell = document.getElementById("videoFrameShell");
@@ -694,6 +755,7 @@ function initPage() {
   initKpiCounters();
   initRevealAnimations();
   initSectionLinkHighlighting();
+  initResearchAccessPolicy();
   initVideoOverview();
   initHireRequestBuilder();
   makeCharts();

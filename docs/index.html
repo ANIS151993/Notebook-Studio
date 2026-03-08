@@ -319,43 +319,54 @@
     <section class="panel reveal" id="paper">
       <div class="section-head">
         <h2>IEEE Research Paper and Artifacts</h2>
-        <p>View the full publication-ready manuscript and download the PDF + LaTeX source bundle.</p>
+        <p>First-page preview is visible here. Full research files are stored in encrypted form.</p>
       </div>
 
       <div class="paper-portal">
         <article class="paper-summary-card">
-          <p class="paper-badge">IEEE Conference Ready • 10 Pages</p>
           <h3>DataMentor: A Reproducible Framework for Serverless CSV Intelligence, Offline Local Language-Model Repair, and Interactive Notebook Analytics</h3>
           <p>
             This manuscript presents the full scientific contribution of DataMentor, including architecture,
             training and deployment details for the local offline model, benchmark methodology, quantitative evaluation,
             case study analysis, and complete reproducibility artifacts.
           </p>
-          <ul class="paper-meta-list">
+          <ul class="paper-meta-list paper-policy-list">
             <li><strong>Author:</strong> Md Anisur Rahman Chowdhury</li>
             <li><strong>Affiliation:</strong> Dept. of Computer and Information Science, Gannon University, USA</li>
-            <li><strong>Format:</strong> IEEE conference layout, publication-ready PDF and source package</li>
-            <li><strong>Included:</strong> all graphs, charts, tables, runtime output transcript, and benchmark script</li>
+            <li><strong>Protection:</strong> research package is encrypted and inaccessible without the authorized password</li>
+            <li><strong>Policy:</strong> full-document access requires follow + subscribe + password request approval</li>
           </ul>
-          <div class="paper-actions">
-            <a class="btn-primary" href="./papers/datamentor_ieee/datamentor_ieee.pdf" target="_blank" rel="noopener noreferrer">View IEEE PDF</a>
-            <a class="btn-secondary" href="./papers/datamentor_ieee/datamentor_ieee.pdf" download>Download PDF</a>
-            <a class="btn-secondary" href="./papers/datamentor_ieee/datamentor_ieee_latex_source.zip" download>Download LaTeX Source (.zip)</a>
-            <a class="btn-secondary" href="./papers/datamentor_ieee/datamentor_ieee.tex" download>Download .tex</a>
+
+          <div class="policy-links">
+            <a class="btn-secondary" href="https://github.com/ANIS151993" target="_blank" rel="noopener noreferrer">Follow on GitHub</a>
+            <a class="btn-secondary" href="https://youtu.be/yN4jibDm8v8" target="_blank" rel="noopener noreferrer">Subscribe on YouTube</a>
+            <a class="btn-secondary" href="mailto:engr.aanis@gmail.com?subject=Password%20Request%20for%20DataMentor%20Research%20Documents&body=Hello%20Md%20Anisur%20Rahman%20Chowdhury%2C%0A%0AI%20have%20followed%20your%20GitHub%20and%20subscribed%20to%20your%20YouTube%20channel.%20Please%20share%20the%20password%20for%20the%20encrypted%20research%20documents.%0A%0AName%3A%0AGitHub%20Profile%3A%0AYouTube%20Profile%3A">Request Password</a>
+          </div>
+
+          <div class="access-card">
+            <h4>Encrypted Download Access</h4>
+            <p>After approval, enter the provided password to unlock encrypted file download.</p>
+            <div class="access-row">
+              <input id="researchPasswordInput" class="access-input" type="password" placeholder="Enter authorized password" autocomplete="off" />
+              <button type="button" class="btn-primary" id="researchUnlockBtn">Unlock</button>
+            </div>
+            <p id="researchAccessStatus" class="access-status" aria-live="polite"></p>
+            <div id="researchDownloadZone" class="download-zone" hidden>
+              <a class="btn-secondary" id="researchDownloadBtn" href="#" download>Download Encrypted Research Bundle</a>
+              <p>Decrypt command:</p>
+              <code>openssl enc -d -aes-256-cbc -pbkdf2 -iter 250000 -in datamentor_research_bundle.tar.gz.enc -out datamentor_research_bundle.tar.gz</code>
+            </div>
           </div>
         </article>
 
         <article class="paper-viewer-card">
-          <h3>In-Page Paper Viewer</h3>
-          <iframe
-            class="paper-viewer"
-            src="./papers/datamentor_ieee/datamentor_ieee.pdf#view=FitH"
-            title="DataMentor IEEE Research Paper"
-            loading="lazy"
-          ></iframe>
-          <p class="paper-viewer-note">
-            If embedded preview is blocked by the browser, open the PDF directly using
-            <a href="./papers/datamentor_ieee/datamentor_ieee.pdf" target="_blank" rel="noopener noreferrer">this link</a>.
+          <h3>In-Page Paper Viewer (First Page Only)</h3>
+          <div class="paper-preview-wrap">
+            <img class="paper-preview-image" src="./papers/datamentor_ieee/datamentor_page1.png" alt="First page preview of DataMentor IEEE research paper" loading="lazy" />
+            <span class="paper-preview-label">Preview Only · Page 1</span>
+          </div>
+          <p class="paper-viewer-note viewer-restriction">
+            Full PDF, LaTeX source, benchmark files, and runtime outputs are encrypted and not publicly readable.
           </p>
         </article>
       </div>
