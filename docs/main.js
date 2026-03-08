@@ -113,156 +113,202 @@ if (nodes.length > 0) {
   renderNode(key, flows);
 }
 
+const chartInstances = new Map();
+let chartsInitialized = false;
+let resizeTimerId = null;
+
+function enforceCanvasFrameSize(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const frame = canvas.closest(".chart-frame");
+  if (!frame) return;
+
+  const width = Math.max(1, Math.floor(frame.clientWidth));
+  const height = Math.max(1, Math.floor(frame.clientHeight));
+  canvas.width = width;
+  canvas.height = height;
+}
+
+function createOrReplaceChart(canvasId, config) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  const existing = chartInstances.get(canvasId);
+  if (existing) {
+    existing.destroy();
+  }
+
+  enforceCanvasFrameSize(canvasId);
+  const chart = new Chart(canvas, config);
+  chartInstances.set(canvasId, chart);
+}
+
 function makeCharts() {
-  if (typeof Chart === "undefined") return;
+  if (typeof Chart === "undefined" || chartsInitialized) return;
+  chartsInitialized = true;
+
+  Chart.defaults.animation = false;
+  Chart.defaults.responsive = true;
+  Chart.defaults.maintainAspectRatio = false;
 
   const baseGrid = "rgba(171, 192, 210, 0.25)";
   const baseTicks = "#d5e0eb";
 
-  const trend = document.getElementById("trendChart");
-  if (trend) {
-    new Chart(trend, {
-      type: "line",
-      data: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
-        datasets: [
-          {
-            label: "Avg Processing Time (minutes)",
-            data: [14.8, 13.5, 11.9, 9.8, 8.6, 7.3, 6.1, 5.2],
-            borderColor: "#36c7a0",
-            backgroundColor: "rgba(54, 199, 160, 0.18)",
-            fill: true,
-            tension: 0.28,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: baseTicks } } },
-        scales: {
-          x: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
-          y: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
+  createOrReplaceChart("trendChart", {
+    type: "line",
+    data: {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+      datasets: [
+        {
+          label: "Avg Processing Time (minutes)",
+          data: [14.8, 13.5, 11.9, 9.8, 8.6, 7.3, 6.1, 5.2],
+          borderColor: "#36c7a0",
+          backgroundColor: "rgba(54, 199, 160, 0.18)",
+          fill: true,
+          tension: 0.28,
         },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      resizeDelay: 200,
+      plugins: { legend: { labels: { color: baseTicks } } },
+      scales: {
+        x: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
+        y: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
       },
-    });
-  }
+    },
+  });
 
-  const bar = document.getElementById("barChart");
-  if (bar) {
-    new Chart(bar, {
-      type: "bar",
-      data: {
-        labels: ["Ingestion", "Cleaning", "Validation", "Notebook Prep", "Debug"],
-        datasets: [
-          {
-            label: "Manual Baseline",
-            data: [22, 34, 18, 16, 29],
-            backgroundColor: "rgba(243, 166, 74, 0.8)",
-          },
-          {
-            label: "Notebook Studio",
-            data: [7, 10, 6, 5, 9],
-            backgroundColor: "rgba(54, 199, 160, 0.85)",
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: baseTicks } } },
-        scales: {
-          x: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
-          y: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
+  createOrReplaceChart("barChart", {
+    type: "bar",
+    data: {
+      labels: ["Ingestion", "Cleaning", "Validation", "Notebook Prep", "Debug"],
+      datasets: [
+        {
+          label: "Manual Baseline",
+          data: [22, 34, 18, 16, 29],
+          backgroundColor: "rgba(243, 166, 74, 0.8)",
         },
+        {
+          label: "Notebook Studio",
+          data: [7, 10, 6, 5, 9],
+          backgroundColor: "rgba(54, 199, 160, 0.85)",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      resizeDelay: 200,
+      plugins: { legend: { labels: { color: baseTicks } } },
+      scales: {
+        x: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
+        y: { ticks: { color: baseTicks }, grid: { color: baseGrid } },
       },
-    });
-  }
+    },
+  });
 
-  const radar = document.getElementById("radarChart");
-  if (radar) {
-    new Chart(radar, {
-      type: "radar",
-      data: {
-        labels: ["Completeness", "Consistency", "Uniqueness", "Traceability", "Reusability"],
-        datasets: [
-          {
-            label: "Before",
-            data: [42, 48, 51, 35, 44],
-            borderColor: "#f3a64a",
-            backgroundColor: "rgba(243, 166, 74, 0.2)",
-          },
-          {
-            label: "After",
-            data: [86, 89, 92, 80, 88],
-            borderColor: "#36c7a0",
-            backgroundColor: "rgba(54, 199, 160, 0.2)",
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: baseTicks } } },
-        scales: {
-          r: {
-            angleLines: { color: baseGrid },
-            grid: { color: baseGrid },
-            pointLabels: { color: baseTicks },
-            ticks: { color: baseTicks, backdropColor: "transparent" },
-          },
+  createOrReplaceChart("radarChart", {
+    type: "radar",
+    data: {
+      labels: ["Completeness", "Consistency", "Uniqueness", "Traceability", "Reusability"],
+      datasets: [
+        {
+          label: "Before",
+          data: [42, 48, 51, 35, 44],
+          borderColor: "#f3a64a",
+          backgroundColor: "rgba(243, 166, 74, 0.2)",
+        },
+        {
+          label: "After",
+          data: [86, 89, 92, 80, 88],
+          borderColor: "#36c7a0",
+          backgroundColor: "rgba(54, 199, 160, 0.2)",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      resizeDelay: 200,
+      plugins: { legend: { labels: { color: baseTicks } } },
+      scales: {
+        r: {
+          angleLines: { color: baseGrid },
+          grid: { color: baseGrid },
+          pointLabels: { color: baseTicks },
+          ticks: { color: baseTicks, backdropColor: "transparent" },
         },
       },
-    });
-  }
+    },
+  });
 
-  const scatter = document.getElementById("scatterChart");
-  if (scatter) {
-    new Chart(scatter, {
-      type: "scatter",
-      data: {
-        datasets: [
-          {
-            label: "Manual Process",
-            data: [
-              { x: 5, y: 21 },
-              { x: 10, y: 37 },
-              { x: 20, y: 61 },
-              { x: 30, y: 92 },
-            ],
-            backgroundColor: "#ff6b6b",
-          },
-          {
-            label: "Notebook Studio",
-            data: [
-              { x: 5, y: 8 },
-              { x: 10, y: 12 },
-              { x: 20, y: 19 },
-              { x: 30, y: 27 },
-            ],
-            backgroundColor: "#36c7a0",
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: baseTicks } } },
-        scales: {
-          x: {
-            title: { display: true, text: "Dataset Size (x1000 rows)", color: baseTicks },
-            ticks: { color: baseTicks },
-            grid: { color: baseGrid },
-          },
-          y: {
-            title: { display: true, text: "Processing Time (minutes)", color: baseTicks },
-            ticks: { color: baseTicks },
-            grid: { color: baseGrid },
-          },
+  createOrReplaceChart("scatterChart", {
+    type: "scatter",
+    data: {
+      datasets: [
+        {
+          label: "Manual Process",
+          data: [
+            { x: 5, y: 21 },
+            { x: 10, y: 37 },
+            { x: 20, y: 61 },
+            { x: 30, y: 92 },
+          ],
+          backgroundColor: "#ff6b6b",
+        },
+        {
+          label: "Notebook Studio",
+          data: [
+            { x: 5, y: 8 },
+            { x: 10, y: 12 },
+            { x: 20, y: 19 },
+            { x: 30, y: 27 },
+          ],
+          backgroundColor: "#36c7a0",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      resizeDelay: 200,
+      plugins: { legend: { labels: { color: baseTicks } } },
+      scales: {
+        x: {
+          title: { display: true, text: "Dataset Size (x1000 rows)", color: baseTicks },
+          ticks: { color: baseTicks },
+          grid: { color: baseGrid },
+        },
+        y: {
+          title: { display: true, text: "Processing Time (minutes)", color: baseTicks },
+          ticks: { color: baseTicks },
+          grid: { color: baseGrid },
         },
       },
-    });
-  }
+    },
+  });
 }
 
-makeCharts();
+window.addEventListener("resize", () => {
+  if (chartInstances.size === 0) return;
+  clearTimeout(resizeTimerId);
+  resizeTimerId = window.setTimeout(() => {
+    chartInstances.forEach((chart, canvasId) => {
+      enforceCanvasFrameSize(canvasId);
+      chart.resize();
+    });
+  }, 180);
+});
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", makeCharts, { once: true });
+} else {
+  makeCharts();
+}
