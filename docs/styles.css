@@ -280,12 +280,22 @@ p {
   border-radius: 14px;
   background: rgba(9, 16, 24, 0.72);
   padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
 }
 
 .chart-card h3 {
   color: var(--gold);
   font-size: 0.92rem;
   margin-bottom: 0.5rem;
+}
+
+.chart-card canvas {
+  display: block;
+  width: 100% !important;
+  height: 250px !important;
+  max-height: 250px !important;
 }
 
 .paper-actions {
@@ -476,5 +486,14 @@ p {
 
   .topnav {
     justify-content: flex-start;
+  }
+
+  .chart-card {
+    min-height: 280px;
+  }
+
+  .chart-card canvas {
+    height: 210px !important;
+    max-height: 210px !important;
   }
 }
