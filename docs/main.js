@@ -332,9 +332,13 @@ async function sha256Hex(text) {
 }
 
 function initResearchAccessPolicy() {
-  const step1 = document.getElementById("policyStep1");
-  const step2 = document.getElementById("policyStep2");
-  const step3 = document.getElementById("policyStep3");
+  const openGateButton = document.getElementById("policyOpenGateBtn");
+  const modal = document.getElementById("policyGateModal");
+  const closeButton = document.getElementById("policyGateCloseBtn");
+  const step1 = document.getElementById("policyGateStep1");
+  const step2 = document.getElementById("policyGateStep2");
+  const step3 = document.getElementById("policyGateStep3");
+  const unlocked = document.getElementById("policyGateUnlocked");
   const step1Github = document.getElementById("policyStep1Github");
   const step1Youtube = document.getElementById("policyStep1Youtube");
   const step1Next = document.getElementById("policyStep1Next");
@@ -345,12 +349,15 @@ function initResearchAccessPolicy() {
   const passwordInput = document.getElementById("researchPasswordInput");
   const unlockButton = document.getElementById("researchUnlockBtn");
   const status = document.getElementById("researchAccessStatus");
-  const downloadZone = document.getElementById("researchDownloadZone");
   const downloadButton = document.getElementById("researchDownloadBtn");
   if (
+    !openGateButton ||
+    !modal ||
+    !closeButton ||
     !step1 ||
     !step2 ||
     !step3 ||
+    !unlocked ||
     !step1Github ||
     !step1Youtube ||
     !step1Next ||
@@ -361,7 +368,6 @@ function initResearchAccessPolicy() {
     !passwordInput ||
     !unlockButton ||
     !status ||
-    !downloadZone ||
     !downloadButton
   ) {
     return;
@@ -369,12 +375,27 @@ function initResearchAccessPolicy() {
 
   const expectedHash = "5b484d8b2799daf74779ce686501847d4a08b5e917c1e8395e1da7f7e73bce0d";
   const encodedBundlePath = "Li9wYXBlcnMvZGF0YW1lbnRvcl9pZWVlL2RhdGFtZW50b3JfcmVzZWFyY2hfYnVuZGxlLnRhci5nei5lbmM=";
-  const steps = [step1, step2, step3];
+  const steps = [step1, step2, step3, unlocked];
 
-  function showStep(stepNumber) {
-    steps.forEach((step, index) => {
-      step.hidden = index + 1 !== stepNumber;
+  function showStep(targetStep) {
+    steps.forEach((step) => {
+      step.hidden = step !== targetStep;
     });
+  }
+
+  function openModal() {
+    resetFlow();
+    modal.hidden = false;
+    document.body.classList.add("policy-modal-open");
+    window.requestAnimationFrame(() => {
+      modal.classList.add("visible");
+    });
+  }
+
+  function closeModal() {
+    modal.classList.remove("visible");
+    modal.hidden = true;
+    document.body.classList.remove("policy-modal-open");
   }
 
   function refreshStep1() {
@@ -385,14 +406,27 @@ function initResearchAccessPolicy() {
     step2Next.disabled = !step2Sent.checked;
   }
 
+  function resetFlow() {
+    step1Github.checked = false;
+    step1Youtube.checked = false;
+    step2Sent.checked = false;
+    step1Next.disabled = true;
+    step2Next.disabled = true;
+    passwordInput.value = "";
+    status.textContent = "";
+    status.className = "policy-status";
+    downloadButton.setAttribute("href", "#");
+    showStep(step1);
+  }
+
   async function copyTemplateText() {
-    const text = emailTemplate.value;
-    const previous = copyTemplate.textContent || "📋 Copy Email Template";
+    const text = (emailTemplate.textContent || "").trim();
+    const previous = copyTemplate.textContent || "Copy email template";
     try {
       await navigator.clipboard.writeText(text);
-      copyTemplate.textContent = "✅ Copied";
+      copyTemplate.textContent = "Copied";
     } catch (error) {
-      copyTemplate.textContent = "❌ Copy failed";
+      copyTemplate.textContent = "Copy failed";
     } finally {
       window.setTimeout(() => {
         copyTemplate.textContent = previous;
@@ -402,12 +436,10 @@ function initResearchAccessPolicy() {
 
   async function verifyPassword() {
     const password = passwordInput.value.trim();
-    status.className = "access-status";
-    downloadZone.hidden = true;
-    downloadButton.setAttribute("href", "#");
+    status.className = "policy-status";
 
     if (!password) {
-      status.textContent = "Enter the authorized password to continue.";
+      status.textContent = "Enter the archive password.";
       status.classList.add("error");
       return;
     }
@@ -419,11 +451,10 @@ function initResearchAccessPolicy() {
       const providedHash = await sha256Hex(password);
       if (providedHash === expectedHash) {
         downloadButton.setAttribute("href", atob(encodedBundlePath));
-        status.textContent = "Access granted. You can now download the encrypted research bundle.";
-        status.classList.add("success");
-        downloadZone.hidden = false;
+        status.textContent = "";
+        showStep(unlocked);
       } else {
-        status.textContent = "Incorrect password. Request access from Md Anisur Rahman Chowdhury.";
+        status.textContent = "Incorrect password. Request access from the author.";
         status.classList.add("error");
       }
     } catch (error) {
@@ -441,23 +472,32 @@ function initResearchAccessPolicy() {
     verifyPassword();
   });
 
+  openGateButton.addEventListener("click", openModal);
+  closeButton.addEventListener("click", closeModal);
+  modal.addEventListener("click", (event) => {
+    if (event.target !== modal) return;
+    closeModal();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || modal.hidden) return;
+    closeModal();
+  });
+
   step1Github.addEventListener("change", refreshStep1);
   step1Youtube.addEventListener("change", refreshStep1);
   step1Next.addEventListener("click", () => {
-    showStep(2);
+    showStep(step2);
     step2Sent.focus();
   });
 
   copyTemplate.addEventListener("click", copyTemplateText);
   step2Sent.addEventListener("change", refreshStep2);
   step2Next.addEventListener("click", () => {
-    showStep(3);
+    showStep(step3);
     passwordInput.focus();
   });
 
-  showStep(1);
-  refreshStep1();
-  refreshStep2();
+  resetFlow();
 }
 
 function initVideoOverview() {

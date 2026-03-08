@@ -364,67 +364,81 @@
 
           <aside class="policy-card">
             <h3>Download policy</h3>
-            <div class="policy-step" id="policyStep1">
-              <p class="policy-step-title">Step 1 of 3<br />Subscribe to Unlock</p>
-              <p class="policy-step-text">To access the full paper, please follow and subscribe to the author's channels:</p>
-              <p class="policy-task">🔗 Follow on GitHub (@ANIS151993)</p>
-              <p class="policy-task">▶ Subscribe on YouTube & Like the Video</p>
-              <label class="policy-check">
-                <input id="policyStep1Github" type="checkbox" />
-                <span>I have followed the GitHub profile</span>
-              </label>
-              <label class="policy-check">
-                <input id="policyStep1Youtube" type="checkbox" />
-                <span>I have subscribed to YouTube and liked the video</span>
-              </label>
-              <button class="btn btn-primary btn-block" id="policyStep1Next" type="button" disabled>Continue to Step 2 →</button>
-            </div>
-
-            <div class="policy-step" id="policyStep2" hidden>
-              <p class="policy-step-title">Step 2 of 3<br />Request Permission</p>
-              <p class="policy-step-text">Send an access request to the author. Include your name, institution, and reason for access.</p>
-              <p class="policy-step-text">Copy and send this email to: <strong>engr.aanis@gmail.com</strong></p>
-              <textarea id="policyEmailTemplate" class="policy-template" readonly>Subject: Paper Access Request — Serverless Intelligent Firewall
-
-Dear Md Anisur Rahman Chowdhury,
-
-I am writing to request access to your paper:
-"Towards a Serverless Intelligent Firewall: AI-Driven Security, and Zero-Trust Architectures"
-
-Name: [Your Name]
-Institution: [Your Institution]
-Purpose: [Research / Study / Review]
-
-I have followed your GitHub and subscribed to your YouTube channel.
-
-Thank you.</textarea>
-              <div class="policy-template-actions">
-                <button class="btn btn-secondary btn-block" id="policyCopyTemplate" type="button">📋 Copy Email Template</button>
-                <a class="btn btn-secondary btn-block" href="mailto:engr.aanis@gmail.com?subject=Paper%20Access%20Request%20%E2%80%94%20Serverless%20Intelligent%20Firewall&body=Dear%20Md%20Anisur%20Rahman%20Chowdhury%2C%0A%0AI%20am%20writing%20to%20request%20access%20to%20your%20paper%3A%0A%22Towards%20a%20Serverless%20Intelligent%20Firewall%3A%20AI-Driven%20Security%2C%20and%20Zero-Trust%20Architectures%22%0A%0AName%3A%20%5BYour%20Name%5D%0AInstitution%3A%20%5BYour%20Institution%5D%0APurpose%3A%20%5BResearch%20%2F%20Study%20%2F%20Review%5D%0A%0AI%20have%20followed%20your%20GitHub%20and%20subscribed%20to%20your%20YouTube%20channel.%0A%0AThank%20you." target="_blank" rel="noopener noreferrer">✉ Send Permission Request Email</a>
-              </div>
-              <label class="policy-check">
-                <input id="policyStep2Sent" type="checkbox" />
-                <span>I have sent the permission request email</span>
-              </label>
-              <button class="btn btn-primary btn-block" id="policyStep2Next" type="button" disabled>Continue to Step 3 →</button>
-            </div>
-
-            <div class="policy-step" id="policyStep3" hidden>
-              <p class="policy-step-title">Step 3 of 3<br />Enter Access Password</p>
-              <p class="policy-step-text">Enter the password you received from the author after permission is granted.</p>
-              <div class="access-row">
-                <input id="researchPasswordInput" class="access-input" type="password" placeholder="Enter paper password..." autocomplete="off" />
-                <button type="button" class="btn btn-primary" id="researchUnlockBtn">🔓 Unlock Paper</button>
-              </div>
-              <p id="researchAccessStatus" class="access-status" aria-live="polite"></p>
-              <p class="policy-note">ℹ Password is provided by the author via email after reviewing your request.</p>
-              <div id="researchDownloadZone" class="download-zone" hidden>
-                <a class="btn btn-secondary btn-block" id="researchDownloadBtn" href="#" download>Download Encrypted Research Bundle</a>
-                <p>Decrypt command:</p>
-                <code>openssl enc -d -aes-256-cbc -pbkdf2 -iter 250000 -in datamentor_research_bundle.tar.gz.enc -out datamentor_research_bundle.tar.gz</code>
-              </div>
-            </div>
+            <ol class="policy-list">
+              <li>Follow the author on GitHub.</li>
+              <li>Subscribe to the YouTube channel and review the overview video.</li>
+              <li>Send a password request email to the author.</li>
+              <li>Use the password to unlock the download gate and extract the encrypted archives.</li>
+            </ol>
+            <button class="btn btn-primary btn-block policy-open-btn" id="policyOpenGateBtn" type="button">Open secure download gate</button>
           </aside>
+
+          <div class="policy-modal" id="policyGateModal" hidden>
+            <div class="policy-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="policyGateTitle">
+              <button type="button" class="policy-modal-close" id="policyGateCloseBtn" aria-label="Close secure download gate">×</button>
+              <h3 id="policyGateTitle">Secure download gate</h3>
+              <p class="policy-modal-subtitle">Complete the public policy steps, then unlock the encrypted archives.</p>
+
+              <div class="policy-gate-shell" id="policyGateStep1">
+                <span class="policy-gate-badge">STEP 1</span>
+                <h4>Follow the public channels</h4>
+                <p>Open the official profile and video links first, then confirm the two checks below.</p>
+                <a class="policy-action-btn policy-action-btn--secondary" href="https://github.com/ANIS151993" target="_blank" rel="noopener noreferrer">Open GitHub profile</a>
+                <a class="policy-action-btn policy-action-btn--secondary" href="https://youtu.be/yN4jibDm8v8" target="_blank" rel="noopener noreferrer">Open YouTube video</a>
+                <label class="policy-check">
+                  <input id="policyStep1Github" type="checkbox" />
+                  <span>I followed the GitHub profile.</span>
+                </label>
+                <label class="policy-check">
+                  <input id="policyStep1Youtube" type="checkbox" />
+                  <span>I subscribed to the YouTube channel.</span>
+                </label>
+                <button class="policy-action-btn policy-action-btn--primary" id="policyStep1Next" type="button" disabled>Continue</button>
+              </div>
+
+              <div class="policy-gate-shell" id="policyGateStep2" hidden>
+                <span class="policy-gate-badge">STEP 2</span>
+                <h4>Request the password</h4>
+                <p>Send a short request email so the author can verify the purpose of access before sharing the archive password.</p>
+                <a
+                  class="policy-action-btn policy-action-btn--secondary"
+                  href="mailto:engr.aanis@gmail.com?subject=Password%20request%20for%20SIF-CCA%20research%20download&body=Hello%20Md%20Anisur%20Rahman%20Chowdhury%2C%0A%0AI%20followed%20the%20GitHub%20profile%2C%20subscribed%20to%20the%20YouTube%20channel%2C%20and%20would%20like%20the%20password%20for%20the%20encrypted%20SIF-CCA%20research%20package.%0A%0AName%3A%0AInstitution%3A%0APurpose%20of%20use%3A"
+                >Email the author</a>
+                <div id="policyEmailTemplate" class="policy-template-box">Subject: Password request for SIF-CCA research download
+
+Hello Md Anisur Rahman Chowdhury,
+I followed the GitHub profile, subscribed to the YouTube channel,
+and would like the password for the encrypted SIF-CCA research
+package.
+Name:
+Institution:
+Purpose of use:</div>
+                <button class="policy-copy-btn" id="policyCopyTemplate" type="button">Copy email template</button>
+                <label class="policy-check">
+                  <input id="policyStep2Sent" type="checkbox" />
+                  <span>I sent the password request email.</span>
+                </label>
+                <button class="policy-action-btn policy-action-btn--primary" id="policyStep2Next" type="button" disabled>Continue</button>
+              </div>
+
+              <div class="policy-gate-shell" id="policyGateStep3" hidden>
+                <span class="policy-gate-badge">STEP 3</span>
+                <h4>Enter the password</h4>
+                <p>The archives remain encrypted after download. Enter the password here to reveal the links once you have received it from the author.</p>
+                <input id="researchPasswordInput" class="policy-password-input" type="password" placeholder="Enter the archive password" autocomplete="off" />
+                <p id="researchAccessStatus" class="policy-status" aria-live="polite"></p>
+                <button type="button" class="policy-action-btn policy-action-btn--primary" id="researchUnlockBtn">Unlock downloads</button>
+              </div>
+
+              <div class="policy-gate-shell" id="policyGateUnlocked" hidden>
+                <span class="policy-gate-badge">UNLOCKED</span>
+                <h4>Encrypted files ready</h4>
+                <p>These files are encrypted zip archives. The same password is still required after download to extract the contents.</p>
+                <a class="policy-action-btn policy-action-btn--primary" id="researchDownloadBtn" href="#" download>Download encrypted conference PDF</a>
+                <a class="policy-action-btn policy-action-btn--secondary" href="report.html">Open public HTML report</a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
