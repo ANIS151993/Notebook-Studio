@@ -249,14 +249,25 @@ body::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .reveal-up {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .panel-enter,
+  .route-enter {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    animation: none !important;
+  }
+
   .hover-lift,
   .hover-lift:hover,
-  .reveal-up,
   .shine-btn::after,
   .tab-pill,
-  .panel-enter,
-  .status-pulse,
-  .route-enter {
+  .status-pulse {
     animation: none !important;
     transform: none !important;
     transition: none !important;
