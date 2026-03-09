@@ -889,14 +889,61 @@ a {
 }
 
 .paper-topline {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-  font-size: 0.74rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.42rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #23425e;
+}
+
+.paper-topline span {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0.34rem 0.54rem;
+  border: 1px solid rgba(41, 70, 99, 0.22);
+  border-radius: 999px;
+  background: linear-gradient(130deg, rgba(255, 255, 255, 0.86), rgba(228, 239, 250, 0.9));
+  box-shadow: 0 6px 16px rgba(18, 37, 56, 0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.paper-topline span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.52) 50%, transparent 70%);
+  transform: translateX(-135%);
+  transition: transform 360ms ease;
+  pointer-events: none;
+}
+
+.paper-topline span:first-child {
+  border-color: rgba(46, 73, 100, 0.28);
+  background: linear-gradient(130deg, rgba(242, 248, 255, 0.93), rgba(221, 234, 247, 0.92));
+}
+
+.paper-topline span:last-child {
+  border-color: rgba(15, 109, 130, 0.24);
+  background: linear-gradient(130deg, rgba(236, 251, 247, 0.92), rgba(216, 240, 251, 0.9));
+}
+
+.paper-topline span:hover {
+  transform: translateY(-1px);
+  border-color: rgba(30, 90, 129, 0.45);
+  box-shadow: 0 10px 20px rgba(18, 37, 56, 0.15);
+}
+
+.paper-topline span:hover::after {
+  transform: translateX(135%);
 }
 
 .paper-title {
