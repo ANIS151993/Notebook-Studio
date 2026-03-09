@@ -64,12 +64,41 @@ const normalizeHeader = (header: string) =>
 const downloadFile = (content: string, filename: string, type: string) => {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
+  const isIosLike =
+    typeof navigator !== "undefined" &&
+    (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+
+  // iOS Safari often ignores `download` and works better by opening the blob.
+  if (isIosLike) {
+    window.open(url, "_blank", "noopener,noreferrer");
+    window.setTimeout(() => URL.revokeObjectURL(url), 4000);
+    return;
+  }
+
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
   link.click();
   URL.revokeObjectURL(url);
 };
+
+const readFileAsText = async (file: File): Promise<string> => {
+  // File.text() is not available in some older mobile Safari versions.
+  if (typeof file.text === "function") {
+    return file.text();
+  }
+
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+    reader.readAsText(file);
+  });
+};
+
+const replaceAllCompat = (source: string, searchValue: string, replaceValue: string) =>
+  source.split(searchValue).join(replaceValue);
 
 const parseStats = (raw: unknown): Stats | null => {
   if (!raw || typeof raw !== "object") {
@@ -182,7 +211,11 @@ const writeLocalWorks = (uid: string, works: LocalWorkRecord[]) => {
     return;
   }
 
-  window.localStorage.setItem(getLocalWorksStorageKey(uid), JSON.stringify(works.slice(0, 20)));
+  try {
+    window.localStorage.setItem(getLocalWorksStorageKey(uid), JSON.stringify(works.slice(0, 20)));
+  } catch (error) {
+    console.error("Failed to persist local works:", error);
+  }
 };
 
 const upsertLocalWork = (
@@ -568,7 +601,7 @@ export default function CsvNotebookBuilder() {
     setOutputName(null);
 
     try {
-      const rawContent = await selected.text();
+      const rawContent = await readFileAsText(selected);
       setRawCsvContent(rawContent);
 
       const result = await new Promise<Papa.ParseResult<Record<string, string>>>(
@@ -654,9 +687,11 @@ export default function CsvNotebookBuilder() {
         ? `clean_${safeName}`
         : `clean_${safeName}.csv`;
 
-      const notebookText = templateText
-        .replaceAll("{{INPUT_FILE}}", safeName)
-        .replaceAll("{{OUTPUT_FILE}}", nextOutputName);
+      const notebookText = replaceAllCompat(
+        replaceAllCompat(templateText, "{{INPUT_FILE}}", safeName),
+        "{{OUTPUT_FILE}}",
+        nextOutputName,
+      );
 
       setNotebook(notebookText);
       setOutputName(nextOutputName);
