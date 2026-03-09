@@ -282,11 +282,12 @@ function initHireRequestBuilder() {
   const options = Array.from(document.querySelectorAll(".service-option"));
   const summary = document.getElementById("hireSummary");
   const requestLink = document.getElementById("hireRequestLink");
+  const hireCard = document.getElementById("hireCard");
   if (options.length === 0 || !summary || !requestLink) return;
 
   const issueBase = "https://github.com/ANIS151993/Notebook-Studio/issues/new";
 
-  function setService(service) {
+  function setService(service, theme = "automation") {
     const issueTitle = `Collaboration Request: ${service}`;
     const issueBody = [
       "Hello Md Anisur Rahman Chowdhury,",
@@ -307,20 +308,31 @@ function initHireRequestBuilder() {
     ].join("\n");
 
     const url = `${issueBase}?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}`;
-    summary.textContent = `Selected service: ${service}`;
+    summary.textContent = service;
     requestLink.setAttribute("href", url);
+    if (hireCard) {
+      hireCard.setAttribute("data-service-theme", theme);
+    }
   }
 
   options.forEach((option) => {
     option.addEventListener("click", () => {
       const service = option.getAttribute("data-service") || "Data Workflow Automation";
-      options.forEach((item) => item.classList.toggle("active", item === option));
-      setService(service);
+      const theme = option.getAttribute("data-theme") || "automation";
+      options.forEach((item) => {
+        const isActive = item === option;
+        item.classList.toggle("active", isActive);
+        item.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+      setService(service, theme);
     });
   });
 
   const defaultOption = options.find((option) => option.classList.contains("active")) || options[0];
-  setService(defaultOption.getAttribute("data-service") || "Data Workflow Automation");
+  setService(
+    defaultOption.getAttribute("data-service") || "Data Workflow Automation",
+    defaultOption.getAttribute("data-theme") || "automation"
+  );
 }
 
 async function sha256Hex(text) {

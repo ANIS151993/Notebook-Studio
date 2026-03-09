@@ -1450,33 +1450,69 @@ a {
 .contact-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-  gap: 0.66rem;
+  gap: 0.72rem;
+  align-items: start;
+}
+
+#contact {
+  position: relative;
+  overflow: hidden;
+}
+
+#contact::before {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  left: -90px;
+  bottom: -140px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(41, 199, 162, 0.18), rgba(41, 199, 162, 0));
+  pointer-events: none;
 }
 
 .contact-card,
 .hire-card {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: rgba(9, 19, 30, 0.8);
-  padding: 0.82rem;
+  position: relative;
+  isolation: isolate;
+  border: 1px solid rgba(86, 125, 160, 0.42);
+  border-radius: 14px;
+  background: linear-gradient(165deg, rgba(10, 22, 35, 0.9), rgba(7, 17, 28, 0.94));
+  padding: 0.9rem;
   display: grid;
-  gap: 0.42rem;
+  gap: 0.46rem;
+  overflow: hidden;
+}
+
+.contact-card::before,
+.hire-card::before {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: -70px;
+  top: -80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(105, 216, 191, 0.32), rgba(105, 216, 191, 0));
+  pointer-events: none;
+  z-index: -1;
 }
 
 .contact-card h3,
 .hire-card h3 {
-  color: #f1d483;
+  color: #f6d188;
   font-size: 0.98rem;
+  letter-spacing: 0.01em;
 }
 
 .contact-role {
-  color: #dbefff;
+  color: #c9f1e7;
   font-size: 0.85rem;
   font-weight: 600;
 }
 
 .contact-meta,
-.hire-card p {
+.hire-lead {
   color: var(--muted);
   font-size: 0.84rem;
   line-height: 1.58;
@@ -1489,12 +1525,47 @@ a {
 
 .email-list a {
   text-decoration: none;
-  color: #cde9ff;
+  color: #d8ebff;
   font-size: 0.8rem;
-  border: 1px solid rgba(108, 150, 191, 0.4);
+  border: 1px solid rgba(108, 150, 191, 0.42);
   border-radius: 10px;
-  background: rgba(8, 18, 28, 0.72);
-  padding: 0.36rem 0.5rem;
+  background: rgba(8, 18, 28, 0.74);
+  padding: 0.4rem 0.54rem;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.email-list a:hover {
+  border-color: rgba(115, 233, 205, 0.54);
+  transform: translateY(-1px);
+}
+
+.contact-highlights {
+  margin-top: 0.18rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.42rem;
+}
+
+.contact-highlights article {
+  border: 1px solid rgba(92, 133, 169, 0.34);
+  border-radius: 10px;
+  background: rgba(8, 18, 28, 0.74);
+  padding: 0.44rem 0.48rem;
+}
+
+.contact-highlights h4 {
+  margin: 0;
+  color: #f2d78f;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.contact-highlights p {
+  margin: 0.14rem 0 0;
+  color: #d6ecff;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .profile-grid {
@@ -1506,62 +1577,182 @@ a {
 
 .profile-link {
   text-decoration: none;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(104, 145, 181, 0.42);
   border-radius: 10px;
-  background: rgba(8, 18, 28, 0.75);
-  color: var(--text);
+  background: rgba(8, 18, 28, 0.8);
+  color: #dceeff;
   padding: 0.5rem 0.56rem;
   font-size: 0.79rem;
   font-weight: 600;
-  transition: transform 160ms ease, border-color 160ms ease;
+  transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease;
 }
 
 .profile-link:hover {
-  border-color: var(--teal);
+  border-color: rgba(116, 232, 205, 0.72);
+  background: rgba(30, 58, 82, 0.78);
   transform: translateY(-1px);
+}
+
+.hire-card {
+  --service-tone: #2ad0a8;
+  --service-tone-soft: rgba(42, 208, 168, 0.2);
+  --service-tone-strong: #1f8f75;
+  --service-ink: #063429;
+  --service-meta-ink: #0a4a3c;
+  border-color: rgba(92, 174, 154, 0.46);
+}
+
+.hire-card[data-service-theme="automation"] {
+  --service-tone: #2ad0a8;
+  --service-tone-soft: rgba(42, 208, 168, 0.2);
+  --service-tone-strong: #1f8f75;
+  --service-ink: #063429;
+  --service-meta-ink: #0a4a3c;
+}
+
+.hire-card[data-service-theme="web"] {
+  --service-tone: #4eb0ff;
+  --service-tone-soft: rgba(78, 176, 255, 0.2);
+  --service-tone-strong: #2f7ec2;
+  --service-ink: #082743;
+  --service-meta-ink: #163d5f;
+}
+
+.hire-card[data-service-theme="analytics"] {
+  --service-tone: #f4b658;
+  --service-tone-soft: rgba(244, 182, 88, 0.2);
+  --service-tone-strong: #d28b25;
+  --service-ink: #3a2200;
+  --service-meta-ink: #523400;
+}
+
+.hire-card[data-service-theme="research"] {
+  --service-tone: #d79dff;
+  --service-tone-soft: rgba(215, 157, 255, 0.2);
+  --service-tone-strong: #9d5bce;
+  --service-ink: #2b0f42;
+  --service-meta-ink: #4b2270;
+}
+
+.hire-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.34rem;
+}
+
+.hire-flow span {
+  border: 1px solid rgba(102, 140, 174, 0.42);
+  border-radius: 999px;
+  background: rgba(8, 18, 28, 0.76);
+  color: #cfe6fb;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
 }
 
 .service-options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.42rem;
+  gap: 0.46rem;
 }
 
 .service-option {
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: rgba(8, 18, 28, 0.78);
+  position: relative;
+  border: 1px solid rgba(94, 136, 172, 0.42);
+  border-radius: 12px;
+  background: rgba(8, 18, 28, 0.82);
   color: var(--muted);
   text-align: left;
   font: inherit;
-  font-size: 0.82rem;
-  font-weight: 600;
-  padding: 0.52rem 0.58rem;
+  padding: 0.52rem 0.6rem;
+  display: grid;
+  gap: 0.14rem;
+  min-height: 72px;
   cursor: pointer;
-  transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
+  overflow: hidden;
+  transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.service-option::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(120, 168, 211, 0.6), transparent);
+  opacity: 0.5;
+}
+
+.service-option-title {
+  color: #dcefff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.service-option-meta {
+  color: #9cb8d1;
+  font-size: 0.72rem;
+  line-height: 1.38;
 }
 
 .service-option:hover {
-  color: var(--text);
-  border-color: var(--line-soft);
+  color: #f0f7ff;
+  border-color: rgba(127, 170, 206, 0.82);
+  box-shadow: 0 8px 18px rgba(4, 11, 19, 0.34);
+  transform: translateY(-1px);
 }
 
 .service-option.active {
-  color: #092018;
-  border-color: #74e8cd;
-  background: linear-gradient(120deg, #74e8cd, #2ac8a3);
+  border-color: var(--service-tone);
+  background: linear-gradient(130deg, var(--service-tone), var(--service-tone-strong));
+  box-shadow: 0 12px 22px var(--service-tone-soft);
+}
+
+.service-option.active .service-option-title {
+  color: var(--service-ink);
+}
+
+.service-option.active .service-option-meta {
+  color: var(--service-meta-ink);
+}
+
+.hire-summary-card {
+  margin-top: 0.14rem;
+  border: 1px solid var(--service-tone);
+  border-radius: 12px;
+  background: linear-gradient(165deg, var(--service-tone-soft), rgba(8, 18, 28, 0.9));
+  padding: 0.48rem 0.56rem;
+  display: grid;
+  gap: 0.18rem;
+}
+
+.hire-summary-label {
+  margin: 0;
+  color: #b9d7f0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .hire-summary {
-  color: #dbefff;
-  font-size: 0.83rem;
-  font-weight: 600;
+  margin: 0;
+  color: #ecf7ff;
+  font-size: 0.86rem;
+  font-weight: 700;
 }
 
 .hire-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.46rem;
+}
+
+.hire-actions .btn-primary {
+  color: #09131f;
+  background: linear-gradient(120deg, var(--service-tone), var(--service-tone-strong));
 }
 
 .btn-primary,
@@ -1640,6 +1831,7 @@ a {
   .chart-grid,
   .paper-insight-grid,
   .resource-grid,
+  .contact-highlights,
   .profile-grid,
   .service-options {
     grid-template-columns: 1fr;

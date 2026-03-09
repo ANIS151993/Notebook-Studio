@@ -457,6 +457,21 @@ Purpose of use:</div>
             <a href="mailto:chowdhur014@gannon.edu">chowdhur014@gannon.edu</a>
           </div>
 
+          <div class="contact-highlights" aria-hidden="true">
+            <article>
+              <h4>Response</h4>
+              <p>&lt; 24h</p>
+            </article>
+            <article>
+              <h4>Modes</h4>
+              <p>Research + Dev</p>
+            </article>
+            <article>
+              <h4>Focus</h4>
+              <p>DataMentor</p>
+            </article>
+          </div>
+
           <div class="profile-grid">
             <a class="profile-link" href="https://linkedin.com/in/md-anisur-rahman-chowdhury-15862420a" target="_blank" rel="noopener noreferrer">LinkedIn</a>
             <a class="profile-link" href="https://github.com/ANIS151993" target="_blank" rel="noopener noreferrer">GitHub</a>
@@ -467,18 +482,39 @@ Purpose of use:</div>
           </div>
         </article>
 
-        <article class="hire-card">
+        <article class="hire-card" id="hireCard" data-service-theme="automation">
           <h3>Start a Technical Collaboration Request</h3>
-          <p>Choose your required service area and send a structured request in one click.</p>
+          <p class="hire-lead">Choose your required service area and send a structured request in one click.</p>
 
-          <div class="service-options" role="listbox" aria-label="Service options">
-            <button type="button" class="service-option active" data-service="Data Workflow Automation">Data Workflow Automation</button>
-            <button type="button" class="service-option" data-service="Full-Stack Web Application">Full-Stack Web Application</button>
-            <button type="button" class="service-option" data-service="Notebook and Analytics Engineering">Notebook and Analytics Engineering</button>
-            <button type="button" class="service-option" data-service="Scientific Research Collaboration">Scientific Research Collaboration</button>
+          <div class="hire-flow" aria-hidden="true">
+            <span>Select service</span>
+            <span>Review scope</span>
+            <span>Send request</span>
           </div>
 
-          <p class="hire-summary" id="hireSummary">Selected service: Data Workflow Automation</p>
+          <div class="service-options" role="listbox" aria-label="Service options">
+            <button type="button" class="service-option active" data-service="Data Workflow Automation" data-theme="automation" aria-pressed="true">
+              <span class="service-option-title">Data Workflow Automation</span>
+              <span class="service-option-meta">Pipelines, ETL and CSV intelligence.</span>
+            </button>
+            <button type="button" class="service-option" data-service="Full-Stack Web Application" data-theme="web" aria-pressed="false">
+              <span class="service-option-title">Full-Stack Web Application</span>
+              <span class="service-option-meta">Portal architecture and delivery.</span>
+            </button>
+            <button type="button" class="service-option" data-service="Notebook and Analytics Engineering" data-theme="analytics" aria-pressed="false">
+              <span class="service-option-title">Notebook and Analytics Engineering</span>
+              <span class="service-option-meta">Reproducible notebooks and KPI charts.</span>
+            </button>
+            <button type="button" class="service-option" data-service="Scientific Research Collaboration" data-theme="research" aria-pressed="false">
+              <span class="service-option-title">Scientific Research Collaboration</span>
+              <span class="service-option-meta">Methodology, writing and publication flow.</span>
+            </button>
+          </div>
+
+          <div class="hire-summary-card">
+            <p class="hire-summary-label">Selected service</p>
+            <p class="hire-summary" id="hireSummary">Data Workflow Automation</p>
+          </div>
           <div class="hire-actions">
             <a
               class="btn-primary"
