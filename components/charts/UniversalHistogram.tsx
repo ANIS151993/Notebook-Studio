@@ -3,14 +3,17 @@
 import { Bar } from 'react-chartjs-2';
 import { ChartOptions } from 'chart.js';
 import { DEFAULT_CHART_OPTIONS, CHART_COLORS } from '@/lib/chartConfig';
+import type { VisualizationAnalysis } from '@/lib/visualizationAnalysis';
+import AnalysisPanel from './AnalysisPanel';
 
 type Props = {
   title: string;
   description: string;
   data: { range: string; count: number }[];
+  analysis?: VisualizationAnalysis;
 };
 
-export default function UniversalHistogram({ title, description, data }: Props) {
+export default function UniversalHistogram({ title, description, data, analysis }: Props) {
   if (data.length === 0) return null;
 
   const chartData = {
@@ -47,6 +50,7 @@ export default function UniversalHistogram({ title, description, data }: Props) 
       <div style={{ height: '400px' }}>
         <Bar data={chartData} options={options} />
       </div>
+      {analysis && <AnalysisPanel analysis={analysis} />}
     </div>
   );
 }

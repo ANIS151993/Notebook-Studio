@@ -3,6 +3,8 @@
 import { Line } from 'react-chartjs-2';
 import { ChartOptions } from 'chart.js';
 import { DEFAULT_CHART_OPTIONS, CHART_COLORS } from '@/lib/chartConfig';
+import type { VisualizationAnalysis } from '@/lib/visualizationAnalysis';
+import AnalysisPanel from './AnalysisPanel';
 
 type Props = {
   title: string;
@@ -10,9 +12,10 @@ type Props = {
   data: { date: string; value: number }[];
   xLabel: string;
   yLabel: string;
+  analysis?: VisualizationAnalysis;
 };
 
-export default function UniversalLineChart({ title, description, data, xLabel, yLabel }: Props) {
+export default function UniversalLineChart({ title, description, data, xLabel, yLabel, analysis }: Props) {
   if (data.length === 0) return null;
 
   const chartData = {
@@ -71,6 +74,7 @@ export default function UniversalLineChart({ title, description, data, xLabel, y
       <div style={{ height: '400px' }}>
         <Line data={chartData} options={options} />
       </div>
+      {analysis && <AnalysisPanel analysis={analysis} />}
     </div>
   );
 }

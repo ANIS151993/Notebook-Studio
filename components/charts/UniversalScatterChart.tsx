@@ -3,6 +3,8 @@
 import { Scatter } from 'react-chartjs-2';
 import { ChartOptions } from 'chart.js';
 import { DEFAULT_CHART_OPTIONS, CHART_COLORS } from '@/lib/chartConfig';
+import type { VisualizationAnalysis } from '@/lib/visualizationAnalysis';
+import AnalysisPanel from './AnalysisPanel';
 
 type Props = {
   title: string;
@@ -10,9 +12,10 @@ type Props = {
   data: { x: number; y: number }[];
   xLabel: string;
   yLabel: string;
+  analysis?: VisualizationAnalysis;
 };
 
-export default function UniversalScatterChart({ title, description, data, xLabel, yLabel }: Props) {
+export default function UniversalScatterChart({ title, description, data, xLabel, yLabel, analysis }: Props) {
   if (data.length === 0) return null;
 
   const chartData = {
@@ -67,6 +70,7 @@ export default function UniversalScatterChart({ title, description, data, xLabel
       <div style={{ height: '400px' }}>
         <Scatter data={chartData} options={options} />
       </div>
+      {analysis && <AnalysisPanel analysis={analysis} />}
     </div>
   );
 }
