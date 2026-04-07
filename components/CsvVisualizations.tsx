@@ -1,6 +1,6 @@
 "use client";
 
-import { Component, useMemo, useState, type ErrorInfo, type ReactNode } from "react";
+import { Component, useCallback, useMemo, useState, type ErrorInfo, type ReactNode } from "react";
 import Papa from "papaparse";
 import {
   Chart as ChartJS,
@@ -43,14 +43,6 @@ import {
   type VisualizationAnalysis,
 } from '@/lib/visualizationAnalysis';
 
-import MissingValuesChart from './charts/MissingValuesChart';
-import FraudDistributionChart from './charts/FraudDistributionChart';
-import TopIndustriesChart from './charts/TopIndustriesChart';
-import GeographicDistributionChart from './charts/GeographicDistributionChart';
-import ExperienceDistributionChart from './charts/ExperienceDistributionChart';
-import SalaryHistogramChart from './charts/SalaryHistogramChart';
-import TelecommutingChart from './charts/TelecommutingChart';
-import FraudRateByTypeChart from './charts/FraudRateByTypeChart';
 import UniversalBarChart from './charts/UniversalBarChart';
 import UniversalHistogram from './charts/UniversalHistogram';
 import UniversalPieChart from './charts/UniversalPieChart';
@@ -61,7 +53,6 @@ import UniversalViolinPlot from './charts/UniversalViolinPlot';
 import UniversalHeatMap from './charts/UniversalHeatMap';
 import UniversalPairPlot from './charts/UniversalPairPlot';
 import UniversalJointPlot from './charts/UniversalJointPlot';
-import AdvancedStandardVisualizations from './AdvancedStandardVisualizations';
 
 // Register Chart.js components
 ChartJS.register(
@@ -121,17 +112,6 @@ type ChartSpec =
   | (ChartSpecBase & { type: 'pairplot'; data: PairPlotData })
   | (ChartSpecBase & { type: 'jointplot'; data: JointPlotData });
 
-type StandardChartData = {
-  missingValues?: ReturnType<typeof chartProcessor.calculateMissingValues>;
-  fraudDistribution?: ReturnType<typeof chartProcessor.countOccurrences>;
-  topIndustries?: ReturnType<typeof chartProcessor.getTopN>;
-  geographic?: ReturnType<typeof chartProcessor.getTopN>;
-  experience?: ReturnType<typeof chartProcessor.countOccurrences>;
-  salary?: ReturnType<typeof chartProcessor.createHistogramBins>;
-  telecommuting?: ReturnType<typeof chartProcessor.countOccurrences>;
-  fraudRateByType?: ReturnType<typeof chartProcessor.calculateFraudRateByCategory>;
-};
-
 type ChartErrorBoundaryProps = {
   children: ReactNode;
 };
@@ -154,7 +134,7 @@ class ChartErrorBoundary extends Component<
   }
 
   componentDidCatch(error: unknown, info: ErrorInfo) {
-    console.error("Standard chart render failed:", error, info);
+    console.error("Chart render failed:", error, info);
   }
 
   render() {
@@ -162,7 +142,7 @@ class ChartErrorBoundary extends Component<
       return (
         <div className="rounded-xl border border-[#d4af37] bg-[#1a1a1a] p-6">
           <p className="text-sm text-[#c9a961]">
-            This standard chart could not be rendered. Use Custom mode for this dataset.
+            This chart could not be rendered.
           </p>
         </div>
       );
@@ -172,7 +152,7 @@ class ChartErrorBoundary extends Component<
   }
 }
 
-// All chart types for CUSTOM mode
+// All chart types
 type AllChartTypes = 'bar' | 'histogram' | 'pie' | 'scatter' | 'line' | 'distplot' | 'violin' | 'heatmap' | 'pairplot' | 'jointplot';
 
 const CHART_TYPE_LABELS: Record<AllChartTypes, string> = {
@@ -195,6 +175,403 @@ const MULTI_COLUMN_TYPES: AllChartTypes[] = ['heatmap', 'pairplot'];
 // Chart types needing a category column
 const CATEGORY_COLUMN_TYPES: AllChartTypes[] = ['violin', 'pairplot'];
 
+// =========================================================================
+// Column Selector Dropdown for individual standard charts
+// =========================================================================
+
+function ColumnDropdown({
+  label,
+  value,
+  onChange,
+  columns,
+  columnAnalysis,
+  filterType,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  columns: string[];
+  columnAnalysis: ColumnAnalysis[];
+  filterType?: 'numeric' | 'categorical' | 'boolean' | 'all';
+}) {
+  const filtered = filterType && filterType !== 'all'
+    ? columns.filter(c => {
+        const analysis = columnAnalysis.find(a => a.name === c);
+        return analysis?.type === filterType;
+      })
+    : columns;
+
+  return (
+    <div className="flex items-center gap-2">
+      <label className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-[#c9a961]">
+        {label}
+      </label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="min-w-0 flex-1 rounded-lg border border-[#d4af37]/50 bg-[#1a1a1a] px-2 py-1 text-xs text-[#c9a961] focus:border-[#f4d03f] focus:outline-none"
+      >
+        {filtered.map(col => (
+          <option key={col} value={col}>
+            {col} ({columnAnalysis.find(c => c.name === col)?.type})
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function MultiColumnSelector({
+  label,
+  selected,
+  onChange,
+  columns,
+  columnAnalysis,
+}: {
+  label: string;
+  selected: string[];
+  onChange: (cols: string[]) => void;
+  columns: string[];
+  columnAnalysis: ColumnAnalysis[];
+}) {
+  const numericCols = columns.filter(c => columnAnalysis.find(a => a.name === c)?.type === 'numeric');
+
+  return (
+    <div>
+      <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-[#c9a961]">
+        {label}
+      </label>
+      <div className="flex flex-wrap gap-1.5">
+        {numericCols.map(col => (
+          <label
+            key={col}
+            className={`flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-[10px] transition ${
+              selected.includes(col)
+                ? 'bg-[#d4af37]/30 text-[#f4d03f]'
+                : 'bg-[#1a1a1a] text-[#c9a961] hover:bg-[#3a3420]'
+            }`}
+          >
+            <input
+              type="checkbox"
+              checked={selected.includes(col)}
+              onChange={(e) => {
+                onChange(
+                  e.target.checked
+                    ? [...selected, col]
+                    : selected.filter(c => c !== col)
+                );
+              }}
+              className="sr-only"
+            />
+            <div className={`h-2.5 w-2.5 rounded border ${
+              selected.includes(col)
+                ? 'border-[#f4d03f] bg-[#f4d03f]'
+                : 'border-[#c9a961]'
+            }`} />
+            {col}
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// =========================================================================
+// Chart builder function — shared between STANDARD and CUSTOM modes
+// =========================================================================
+
+function buildChartSpec(
+  chartType: AllChartTypes,
+  parsedData: Record<string, string>[],
+  col1: string,
+  col2: string,
+  multiCols: string[],
+  categoryCol: string,
+  dsName: string,
+  dsDesc: string,
+  idPrefix: string,
+): ChartSpec | null {
+  const chartId = `${idPrefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+  switch (chartType) {
+    case 'histogram': {
+      const histogramData = chartProcessor.createHistogramBins(parsedData, col1, 15);
+      if (histogramData.length > 0) {
+        return {
+          id: chartId, type: 'histogram',
+          title: `Distribution of ${col1}`,
+          description: `Histogram showing frequency distribution`,
+          columns: [col1], data: histogramData,
+          analysis: generateHistogramAnalysis(histogramData, dsName, dsDesc, col1),
+        };
+      }
+      break;
+    }
+    case 'bar': {
+      const barData = chartProcessor.getTopN(
+        chartProcessor.countOccurrences(parsedData, col1), 15
+      );
+      if (barData.length > 0) {
+        return {
+          id: chartId, type: 'bar',
+          title: `Top ${Math.min(15, barData.length)} ${col1}`,
+          description: `Distribution of values`,
+          columns: [col1], data: barData,
+          analysis: generateBarAnalysis(barData, dsName, dsDesc, col1),
+        };
+      }
+      break;
+    }
+    case 'pie': {
+      const pieData = chartProcessor.countOccurrences(parsedData, col1);
+      if (pieData.length > 0) {
+        return {
+          id: chartId, type: 'pie',
+          title: `${col1} Distribution`,
+          description: `Breakdown of values`,
+          columns: [col1], data: pieData,
+          analysis: generatePieChartAnalysis(pieData, dsName, dsDesc, col1),
+        };
+      }
+      break;
+    }
+    case 'scatter': {
+      const scatterData = chartProcessor.createScatterData(parsedData, col1, col2);
+      if (scatterData.length > 0) {
+        return {
+          id: chartId, type: 'scatter',
+          title: `${col2} vs ${col1}`,
+          description: `Relationship between columns`,
+          columns: [col1, col2], data: scatterData,
+          analysis: generateScatterAnalysis(scatterData, dsName, dsDesc, col1, col2),
+        };
+      }
+      break;
+    }
+    case 'line': {
+      const lineData = chartProcessor.createTimeSeriesData(parsedData, col1, col2);
+      if (lineData.length > 0) {
+        return {
+          id: chartId, type: 'line',
+          title: `${col2} over ${col1}`,
+          description: `Time series trend`,
+          columns: [col1, col2], data: lineData,
+          analysis: generateLineAnalysis(lineData, dsName, dsDesc, col1, col2),
+        };
+      }
+      break;
+    }
+    case 'distplot': {
+      const distData = generateDistPlotData(parsedData, col1, 20);
+      if (distData.histogram.length > 0) {
+        return {
+          id: chartId, type: 'distplot',
+          title: `Distribution of ${col1}`,
+          description: `Histogram with KDE density curve`,
+          columns: [col1], data: distData,
+          analysis: generateDistPlotAnalysis(distData, dsName, dsDesc),
+        };
+      }
+      break;
+    }
+    case 'violin': {
+      const vData = generateViolinData(parsedData, col1, categoryCol);
+      if (vData.length > 0) {
+        return {
+          id: chartId, type: 'violin',
+          title: `${col1} by ${categoryCol}`,
+          description: `Distribution comparison across categories`,
+          columns: [col1, categoryCol], data: vData,
+          analysis: generateViolinAnalysis(vData, dsName, dsDesc, col1, categoryCol),
+        };
+      }
+      break;
+    }
+    case 'heatmap': {
+      const hmData = generateHeatMapData(parsedData, multiCols);
+      return {
+        id: chartId, type: 'heatmap',
+        title: 'Correlation Heatmap',
+        description: `Pairwise correlations across ${multiCols.length} features`,
+        columns: [...multiCols], data: hmData,
+        analysis: generateHeatMapAnalysis(hmData, dsName, dsDesc),
+      };
+    }
+    case 'pairplot': {
+      const ppData = generatePairPlotData(parsedData, multiCols, categoryCol || undefined);
+      return {
+        id: chartId, type: 'pairplot',
+        title: 'Pair Plot',
+        description: `Pairwise analysis of ${multiCols.length} features${categoryCol ? ` grouped by ${categoryCol}` : ''}`,
+        columns: [...multiCols], data: ppData,
+        analysis: generatePairPlotAnalysis(ppData, dsName, dsDesc),
+      };
+    }
+    case 'jointplot': {
+      const jpData = generateJointPlotData(parsedData, col1, col2);
+      if (jpData.scatter.length > 0) {
+        return {
+          id: chartId, type: 'jointplot',
+          title: `${col2} vs ${col1}`,
+          description: `Joint distribution analysis`,
+          columns: [col1, col2], data: jpData,
+          analysis: generateJointPlotAnalysis(jpData, dsName, dsDesc),
+        };
+      }
+      break;
+    }
+  }
+  return null;
+}
+
+// =========================================================================
+// Standard chart panel with column selectors built-in
+// =========================================================================
+
+type StandardChartPanelProps = {
+  chartType: AllChartTypes;
+  parsedData: Record<string, string>[];
+  columns: string[];
+  columnAnalysis: ColumnAnalysis[];
+  defaultCol1: string;
+  defaultCol2?: string;
+  defaultMultiCols?: string[];
+  defaultCategoryCol?: string;
+  dsName: string;
+  dsDesc: string;
+};
+
+function StandardChartPanel({
+  chartType,
+  parsedData,
+  columns,
+  columnAnalysis,
+  defaultCol1,
+  defaultCol2,
+  defaultMultiCols,
+  defaultCategoryCol,
+  dsName,
+  dsDesc,
+}: StandardChartPanelProps) {
+  const [col1, setCol1] = useState(defaultCol1);
+  const [col2, setCol2] = useState(defaultCol2 || '');
+  const [multiCols, setMultiCols] = useState<string[]>(defaultMultiCols || []);
+  const [categoryCol, setCategoryCol] = useState(defaultCategoryCol || '');
+
+  const needsTwoCols = TWO_COLUMN_TYPES.includes(chartType);
+  const needsMultiCols = MULTI_COLUMN_TYPES.includes(chartType);
+  const needsCategoryCol = CATEGORY_COLUMN_TYPES.includes(chartType);
+
+  const spec = useMemo(() => {
+    if (needsMultiCols && multiCols.length < 2) return null;
+    if (!needsMultiCols && !col1) return null;
+    if (needsTwoCols && !col2) return null;
+    if (chartType === 'violin' && !categoryCol) return null;
+
+    return buildChartSpec(
+      chartType, parsedData, col1, col2, multiCols, categoryCol,
+      dsName, dsDesc, 'std',
+    );
+  }, [chartType, parsedData, col1, col2, multiCols, categoryCol, dsName, dsDesc, needsMultiCols, needsTwoCols]);
+
+  const renderChart = useCallback((s: ChartSpec) => {
+    switch (s.type) {
+      case 'histogram':
+        return <UniversalHistogram title={s.title} description={s.description} data={s.data} analysis={s.analysis} />;
+      case 'bar':
+        return <UniversalBarChart title={s.title} description={s.description} data={s.data} analysis={s.analysis} />;
+      case 'pie':
+        return <UniversalPieChart title={s.title} description={s.description} data={s.data} analysis={s.analysis} />;
+      case 'scatter':
+        return <UniversalScatterChart title={s.title} description={s.description} data={s.data} xLabel={s.columns[0]} yLabel={s.columns[1]} analysis={s.analysis} />;
+      case 'line':
+        return <UniversalLineChart title={s.title} description={s.description} data={s.data} xLabel={s.columns[0]} yLabel={s.columns[1]} analysis={s.analysis} />;
+      case 'distplot':
+        return <UniversalDistPlot title={s.title} description={s.description} data={s.data} analysis={s.analysis} />;
+      case 'violin':
+        return <UniversalViolinPlot title={s.title} description={s.description} violinData={s.data} analysis={s.analysis} />;
+      case 'heatmap':
+        return <UniversalHeatMap title={s.title} description={s.description} data={s.data} analysis={s.analysis} />;
+      case 'pairplot':
+        return <UniversalPairPlot title={s.title} description={s.description} data={s.data} analysis={s.analysis} />;
+      case 'jointplot':
+        return <UniversalJointPlot title={s.title} description={s.description} data={s.data} analysis={s.analysis} />;
+      default:
+        return null;
+    }
+  }, []);
+
+  return (
+    <div className="space-y-3">
+      {/* Column selector bar */}
+      <div className="rounded-lg border border-[#d4af37]/30 bg-[#2a2416] p-3">
+        <div className="mb-2 flex items-center gap-2">
+          <span className="rounded bg-[#d4af37]/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#f4d03f]">
+            {CHART_TYPE_LABELS[chartType]}
+          </span>
+          <span className="text-[10px] text-[#c9a961]">Select columns for this visualization</span>
+        </div>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {!needsMultiCols && (
+            <ColumnDropdown
+              label={needsTwoCols ? 'X-Axis' : chartType === 'violin' ? 'Numeric' : 'Column'}
+              value={col1}
+              onChange={setCol1}
+              columns={columns}
+              columnAnalysis={columnAnalysis}
+              filterType={['distplot', 'histogram', 'violin', 'scatter', 'jointplot'].includes(chartType) ? 'numeric' : 'all'}
+            />
+          )}
+          {needsTwoCols && (
+            <ColumnDropdown
+              label="Y-Axis"
+              value={col2}
+              onChange={setCol2}
+              columns={columns.filter(c => c !== col1)}
+              columnAnalysis={columnAnalysis}
+              filterType="numeric"
+            />
+          )}
+          {needsCategoryCol && (
+            <ColumnDropdown
+              label={chartType === 'violin' ? 'Category' : 'Group By'}
+              value={categoryCol}
+              onChange={setCategoryCol}
+              columns={columns}
+              columnAnalysis={columnAnalysis}
+              filterType="all"
+            />
+          )}
+        </div>
+        {needsMultiCols && (
+          <div className="mt-2">
+            <MultiColumnSelector
+              label="Select Numeric Columns (at least 2)"
+              selected={multiCols}
+              onChange={setMultiCols}
+              columns={columns}
+              columnAnalysis={columnAnalysis}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Rendered chart */}
+      {spec ? (
+        <ChartErrorBoundary>{renderChart(spec)}</ChartErrorBoundary>
+      ) : (
+        <div className="rounded-xl border border-[#d4af37]/30 bg-[#1a1a1a] p-6 text-center text-xs text-[#c9a961]">
+          Select valid columns above to generate this visualization
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =========================================================================
+// Main Component
+// =========================================================================
+
 export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
   const [viewMode, setViewMode] = useState<'standard' | 'custom'>('standard');
 
@@ -216,68 +593,7 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
     return result.data;
   }, [cleanedCsv]);
 
-  // Detect available columns (case-insensitive)
-  const detectedColumns = useMemo(() => ({
-    fraud: chartProcessor.hasColumn(stats.columns, 'fraudulent'),
-    employmentType: chartProcessor.hasColumn(stats.columns, 'employment_type'),
-    industry: chartProcessor.hasColumn(stats.columns, 'industry'),
-    experience: chartProcessor.hasColumn(stats.columns, 'required_experience'),
-    salary: chartProcessor.hasColumn(stats.columns, 'salary_min'),
-    telecommuting: chartProcessor.hasColumn(stats.columns, 'telecommuting'),
-    country: chartProcessor.hasColumn(stats.columns, 'country'),
-    state: chartProcessor.hasColumn(stats.columns, 'state'),
-  }), [stats.columns]);
-
-  // Process data for standard charts
-  const chartData = useMemo<StandardChartData>(() => {
-    if (!parsedData.length) return {};
-
-    const data: StandardChartData = {};
-
-    data.missingValues = chartProcessor.calculateMissingValues(parsedData);
-
-    if (detectedColumns.fraud) {
-      data.fraudDistribution = chartProcessor.countOccurrences(parsedData, detectedColumns.fraud);
-    }
-
-    if (detectedColumns.industry) {
-      data.topIndustries = chartProcessor.getTopN(
-        chartProcessor.countOccurrences(parsedData, detectedColumns.industry), 10
-      );
-    }
-
-    const geoColumn = detectedColumns.country || detectedColumns.state;
-    if (geoColumn) {
-      data.geographic = chartProcessor.getTopN(
-        chartProcessor.countOccurrences(parsedData, geoColumn), 15
-      );
-    }
-
-    if (detectedColumns.experience) {
-      data.experience = chartProcessor.countOccurrences(parsedData, detectedColumns.experience);
-    }
-
-    if (detectedColumns.salary) {
-      data.salary = chartProcessor.createHistogramBins(parsedData, detectedColumns.salary, 10);
-    }
-
-    if (detectedColumns.telecommuting) {
-      data.telecommuting = chartProcessor.countOccurrences(parsedData, detectedColumns.telecommuting);
-    }
-
-    if (detectedColumns.fraud && detectedColumns.employmentType) {
-      data.fraudRateByType = chartProcessor.calculateFraudRateByCategory(
-        parsedData, detectedColumns.employmentType, detectedColumns.fraud
-      );
-    }
-
-    return data;
-  }, [parsedData, detectedColumns]);
-
-  const hasCharts = Object.values(chartData).some((value) => Boolean(value?.length));
-
-  // ========== CUSTOM CHARTS LOGIC ==========
-
+  // Column analysis
   const columnAnalysis = useMemo((): ColumnAnalysis[] => {
     if (!parsedData.length) return [];
     return stats.columns.map(columnName => {
@@ -295,112 +611,90 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
     });
   }, [parsedData, stats.columns]);
 
-  // Dataset suggestion for current chart type
+  const numericColumns = useMemo(() =>
+    columnAnalysis.filter(c => c.type === 'numeric').map(c => c.name),
+    [columnAnalysis],
+  );
+
+  const categoricalColumns = useMemo(() =>
+    columnAnalysis.filter(c => (c.type === 'categorical' || c.type === 'boolean') && c.uniqueCount >= 2 && c.uniqueCount <= 20).map(c => c.name),
+    [columnAnalysis],
+  );
+
+  const dsName = 'Uploaded CSV';
+  const dsDesc = `Your uploaded dataset (${parsedData.length} rows, ${stats.columns.length} columns)`;
+
+  // ========== STANDARD MODE DEFAULTS ==========
+  // Smart defaults for each chart type based on column analysis
+  const standardDefaults = useMemo(() => {
+    const nc = numericColumns;
+    const cc = categoricalColumns;
+    const defaults: {
+      type: AllChartTypes;
+      col1: string;
+      col2?: string;
+      multiCols?: string[];
+      categoryCol?: string;
+      wide?: boolean;
+    }[] = [];
+
+    // 1. DistPlot — best numeric column
+    if (nc.length >= 1) {
+      defaults.push({ type: 'distplot', col1: nc[0] });
+    }
+    // 2. Pie Chart — best categorical/boolean
+    if (cc.length >= 1) {
+      defaults.push({ type: 'pie', col1: cc[0] });
+    }
+    // 3. Violin Plot — numeric by category
+    if (nc.length >= 1 && cc.length >= 1) {
+      defaults.push({ type: 'violin', col1: nc[0], categoryCol: cc[0] });
+    }
+    // 4. HeatMap — all numeric columns (up to 8)
+    if (nc.length >= 2) {
+      defaults.push({ type: 'heatmap', col1: '', multiCols: nc.slice(0, 8), wide: true });
+    }
+    // 5. PairPlot — top 4 numeric + group by categorical
+    if (nc.length >= 2) {
+      defaults.push({
+        type: 'pairplot', col1: '',
+        multiCols: nc.slice(0, 4),
+        categoryCol: cc[0] || '',
+        wide: true,
+      });
+    }
+    // 6. JointPlot — two best numeric columns
+    if (nc.length >= 2) {
+      defaults.push({ type: 'jointplot', col1: nc[0], col2: nc[1], wide: true });
+    }
+    // 7. Bar Chart — if there's a categorical col
+    if (cc.length >= 1) {
+      const barCol = cc.length > 1 ? cc[1] : cc[0];
+      defaults.push({ type: 'bar', col1: barCol });
+    }
+    // 8. Histogram — second numeric col
+    if (nc.length >= 2) {
+      defaults.push({ type: 'histogram', col1: nc[1] });
+    }
+    // 9. Scatter — two numeric
+    if (nc.length >= 2) {
+      defaults.push({ type: 'scatter', col1: nc[0], col2: nc[1] });
+    }
+
+    return defaults;
+  }, [numericColumns, categoricalColumns]);
+
+  // ========== CUSTOM MODE LOGIC ==========
+
   const chartSuggestion = useMemo(() => {
     if (!columnAnalysis.length) return null;
     return suggestColumnsForChartType(selectedChartType, columnAnalysis);
   }, [selectedChartType, columnAnalysis]);
 
-  // Auto-generated chart specs (for standard fallback)
-  const customChartSpecs = useMemo((): ChartSpec[] => {
-    if (!parsedData.length || !columnAnalysis.length) return [];
-
-    const specs: ChartSpec[] = [];
-    const numericColumns = columnAnalysis
-      .filter((column) => column.type === "numeric")
-      .slice(0, 6);
-    const categoricalColumns = columnAnalysis
-      .filter((column) => column.type === "categorical" && column.uniqueCount > 1)
-      .slice(0, 8);
-    const booleanColumns = columnAnalysis
-      .filter((column) => column.type === "boolean")
-      .slice(0, 4);
-    const dateColumns = columnAnalysis
-      .filter((column) => column.type === "datetime")
-      .slice(0, 3);
-
-    numericColumns.forEach(col => {
-      const histogramData = chartProcessor.createHistogramBins(parsedData, col.name, 15);
-      if (histogramData.length > 0) {
-        specs.push({
-          id: `hist-${col.name}`, type: 'histogram',
-          title: `Distribution of ${col.name}`,
-          description: `Histogram showing the frequency distribution`,
-          columns: [col.name], data: histogramData,
-        });
-      }
-    });
-
-    categoricalColumns.forEach(col => {
-      const barData = chartProcessor.getTopN(
-        chartProcessor.countOccurrences(parsedData, col.name), 15
-      );
-      if (barData.length > 0) {
-        specs.push({
-          id: `bar-${col.name}`, type: 'bar',
-          title: `Top ${Math.min(15, barData.length)} ${col.name}`,
-          description: `Distribution of values in ${col.name}`,
-          columns: [col.name], data: barData,
-        });
-      }
-    });
-
-    booleanColumns.forEach(col => {
-      const pieData = chartProcessor.countOccurrences(parsedData, col.name);
-      if (pieData.length > 0) {
-        specs.push({
-          id: `pie-${col.name}`, type: 'pie',
-          title: `${col.name} Distribution`,
-          description: `Breakdown of ${col.name} values`,
-          columns: [col.name], data: pieData,
-        });
-      }
-    });
-
-    for (let i = 0; i < numericColumns.length; i++) {
-      for (let j = i + 1; j < numericColumns.length && specs.filter(s => s.type === 'scatter').length < 3; j++) {
-        const xCol = numericColumns[i].name;
-        const yCol = numericColumns[j].name;
-        const scatterData = chartProcessor.createScatterData(parsedData, xCol, yCol);
-        if (scatterData.length > 0) {
-          specs.push({
-            id: `scatter-${xCol}-${yCol}`, type: 'scatter',
-            title: `${yCol} vs ${xCol}`,
-            description: `Relationship between ${xCol} and ${yCol}`,
-            columns: [xCol, yCol], data: scatterData,
-          });
-        }
-      }
-    }
-
-    dateColumns.forEach(dateCol => {
-      if (numericColumns.length > 0) {
-        const numCol = numericColumns[0];
-        const lineData = chartProcessor.createTimeSeriesData(parsedData, dateCol.name, numCol.name);
-        if (lineData.length > 0) {
-          specs.push({
-            id: `line-${dateCol.name}-${numCol.name}`, type: 'line',
-            title: `${numCol.name} over ${dateCol.name}`,
-            description: `Time series showing ${numCol.name} trends`,
-            columns: [dateCol.name, numCol.name], data: lineData,
-          });
-        }
-      }
-    });
-
-    return specs;
-  }, [parsedData, columnAnalysis]);
-
-  // ========== HANDLERS ==========
-
   const handleAddChart = () => {
     if (!parsedData.length) return;
-    const chartId = `custom-${Date.now()}`;
-    let newChart: ChartSpec | null = null;
-    const dsName = 'Uploaded CSV';
-    const dsDesc = `Your uploaded dataset (${parsedData.length} rows)`;
 
-    // Validate column selection
+    // Validate
     if (MULTI_COLUMN_TYPES.includes(selectedChartType)) {
       if (selectedMultiColumns.length < 2) {
         alert('Please select at least 2 columns');
@@ -416,144 +710,20 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
       return;
     }
 
-    if (CATEGORY_COLUMN_TYPES.includes(selectedChartType) && selectedChartType === 'violin' && !selectedCategoryColumn) {
+    if (selectedChartType === 'violin' && !selectedCategoryColumn) {
       alert('Please select a category column for violin plot');
       return;
     }
 
-    switch (selectedChartType) {
-      case 'histogram': {
-        const histogramData = chartProcessor.createHistogramBins(parsedData, selectedColumn, 15);
-        if (histogramData.length > 0) {
-          newChart = {
-            id: chartId, type: 'histogram',
-            title: `Distribution of ${selectedColumn}`,
-            description: `Histogram showing frequency distribution`,
-            columns: [selectedColumn], data: histogramData,
-            analysis: generateHistogramAnalysis(histogramData, dsName, dsDesc, selectedColumn),
-          };
-        }
-        break;
-      }
-      case 'bar': {
-        const barData = chartProcessor.getTopN(
-          chartProcessor.countOccurrences(parsedData, selectedColumn), 15
-        );
-        if (barData.length > 0) {
-          newChart = {
-            id: chartId, type: 'bar',
-            title: `Top ${Math.min(15, barData.length)} ${selectedColumn}`,
-            description: `Distribution of values`,
-            columns: [selectedColumn], data: barData,
-            analysis: generateBarAnalysis(barData, dsName, dsDesc, selectedColumn),
-          };
-        }
-        break;
-      }
-      case 'pie': {
-        const pieData = chartProcessor.countOccurrences(parsedData, selectedColumn);
-        if (pieData.length > 0) {
-          newChart = {
-            id: chartId, type: 'pie',
-            title: `${selectedColumn} Distribution`,
-            description: `Breakdown of values`,
-            columns: [selectedColumn], data: pieData,
-            analysis: generatePieChartAnalysis(pieData, dsName, dsDesc, selectedColumn),
-          };
-        }
-        break;
-      }
-      case 'scatter': {
-        const scatterData = chartProcessor.createScatterData(parsedData, selectedColumn, selectedColumn2);
-        if (scatterData.length > 0) {
-          newChart = {
-            id: chartId, type: 'scatter',
-            title: `${selectedColumn2} vs ${selectedColumn}`,
-            description: `Relationship between columns`,
-            columns: [selectedColumn, selectedColumn2], data: scatterData,
-            analysis: generateScatterAnalysis(scatterData, dsName, dsDesc, selectedColumn, selectedColumn2),
-          };
-        }
-        break;
-      }
-      case 'line': {
-        const lineData = chartProcessor.createTimeSeriesData(parsedData, selectedColumn, selectedColumn2);
-        if (lineData.length > 0) {
-          newChart = {
-            id: chartId, type: 'line',
-            title: `${selectedColumn2} over ${selectedColumn}`,
-            description: `Time series trend`,
-            columns: [selectedColumn, selectedColumn2], data: lineData,
-            analysis: generateLineAnalysis(lineData, dsName, dsDesc, selectedColumn, selectedColumn2),
-          };
-        }
-        break;
-      }
-      case 'distplot': {
-        const distData = generateDistPlotData(parsedData, selectedColumn, 20);
-        if (distData.histogram.length > 0) {
-          newChart = {
-            id: chartId, type: 'distplot',
-            title: `Distribution of ${selectedColumn}`,
-            description: `Histogram with KDE density curve`,
-            columns: [selectedColumn], data: distData,
-            analysis: generateDistPlotAnalysis(distData, dsName, dsDesc),
-          };
-        }
-        break;
-      }
-      case 'violin': {
-        const vData = generateViolinData(parsedData, selectedColumn, selectedCategoryColumn);
-        if (vData.length > 0) {
-          newChart = {
-            id: chartId, type: 'violin',
-            title: `${selectedColumn} by ${selectedCategoryColumn}`,
-            description: `Distribution comparison across categories`,
-            columns: [selectedColumn, selectedCategoryColumn], data: vData,
-            analysis: generateViolinAnalysis(vData, dsName, dsDesc, selectedColumn, selectedCategoryColumn),
-          };
-        }
-        break;
-      }
-      case 'heatmap': {
-        const hmData = generateHeatMapData(parsedData, selectedMultiColumns);
-        newChart = {
-          id: chartId, type: 'heatmap',
-          title: 'Correlation Heatmap',
-          description: `Pairwise correlations across ${selectedMultiColumns.length} features`,
-          columns: [...selectedMultiColumns], data: hmData,
-          analysis: generateHeatMapAnalysis(hmData, dsName, dsDesc),
-        };
-        break;
-      }
-      case 'pairplot': {
-        const ppData = generatePairPlotData(parsedData, selectedMultiColumns, selectedCategoryColumn || undefined);
-        newChart = {
-          id: chartId, type: 'pairplot',
-          title: 'Pair Plot',
-          description: `Pairwise analysis of ${selectedMultiColumns.length} features${selectedCategoryColumn ? ` grouped by ${selectedCategoryColumn}` : ''}`,
-          columns: [...selectedMultiColumns], data: ppData,
-          analysis: generatePairPlotAnalysis(ppData, dsName, dsDesc),
-        };
-        break;
-      }
-      case 'jointplot': {
-        const jpData = generateJointPlotData(parsedData, selectedColumn, selectedColumn2);
-        if (jpData.scatter.length > 0) {
-          newChart = {
-            id: chartId, type: 'jointplot',
-            title: `${selectedColumn2} vs ${selectedColumn}`,
-            description: `Joint distribution analysis`,
-            columns: [selectedColumn, selectedColumn2], data: jpData,
-            analysis: generateJointPlotAnalysis(jpData, dsName, dsDesc),
-          };
-        }
-        break;
-      }
-    }
+    const newChart = buildChartSpec(
+      selectedChartType, parsedData,
+      selectedColumn, selectedColumn2,
+      selectedMultiColumns, selectedCategoryColumn,
+      dsName, dsDesc, 'custom',
+    );
 
     if (newChart) {
-      setSelectedCharts(prev => [...prev, newChart!]);
+      setSelectedCharts(prev => [...prev, newChart]);
       setSelectedColumn('');
       setSelectedColumn2('');
       setSelectedMultiColumns([]);
@@ -594,7 +764,7 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
     }
   };
 
-  // Check if current chart type needs multi-column, two-column, or category selector
+  // Custom mode helpers
   const needsMultiColumn = MULTI_COLUMN_TYPES.includes(selectedChartType);
   const needsTwoColumns = TWO_COLUMN_TYPES.includes(selectedChartType);
   const needsCategoryColumn = CATEGORY_COLUMN_TYPES.includes(selectedChartType);
@@ -611,8 +781,8 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
             </h3>
             <p className="mt-2 text-sm text-[#c9a961]">
               {viewMode === 'standard'
-                ? 'Predefined charts for your data + advanced visualizations with built-in datasets'
-                : 'Build custom charts by selecting columns and chart types — with dataset suggestions and analysis'} • {parsedData.length} rows analyzed
+                ? 'All chart types with column selectors — change columns to explore your data'
+                : 'Build custom charts by selecting columns and chart types'} • {parsedData.length} rows analyzed
             </p>
           </div>
 
@@ -644,56 +814,36 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
       {/* ==================== STANDARD MODE ==================== */}
       {viewMode === 'standard' && (
         <>
-          {hasCharts ? (
+          {standardDefaults.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2">
-              {chartData.missingValues && chartData.missingValues.length > 0 && (
-                <ChartErrorBoundary><MissingValuesChart data={chartData.missingValues} /></ChartErrorBoundary>
-              )}
-              {chartData.fraudDistribution && chartData.fraudDistribution.length > 0 && (
-                <ChartErrorBoundary><FraudDistributionChart data={chartData.fraudDistribution} /></ChartErrorBoundary>
-              )}
-              {chartData.topIndustries && chartData.topIndustries.length > 0 && (
-                <ChartErrorBoundary><TopIndustriesChart data={chartData.topIndustries} /></ChartErrorBoundary>
-              )}
-              {chartData.geographic && chartData.geographic.length > 0 && (
-                <ChartErrorBoundary><GeographicDistributionChart data={chartData.geographic} /></ChartErrorBoundary>
-              )}
-              {chartData.experience && chartData.experience.length > 0 && (
-                <ChartErrorBoundary><ExperienceDistributionChart data={chartData.experience} /></ChartErrorBoundary>
-              )}
-              {chartData.salary && chartData.salary.length > 0 && (
-                <ChartErrorBoundary><SalaryHistogramChart data={chartData.salary} /></ChartErrorBoundary>
-              )}
-              {chartData.telecommuting && chartData.telecommuting.length > 0 && (
-                <ChartErrorBoundary><TelecommutingChart data={chartData.telecommuting} /></ChartErrorBoundary>
-              )}
-              {chartData.fraudRateByType && chartData.fraudRateByType.length > 0 && (
-                <ChartErrorBoundary><FraudRateByTypeChart data={chartData.fraudRateByType} /></ChartErrorBoundary>
-              )}
-            </div>
-          ) : customChartSpecs.length > 0 ? (
-            <div className="space-y-4">
-              <div className="rounded-xl border border-[#d4af37] bg-[#1a1a1a] p-4 text-sm text-[#c9a961]">
-                Standard preset charts were not detected for this dataset. Showing smart
-                standard charts generated from your columns.
-              </div>
-              <div className="grid gap-6 md:grid-cols-2">
-                {customChartSpecs.slice(0, 4).map((spec) => (
-                  <div key={spec.id}>{renderUniversalChart(spec)}</div>
-                ))}
-              </div>
+              {standardDefaults.map((def, idx) => {
+                const isWide = def.wide || def.type === 'heatmap' || def.type === 'pairplot' || def.type === 'jointplot';
+                return (
+                  <div key={`std-${def.type}-${idx}`} className={isWide ? 'md:col-span-2' : ''}>
+                    <StandardChartPanel
+                      chartType={def.type}
+                      parsedData={parsedData}
+                      columns={stats.columns}
+                      columnAnalysis={columnAnalysis}
+                      defaultCol1={def.col1}
+                      defaultCol2={def.col2}
+                      defaultMultiCols={def.multiCols}
+                      defaultCategoryCol={def.categoryCol}
+                      dsName={dsName}
+                      dsDesc={dsDesc}
+                    />
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="rounded-xl border border-[#d4af37] bg-[#1a1a1a] p-8 text-center">
               <p className="text-[#c9a961]">
-                No standard visualizations available for this dataset.
-                Try switching to Custom mode for auto-generated charts.
+                No suitable columns detected for standard visualizations.
+                Try switching to Custom mode to manually select columns.
               </p>
             </div>
           )}
-
-          {/* Advanced Visualizations (built-in datasets) */}
-          <AdvancedStandardVisualizations />
         </>
       )}
 
