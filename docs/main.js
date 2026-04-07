@@ -969,7 +969,27 @@ function initSkillDownloadGate() {
 
   downloadLink.addEventListener("click", function () {
     if (downloadLink.classList.contains("disabled")) return;
-    window.setTimeout(closeModal, 600);
+    downloadLink.textContent = "Downloading...";
+    fetch("https://raw.githubusercontent.com/ANIS151993/Notebook-Studio/main/datamentor-skill.md")
+      .then(function (res) { return res.blob(); })
+      .then(function (blob) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "datamentor-skill.md";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        downloadLink.textContent = "Download datamentor-skill.md";
+        window.setTimeout(closeModal, 600);
+      })
+      .catch(function () {
+        downloadLink.textContent = "Download failed — try again";
+        window.setTimeout(function () {
+          downloadLink.textContent = "Download datamentor-skill.md";
+        }, 2000);
+      });
   });
 }
 
