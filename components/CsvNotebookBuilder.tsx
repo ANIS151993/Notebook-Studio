@@ -6,6 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import {
   Timestamp,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -482,6 +483,78 @@ export default function CsvNotebookBuilder() {
     );
   };
 
+  const deleteSelectedWork = async () => {
+    if (!authUserId || !selectedWorkId) {
+      return;
+    }
+
+    const workToDelete = savedWorks.find((w) => w.id === selectedWorkId);
+    if (!workToDelete) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Delete "${workToDelete.name}"?\nThis cannot be undone.`,
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setSyncStatus("saving");
+    setSyncMessage("Deleting...");
+
+    if (isLocalWorkId(selectedWorkId)) {
+      try {
+        const allLocal = readLocalWorks(authUserId);
+        const filtered = allLocal.filter((r) => r.id !== selectedWorkId);
+        writeLocalWorks(authUserId, filtered);
+        setSyncStatus("saved");
+        setSyncMessage("Local saved work deleted.");
+      } catch (err) {
+        console.error("Failed to delete local work:", err);
+        setSyncStatus("error");
+        setSyncMessage("Could not delete local work.");
+      }
+    } else {
+      if (!db) {
+        setSyncStatus("error");
+        setSyncMessage("Cloud database is unavailable.");
+        return;
+      }
+      try {
+        await deleteDoc(doc(db, "users", authUserId, "works", selectedWorkId));
+        setSyncStatus("saved");
+        setSyncMessage("Saved work deleted from your account.");
+      } catch (err) {
+        console.error("Failed to delete cloud work:", err);
+        const errorCode = getErrorCode(err);
+        setSyncStatus("error");
+        setSyncMessage(
+          errorCode
+            ? `Could not delete work (${errorCode}).`
+            : "Could not delete work.",
+        );
+      }
+    }
+
+    // If the deleted work is currently loaded, clear the workspace
+    if (
+      workToDelete.fileName === fileName &&
+      workToDelete.rows === stats?.rows
+    ) {
+      setFileName(null);
+      setRawCsvContent(null);
+      setCleanedCsv(null);
+      setNotebook(null);
+      setOutputName(null);
+      setStats(null);
+      setActiveTab("upload");
+    }
+
+    setSelectedWorkId("");
+    await loadSavedWorks(authUserId);
+  };
+
   const loadSelectedWork = async () => {
     if (!authUserId || !selectedWorkId) {
       return;
@@ -743,7 +816,7 @@ export default function CsvNotebookBuilder() {
             Your processed work can be saved and restored from your account.
           </p>
 
-          <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto_auto]">
+          <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto_auto_auto]">
             <select
               className="h-11 rounded-xl border border-[#d4af37]/70 bg-[#111111] px-3 text-sm text-[#f4d03f] outline-none focus:border-[#ffd700]"
               value={selectedWorkId}
@@ -769,6 +842,17 @@ export default function CsvNotebookBuilder() {
               className="tab-pill inline-flex h-11 items-center justify-center rounded-xl border border-[#d4af37]/70 bg-[#16120d] px-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#f4d03f] hover:bg-[#d4af37] hover:text-[#0a0a0a] disabled:cursor-not-allowed disabled:border-[#6b5d45] disabled:text-[#6b5d45]"
             >
               Load Work
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                void deleteSelectedWork();
+              }}
+              disabled={loadingWorks || !selectedWorkId || syncStatus === "saving"}
+              className="tab-pill inline-flex h-11 items-center justify-center rounded-xl border border-[#ff6b6b]/50 bg-[#16120d] px-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#ff6b6b] hover:border-[#ff6b6b] hover:bg-[#ff6b6b] hover:text-[#0a0a0a] disabled:cursor-not-allowed disabled:border-[#6b5d45] disabled:text-[#6b5d45]"
+            >
+              Delete
             </button>
 
             <button
