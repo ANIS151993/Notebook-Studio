@@ -211,7 +211,10 @@ export function isDateColumn(data: DataRow[], columnName: string): boolean {
   // Check if at least 70% of values can be parsed as dates
   let validDates = 0;
   for (const value of nonMissingValues) {
-    const dateValue = new Date(String(value));
+    const strVal = String(value).trim();
+    // Reject pure numbers — they parse as dates in JS but aren't dates
+    if (/^-?\d+(\.\d+)?$/.test(strVal)) continue;
+    const dateValue = new Date(strVal);
     if (!isNaN(dateValue.getTime())) {
       validDates++;
     }
