@@ -2141,3 +2141,184 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+/* Skill Download Gate Modal */
+
+.skill-gate-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(5, 11, 18, 0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.skill-gate-modal.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.skill-gate-dialog {
+  width: min(440px, 100%);
+  border: 1px solid rgba(115, 233, 205, 0.3);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(41, 199, 162, 0.14), transparent 50%),
+    linear-gradient(180deg, #f7f9fc, #eef3f8);
+  color: #1e456a;
+  padding: 1.6rem 1.4rem;
+  box-shadow: 0 22px 60px rgba(4, 12, 22, 0.48);
+  position: relative;
+  display: grid;
+  gap: 0.72rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.skill-gate-close {
+  position: absolute;
+  top: 0.72rem;
+  right: 0.78rem;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #6d8198;
+  font-size: 1.56rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.skill-gate-close:hover {
+  background: rgba(33, 74, 113, 0.09);
+  color: #214a71;
+}
+
+.skill-gate-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.7rem;
+  color: #062a1e;
+  background: linear-gradient(135deg, #73e9cd, #29c7a2);
+  box-shadow: 0 0 0 0 rgba(41, 199, 162, 0.4);
+  animation: pulseSkillStar 2s ease-out infinite;
+}
+
+@keyframes pulseSkillStar {
+  0% { box-shadow: 0 0 0 0 rgba(41, 199, 162, 0.4); }
+  70% { box-shadow: 0 0 0 14px rgba(41, 199, 162, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(41, 199, 162, 0); }
+}
+
+.skill-gate-dialog h3 {
+  margin: 0;
+  color: #214a71;
+  font-size: 1.44rem;
+  line-height: 1.15;
+}
+
+.skill-gate-subtitle {
+  margin: 0;
+  color: #627992;
+  font-size: 0.88rem;
+  line-height: 1.54;
+  max-width: 30ch;
+}
+
+.skill-gate-star-btn {
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.44rem;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: #1e4670;
+  color: #ecf4ff;
+  transition: transform 160ms ease, filter 160ms ease;
+}
+
+.skill-gate-star-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+.skill-gate-star-icon {
+  font-size: 1.12rem;
+  color: #f5d06b;
+}
+
+.skill-gate-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4b6a86;
+  font-size: 0.88rem;
+  line-height: 1.44;
+  cursor: pointer;
+}
+
+.skill-gate-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: #1e9e7e;
+  cursor: pointer;
+}
+
+.skill-gate-download-btn {
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(120deg, #73e9cd, #29c7a2);
+  color: #062a1e;
+  transition: transform 160ms ease, filter 160ms ease, opacity 160ms ease;
+}
+
+.skill-gate-download-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+.skill-gate-download-btn.disabled {
+  opacity: 0.38;
+  pointer-events: none;
+  filter: grayscale(0.5);
+}
+
+@media (max-width: 700px) {
+  .skill-gate-modal {
+    padding: 0.55rem;
+  }
+
+  .skill-gate-dialog {
+    border-radius: 18px;
+    padding: 1.2rem 1rem;
+  }
+
+  .skill-gate-dialog h3 {
+    font-size: 1.24rem;
+  }
+}

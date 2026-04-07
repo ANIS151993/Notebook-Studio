@@ -344,10 +344,38 @@
             <div class="skill-cover-item">Account workspace (save/load/delete)</div>
           </div>
 
-          <a class="btn-primary skill-download-btn" href="https://raw.githubusercontent.com/ANIS151993/Notebook-Studio/main/datamentor-skill.md" download="datamentor-skill.md">
+          <button type="button" class="btn-primary skill-download-btn" id="skillGateOpenBtn">
             Download Skill File
-          </a>
+          </button>
         </article>
+
+        <div class="skill-gate-modal" id="skillGateModal" hidden>
+          <div class="skill-gate-dialog" role="dialog" aria-modal="true" aria-labelledby="skillGateTitle">
+            <button type="button" class="skill-gate-close" id="skillGateCloseBtn" aria-label="Close download gate">&times;</button>
+            <div class="skill-gate-icon" aria-hidden="true">&#9733;</div>
+            <h3 id="skillGateTitle">Support the Project</h3>
+            <p class="skill-gate-subtitle">Star the author's GitHub profile to unlock the skill file download.</p>
+
+            <a class="skill-gate-star-btn" href="https://github.com/ANIS151993?tab=stars" target="_blank" rel="noopener noreferrer" id="skillStarLink">
+              <span class="skill-gate-star-icon" aria-hidden="true">&#9733;</span>
+              Star on GitHub
+            </a>
+
+            <label class="skill-gate-check">
+              <input id="skillStarConfirm" type="checkbox" />
+              <span>I starred the GitHub profile</span>
+            </label>
+
+            <a
+              class="skill-gate-download-btn disabled"
+              id="skillDownloadLink"
+              href="https://raw.githubusercontent.com/ANIS151993/Notebook-Studio/main/datamentor-skill.md"
+              download="datamentor-skill.md"
+            >
+              Download datamentor-skill.md
+            </a>
+          </div>
+        </div>
 
         <aside class="skill-steps-card">
           <h3>How to Use</h3>

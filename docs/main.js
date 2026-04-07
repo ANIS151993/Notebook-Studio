@@ -920,6 +920,59 @@ window.addEventListener("resize", () => {
   }, 180);
 });
 
+function initSkillDownloadGate() {
+  const openBtn = document.getElementById("skillGateOpenBtn");
+  const modal = document.getElementById("skillGateModal");
+  const closeBtn = document.getElementById("skillGateCloseBtn");
+  const starConfirm = document.getElementById("skillStarConfirm");
+  const downloadLink = document.getElementById("skillDownloadLink");
+  if (!openBtn || !modal || !closeBtn || !starConfirm || !downloadLink) return;
+
+  if (modal.parentElement !== document.body) {
+    document.body.appendChild(modal);
+  }
+
+  function openModal() {
+    starConfirm.checked = false;
+    downloadLink.classList.add("disabled");
+    modal.hidden = false;
+    document.body.classList.add("policy-modal-open");
+    window.requestAnimationFrame(function () {
+      modal.classList.add("visible");
+    });
+  }
+
+  function closeModal() {
+    modal.classList.remove("visible");
+    modal.hidden = true;
+    document.body.classList.remove("policy-modal-open");
+  }
+
+  openBtn.addEventListener("click", openModal);
+  closeBtn.addEventListener("click", closeModal);
+
+  modal.addEventListener("click", function (e) {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !modal.hidden) closeModal();
+  });
+
+  starConfirm.addEventListener("change", function () {
+    if (starConfirm.checked) {
+      downloadLink.classList.remove("disabled");
+    } else {
+      downloadLink.classList.add("disabled");
+    }
+  });
+
+  downloadLink.addEventListener("click", function () {
+    if (downloadLink.classList.contains("disabled")) return;
+    window.setTimeout(closeModal, 600);
+  });
+}
+
 function initPage() {
   initArchitectureExplorer();
   initBuildStepExplorer();
@@ -929,6 +982,7 @@ function initPage() {
   initResearchAccessPolicy();
   initVideoOverview();
   initHireRequestBuilder();
+  initSkillDownloadGate();
   makeCharts();
 }
 
