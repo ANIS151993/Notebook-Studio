@@ -287,11 +287,16 @@ function buildChartSpec(
   col2: string,
   multiCols: string[],
   categoryCol: string,
-  dsName: string,
-  dsDesc: string,
+  rowCount: number,
   idPrefix: string,
 ): ChartSpec | null {
   const chartId = `${idPrefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+  // Dynamic dataset name and description based on selected columns
+  const colLabel = (c: string) => c;
+  const singleDesc = `${rowCount} records from your CSV`;
+  const pairDesc = `${rowCount} records analyzed`;
+  const multiDesc = `${multiCols.length} features across ${rowCount} records`;
 
   switch (chartType) {
     case 'histogram': {
@@ -302,7 +307,7 @@ function buildChartSpec(
           title: `Distribution of ${col1}`,
           description: `Histogram showing frequency distribution`,
           columns: [col1], data: histogramData,
-          analysis: generateHistogramAnalysis(histogramData, dsName, dsDesc, col1),
+          analysis: generateHistogramAnalysis(histogramData, colLabel(col1), singleDesc, col1),
         };
       }
       break;
@@ -317,7 +322,7 @@ function buildChartSpec(
           title: `Top ${Math.min(15, barData.length)} ${col1}`,
           description: `Distribution of values`,
           columns: [col1], data: barData,
-          analysis: generateBarAnalysis(barData, dsName, dsDesc, col1),
+          analysis: generateBarAnalysis(barData, colLabel(col1), singleDesc, col1),
         };
       }
       break;
@@ -330,7 +335,7 @@ function buildChartSpec(
           title: `${col1} Distribution`,
           description: `Breakdown of values`,
           columns: [col1], data: pieData,
-          analysis: generatePieChartAnalysis(pieData, dsName, dsDesc, col1),
+          analysis: generatePieChartAnalysis(pieData, colLabel(col1), singleDesc, col1),
         };
       }
       break;
@@ -343,7 +348,7 @@ function buildChartSpec(
           title: `${col2} vs ${col1}`,
           description: `Relationship between columns`,
           columns: [col1, col2], data: scatterData,
-          analysis: generateScatterAnalysis(scatterData, dsName, dsDesc, col1, col2),
+          analysis: generateScatterAnalysis(scatterData, `${colLabel(col1)} vs ${colLabel(col2)}`, pairDesc, col1, col2),
         };
       }
       break;
@@ -356,7 +361,7 @@ function buildChartSpec(
           title: `${col2} over ${col1}`,
           description: `Time series trend`,
           columns: [col1, col2], data: lineData,
-          analysis: generateLineAnalysis(lineData, dsName, dsDesc, col1, col2),
+          analysis: generateLineAnalysis(lineData, `${colLabel(col2)} over ${colLabel(col1)}`, pairDesc, col1, col2),
         };
       }
       break;
@@ -369,7 +374,7 @@ function buildChartSpec(
           title: `Distribution of ${col1}`,
           description: `Histogram with KDE density curve`,
           columns: [col1], data: distData,
-          analysis: generateDistPlotAnalysis(distData, dsName, dsDesc),
+          analysis: generateDistPlotAnalysis(distData, colLabel(col1), singleDesc),
         };
       }
       break;
@@ -382,7 +387,7 @@ function buildChartSpec(
           title: `${col1} by ${categoryCol}`,
           description: `Distribution comparison across categories`,
           columns: [col1, categoryCol], data: vData,
-          analysis: generateViolinAnalysis(vData, dsName, dsDesc, col1, categoryCol),
+          analysis: generateViolinAnalysis(vData, `${colLabel(col1)} by ${colLabel(categoryCol)}`, pairDesc, col1, categoryCol),
         };
       }
       break;
@@ -394,7 +399,7 @@ function buildChartSpec(
         title: 'Correlation Heatmap',
         description: `Pairwise correlations across ${multiCols.length} features`,
         columns: [...multiCols], data: hmData,
-        analysis: generateHeatMapAnalysis(hmData, dsName, dsDesc),
+        analysis: generateHeatMapAnalysis(hmData, multiCols.join(', '), multiDesc),
       };
     }
     case 'pairplot': {
@@ -404,7 +409,7 @@ function buildChartSpec(
         title: 'Pair Plot',
         description: `Pairwise analysis of ${multiCols.length} features${categoryCol ? ` grouped by ${categoryCol}` : ''}`,
         columns: [...multiCols], data: ppData,
-        analysis: generatePairPlotAnalysis(ppData, dsName, dsDesc),
+        analysis: generatePairPlotAnalysis(ppData, multiCols.join(', '), multiDesc),
       };
     }
     case 'jointplot': {
@@ -415,7 +420,7 @@ function buildChartSpec(
           title: `${col2} vs ${col1}`,
           description: `Joint distribution analysis`,
           columns: [col1, col2], data: jpData,
-          analysis: generateJointPlotAnalysis(jpData, dsName, dsDesc),
+          analysis: generateJointPlotAnalysis(jpData, `${colLabel(col1)} vs ${colLabel(col2)}`, pairDesc),
         };
       }
       break;
@@ -437,8 +442,7 @@ type StandardChartPanelProps = {
   defaultCol2?: string;
   defaultMultiCols?: string[];
   defaultCategoryCol?: string;
-  dsName: string;
-  dsDesc: string;
+  rowCount: number;
 };
 
 function StandardChartPanel({
@@ -450,8 +454,7 @@ function StandardChartPanel({
   defaultCol2,
   defaultMultiCols,
   defaultCategoryCol,
-  dsName,
-  dsDesc,
+  rowCount,
 }: StandardChartPanelProps) {
   const [col1, setCol1] = useState(defaultCol1);
   const [col2, setCol2] = useState(defaultCol2 || '');
@@ -470,9 +473,9 @@ function StandardChartPanel({
 
     return buildChartSpec(
       chartType, parsedData, col1, col2, multiCols, categoryCol,
-      dsName, dsDesc, 'std',
+      rowCount, 'std',
     );
-  }, [chartType, parsedData, col1, col2, multiCols, categoryCol, dsName, dsDesc, needsMultiCols, needsTwoCols]);
+  }, [chartType, parsedData, col1, col2, multiCols, categoryCol, rowCount, needsMultiCols, needsTwoCols]);
 
   const renderChart = useCallback((s: ChartSpec) => {
     switch (s.type) {
@@ -621,8 +624,7 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
     [columnAnalysis],
   );
 
-  const dsName = 'Uploaded CSV';
-  const dsDesc = `Your uploaded dataset (${parsedData.length} rows, ${stats.columns.length} columns)`;
+  const rowCount = parsedData.length;
 
   // ========== STANDARD MODE DEFAULTS ==========
   // Smart defaults for each chart type based on column analysis
@@ -719,7 +721,7 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
       selectedChartType, parsedData,
       selectedColumn, selectedColumn2,
       selectedMultiColumns, selectedCategoryColumn,
-      dsName, dsDesc, 'custom',
+      rowCount, 'custom',
     );
 
     if (newChart) {
@@ -829,8 +831,7 @@ export default function CsvVisualizations({ cleanedCsv, stats }: Props) {
                       defaultCol2={def.col2}
                       defaultMultiCols={def.multiCols}
                       defaultCategoryCol={def.categoryCol}
-                      dsName={dsName}
-                      dsDesc={dsDesc}
+                      rowCount={rowCount}
                     />
                   </div>
                 );
