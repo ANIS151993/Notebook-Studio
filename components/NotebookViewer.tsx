@@ -325,6 +325,8 @@ Line 9-10: print(f"\\nFirst 5 rows:") and df.head()
 matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 import numpy as np
+from io import BytesIO
+import base64
 
 # --- Pick the first numeric column automatically ---
 numeric_cols = df.select_dtypes(include='number').columns.tolist()
@@ -361,8 +363,11 @@ else:
         spine.set_color('#d4af37')
 
     plt.tight_layout()
-    plt.savefig('/tmp/distplot.png', dpi=120, facecolor='#1a1a1a')
+    buf = BytesIO()
+    fig.savefig(buf, format='png', dpi=120, facecolor='#1a1a1a')
     plt.close()
+    buf.seek(0)
+    print("__IMG_BASE64__:" + base64.b64encode(buf.read()).decode())
 
     # Stats summary
     print(f"Column: {col}")
@@ -370,15 +375,14 @@ else:
     print(f"  Median: {data.median():.2f}")
     print(f"  Std:    {data.std():.2f}")
     print(f"  Min:    {data.min():.2f}  |  Max: {data.max():.2f}")
-    print(f"  Skew:   {data.skew():.2f}")
-    print("\\nPlot saved to /tmp/distplot.png")`,
+    print(f"  Skew:   {data.skew():.2f}")`,
       editable: true,
       autoRun: false,
       explanation: `This cell creates a DistPlot — a histogram overlaid with a Kernel Density Estimate (KDE) curve.
 
 Line 1-3: import matplotlib; matplotlib.use('AGG'); import matplotlib.pyplot as plt
   • Imports matplotlib with the non-interactive AGG backend
-  • AGG renders to PNG files (no GUI window needed)
+  • AGG renders to in-memory buffers (no GUI window needed)
   • Why: Pyodide/server environments have no display — AGG writes to file
 
 Line 6-7: numeric_cols = df.select_dtypes(include='number').columns.tolist()
@@ -424,6 +428,8 @@ Line 41-47: Statistical summary
       code: `import matplotlib
 matplotlib.use('AGG')
 import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
 
 # --- Pick first low-cardinality column (<=10 unique) ---
 cat_col = None
@@ -460,15 +466,17 @@ else:
     fig.patch.set_facecolor('#1a1a1a')
 
     plt.tight_layout()
-    plt.savefig('/tmp/piechart.png', dpi=120, facecolor='#1a1a1a')
+    buf = BytesIO()
+    fig.savefig(buf, format='png', dpi=120, facecolor='#1a1a1a')
     plt.close()
+    buf.seek(0)
+    print("__IMG_BASE64__:" + base64.b64encode(buf.read()).decode())
 
     total = counts.sum()
     print(f"Column: {cat_col}  |  Total: {total}")
     for label, count in counts.items():
         pct = count / total * 100
-        print(f"  {label}: {count} ({pct:.1f}%)")
-    print("\\nPlot saved to /tmp/piechart.png")`,
+        print(f"  {label}: {count} ({pct:.1f}%)")`,
       editable: true,
       autoRun: false,
       explanation: `This cell creates a Pie Chart showing the proportional breakdown of a categorical column.
@@ -513,6 +521,8 @@ Line 40-44: Print summary table
 matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 import numpy as np
+from io import BytesIO
+import base64
 
 # --- Select numeric and categorical columns ---
 numeric_cols = df.select_dtypes(include='number').columns.tolist()
@@ -566,14 +576,16 @@ else:
         spine.set_color('#d4af37')
 
     plt.tight_layout()
-    plt.savefig('/tmp/violinplot.png', dpi=120, facecolor='#1a1a1a')
+    buf = BytesIO()
+    fig.savefig(buf, format='png', dpi=120, facecolor='#1a1a1a')
     plt.close()
+    buf.seek(0)
+    print("__IMG_BASE64__:" + base64.b64encode(buf.read()).decode())
 
     print(f"Numeric: {num_col}  |  Category: {cat_col}")
     for label, data in zip(group_labels, data_groups):
         d = np.array(data)
-        print(f"  {label} (n={len(d)}): mean={d.mean():.2f}, median={np.median(d):.2f}, std={d.std():.2f}")
-    print("\\nPlot saved to /tmp/violinplot.png")`,
+        print(f"  {label} (n={len(d)}): mean={d.mean():.2f}, median={np.median(d):.2f}, std={d.std():.2f}")`,
       editable: true,
       autoRun: false,
       explanation: `This cell creates a Violin Plot — combining box plot statistics with KDE density shapes per group.
@@ -620,6 +632,8 @@ Line 59-62: Print per-group statistics
 matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 import numpy as np
+from io import BytesIO
+import base64
 
 # --- Compute correlation matrix for numeric columns ---
 numeric_df = df.select_dtypes(include='number')
@@ -661,8 +675,11 @@ else:
     ax.set_facecolor('#1a1a1a')
 
     plt.tight_layout()
-    plt.savefig('/tmp/heatmap.png', dpi=120, facecolor='#1a1a1a')
+    buf = BytesIO()
+    fig.savefig(buf, format='png', dpi=120, facecolor='#1a1a1a')
     plt.close()
+    buf.seek(0)
+    print("__IMG_BASE64__:" + base64.b64encode(buf.read()).decode())
 
     # Find strongest correlations
     pairs = []
@@ -676,8 +693,7 @@ else:
     for c1, c2, r in pairs[:5]:
         direction = "positive" if r > 0 else "negative"
         strength = "strong" if abs(r) > 0.7 else "moderate" if abs(r) > 0.4 else "weak"
-        print(f"  {c1} & {c2}: r = {r:.3f} ({strength} {direction})")
-    print("\\nPlot saved to /tmp/heatmap.png")`,
+        print(f"  {c1} & {c2}: r = {r:.3f} ({strength} {direction})")`,
       editable: true,
       autoRun: false,
       explanation: `This cell creates a Correlation Heatmap showing pairwise Pearson correlations between numeric columns.
@@ -729,6 +745,8 @@ Line 47-54: Find and print top correlations
 matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 import numpy as np
+from io import BytesIO
+import base64
 
 # --- Select up to 4 numeric columns for readability ---
 numeric_cols = df.select_dtypes(include='number').columns.tolist()[:4]
@@ -800,14 +818,16 @@ else:
     fig.suptitle('Pair Plot' + (f' (colored by {group_col})' if group_col else ''),
                 color='#f4d03f', fontsize=14, fontweight='bold', y=1.01)
     plt.tight_layout()
-    plt.savefig('/tmp/pairplot.png', dpi=100, facecolor='#1a1a1a', bbox_inches='tight')
+    buf = BytesIO()
+    fig.savefig(buf, format='png', dpi=100, facecolor='#1a1a1a', bbox_inches='tight')
     plt.close()
+    buf.seek(0)
+    print("__IMG_BASE64__:" + base64.b64encode(buf.read()).decode())
 
     print(f"Features: {', '.join(numeric_cols)}")
     if group_col:
         print(f"Grouped by: {group_col} ({', '.join(str(g) for g in groups)})")
-    print(f"Grid: {n}x{n} = {n*n} panels ({n} histograms + {n*(n-1)} scatter plots)")
-    print("\\nPlot saved to /tmp/pairplot.png")`,
+    print(f"Grid: {n}x{n} = {n*n} panels ({n} histograms + {n*(n-1)} scatter plots)")`,
       editable: true,
       autoRun: false,
       explanation: `This cell creates a Pair Plot — an NxN grid showing all pairwise relationships between numeric features.
@@ -859,6 +879,8 @@ matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.gridspec import GridSpec
+from io import BytesIO
+import base64
 
 # --- Pick two numeric columns ---
 numeric_cols = df.select_dtypes(include='number').columns.tolist()
@@ -918,8 +940,11 @@ else:
 
     fig.suptitle(f'Joint Plot — {x_col} vs {y_col}', color='#f4d03f',
                 fontsize=14, fontweight='bold', y=0.98)
-    plt.savefig('/tmp/jointplot.png', dpi=120, facecolor='#1a1a1a', bbox_inches='tight')
+    buf = BytesIO()
+    fig.savefig(buf, format='png', dpi=120, facecolor='#1a1a1a', bbox_inches='tight')
     plt.close()
+    buf.seek(0)
+    print("__IMG_BASE64__:" + base64.b64encode(buf.read()).decode())
 
     # Summary
     strength = "strong" if abs(r) > 0.7 else "moderate" if abs(r) > 0.4 else "weak"
@@ -927,8 +952,7 @@ else:
     print(f"X: {x_col}  |  Y: {y_col}")
     print(f"Pearson r = {r:.3f} ({strength} {direction} correlation)")
     print(f"\\n{x_col}: mean={x_data.mean():.2f}, std={x_data.std():.2f}, range=[{x_data.min():.2f}, {x_data.max():.2f}]")
-    print(f"{y_col}: mean={y_data.mean():.2f}, std={y_data.std():.2f}, range=[{y_data.min():.2f}, {y_data.max():.2f}]")
-    print("\\nPlot saved to /tmp/jointplot.png")`,
+    print(f"{y_col}: mean={y_data.mean():.2f}, std={y_data.std():.2f}, range=[{y_data.min():.2f}, {y_data.max():.2f}]")`,
       editable: true,
       autoRun: false,
       explanation: `This cell creates a Joint Plot — a scatter plot with marginal histograms on each axis.

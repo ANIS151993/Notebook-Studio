@@ -312,7 +312,18 @@ export default function CodeCell({
               </div>
             ) : output ? (
               <div className="font-mono text-sm text-[#f4d03f] whitespace-pre-wrap">
-                {output}
+                {output.split("\n").map((line, i) =>
+                  line.startsWith("__IMG_BASE64__:") ? (
+                    <img
+                      key={i}
+                      src={`data:image/png;base64,${line.replace("__IMG_BASE64__:", "")}`}
+                      alt="Plot output"
+                      className="my-3 max-w-full rounded-lg border border-[#d4af37]/30"
+                    />
+                  ) : (
+                    <span key={i}>{line}{"\n"}</span>
+                  )
+                )}
               </div>
             ) : (
               <div className="text-sm text-[#c9a961]">Ready to run</div>

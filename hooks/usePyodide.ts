@@ -50,8 +50,8 @@ export function usePyodide() {
           indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/",
         });
 
-        // Load pandas and other packages
-        await pyodideInstance.loadPackage(["pandas", "numpy"]);
+        // Load pandas, numpy, matplotlib, and scipy for visualizations
+        await pyodideInstance.loadPackage(["pandas", "numpy", "matplotlib", "scipy"]);
 
         setPyodide(pyodideInstance);
         setLoading(false);
