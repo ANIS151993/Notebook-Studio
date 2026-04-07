@@ -139,11 +139,18 @@ export default function UniversalPairPlot({ title, description, data, analysis }
     }
   };
 
-  // Scale cell size based on number of columns to keep grid contained
-  // 2-3 cols: 140px, 4-5: 110px, 6-7: 85px, 8+: 65px
-  const cellSize = n <= 3 ? 140 : n <= 5 ? 110 : n <= 7 ? 85 : 65;
+  // At low column counts the grid fills 100% width for maximum impact.
+  // As columns increase the cells gradually shrink via a max-height cap
+  // so the grid never overflows the container.
   const labelWidth = n <= 5 ? 40 : 30;
   const fontSize = n <= 5 ? 'text-xs' : 'text-[10px]';
+  const gapPx = 2; // gap-0.5 = 2px
+
+  // Max cell height: generous for 2 cols, progressively tighter.
+  // With the fluid 1fr columns the cells already fill available width;
+  // the max-height just prevents the *height* from growing too tall on
+  // wide screens when there are many columns.
+  const maxCellH = n <= 2 ? 320 : n <= 3 ? 240 : n <= 4 ? 180 : n <= 6 ? 130 : 90;
 
   return (
     <div className="rounded-xl border border-[#d4af37] bg-[#1a1a1a] p-6">
@@ -154,10 +161,10 @@ export default function UniversalPairPlot({ title, description, data, analysis }
 
       <div className="overflow-x-auto">
         <div
-          className="mx-auto grid gap-0.5"
+          className="grid"
           style={{
             gridTemplateColumns: `${labelWidth}px repeat(${n}, minmax(0, 1fr))`,
-            maxWidth: `${labelWidth + n * (cellSize + 4)}px`,
+            gap: `${gapPx}px`,
           }}
         >
           {/* Empty corner */}
@@ -184,7 +191,7 @@ export default function UniversalPairPlot({ title, description, data, analysis }
               <div
                 key={`cell-${rowIdx}-${colIdx}`}
                 className="rounded bg-[#2a2416] p-0.5"
-                style={{ aspectRatio: '1', maxHeight: `${cellSize}px` }}
+                style={{ aspectRatio: '1', maxHeight: `${maxCellH}px` }}
               >
                 {renderCell(rowIdx, colIdx)}
               </div>
