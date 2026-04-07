@@ -139,6 +139,12 @@ export default function UniversalPairPlot({ title, description, data, analysis }
     }
   };
 
+  // Scale cell size based on number of columns to keep grid contained
+  // 2-3 cols: 140px, 4-5: 110px, 6-7: 85px, 8+: 65px
+  const cellSize = n <= 3 ? 140 : n <= 5 ? 110 : n <= 7 ? 85 : 65;
+  const labelWidth = n <= 5 ? 40 : 30;
+  const fontSize = n <= 5 ? 'text-xs' : 'text-[10px]';
+
   return (
     <div className="rounded-xl border border-[#d4af37] bg-[#1a1a1a] p-6">
       <div className="mb-4">
@@ -146,40 +152,45 @@ export default function UniversalPairPlot({ title, description, data, analysis }
         <p className="mt-1 text-xs text-[#c9a961]">{description}</p>
       </div>
 
-      <div
-        className="grid gap-1"
-        style={{ gridTemplateColumns: `40px repeat(${n}, 1fr)` }}
-      >
-        {/* Empty corner */}
-        <div />
+      <div className="overflow-x-auto">
+        <div
+          className="mx-auto grid gap-0.5"
+          style={{
+            gridTemplateColumns: `${labelWidth}px repeat(${n}, minmax(0, 1fr))`,
+            maxWidth: `${labelWidth + n * (cellSize + 4)}px`,
+          }}
+        >
+          {/* Empty corner */}
+          <div />
 
-        {/* Column headers */}
-        {data.columns.map(col => (
-          <div key={`header-${col}`} className="flex items-center justify-center">
-            <span className="truncate text-xs text-[#c9a961]">{col}</span>
-          </div>
-        ))}
-
-        {/* Grid cells */}
-        {data.columns.flatMap((_, rowIdx) => [
-          <div key={`row-label-${rowIdx}`} className="flex items-center justify-center">
-            <span
-              className="text-xs text-[#c9a961]"
-              style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-            >
-              {data.columns[rowIdx]}
-            </span>
-          </div>,
-          ...data.columns.map((_, colIdx) => (
-            <div
-              key={`cell-${rowIdx}-${colIdx}`}
-              className="rounded bg-[#2a2416] p-0.5"
-              style={{ height: '120px' }}
-            >
-              {renderCell(rowIdx, colIdx)}
+          {/* Column headers */}
+          {data.columns.map(col => (
+            <div key={`header-${col}`} className="flex items-end justify-center pb-1">
+              <span className={`truncate ${fontSize} text-[#c9a961]`}>{col}</span>
             </div>
-          )),
-        ])}
+          ))}
+
+          {/* Grid cells */}
+          {data.columns.flatMap((_, rowIdx) => [
+            <div key={`row-label-${rowIdx}`} className="flex items-center justify-center">
+              <span
+                className={`${fontSize} text-[#c9a961]`}
+                style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+              >
+                {data.columns[rowIdx]}
+              </span>
+            </div>,
+            ...data.columns.map((_, colIdx) => (
+              <div
+                key={`cell-${rowIdx}-${colIdx}`}
+                className="rounded bg-[#2a2416] p-0.5"
+                style={{ aspectRatio: '1', maxHeight: `${cellSize}px` }}
+              >
+                {renderCell(rowIdx, colIdx)}
+              </div>
+            )),
+          ])}
+        </div>
       </div>
 
       {/* Legend */}
