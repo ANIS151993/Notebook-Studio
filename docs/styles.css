@@ -1899,3 +1899,245 @@ a {
     font-size: 0.78rem;
   }
 }
+
+/* Features Section */
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.62rem;
+}
+
+.feature-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(9, 19, 30, 0.78);
+  padding: 0.82rem;
+  display: grid;
+  gap: 0.38rem;
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.feature-card:hover {
+  border-color: rgba(41, 199, 162, 0.5);
+  transform: translateY(-2px);
+}
+
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #092018;
+  background: linear-gradient(135deg, #73e9cd, #29c7a2);
+}
+
+.feature-card h3 {
+  color: #f1d483;
+  font-size: 0.93rem;
+}
+
+.feature-card p {
+  color: var(--muted);
+  font-size: 0.83rem;
+  line-height: 1.56;
+}
+
+.viz-showcase {
+  margin-top: 0.72rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.72rem;
+}
+
+.viz-type-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+}
+
+.viz-type-pill {
+  border-radius: 999px;
+  border: 1px solid rgba(41, 199, 162, 0.42);
+  background: rgba(41, 199, 162, 0.1);
+  color: #c5f8eb;
+  padding: 0.38rem 0.72rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.viz-type-pill:hover {
+  background: rgba(41, 199, 162, 0.22);
+  transform: translateY(-1px);
+}
+
+/* Claude Skill Section */
+
+.skill-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 0.72rem;
+  align-items: start;
+}
+
+.skill-main-card {
+  border: 1px solid rgba(115, 233, 205, 0.35);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(41, 199, 162, 0.18), transparent 35%),
+    linear-gradient(165deg, rgba(10, 22, 35, 0.92), rgba(7, 17, 28, 0.95));
+  padding: 0.92rem;
+  display: grid;
+  gap: 0.54rem;
+}
+
+.skill-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #73e9cd, #29c7a2);
+  color: #062a1e;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 0.32rem 0.72rem;
+}
+
+.skill-main-card h3 {
+  color: #f1d483;
+  font-size: 1.08rem;
+  font-family: "IBM Plex Serif", serif;
+}
+
+.skill-description {
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.62;
+}
+
+.skill-covers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.38rem;
+}
+
+.skill-cover-item {
+  border: 1px solid rgba(108, 150, 191, 0.35);
+  border-radius: 10px;
+  background: rgba(8, 18, 28, 0.7);
+  color: #d6ecff;
+  padding: 0.42rem 0.56rem;
+  font-size: 0.79rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.skill-download-btn {
+  margin-top: 0.24rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(115, 233, 205, 0.5);
+  background: linear-gradient(120deg, #73e9cd, #29c7a2) !important;
+  color: #062a1e !important;
+  box-shadow: 0 10px 28px rgba(41, 199, 162, 0.24);
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-download-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, 0.3) 50%, transparent 65%);
+  transform: translateX(-130%);
+  transition: transform 380ms ease;
+  pointer-events: none;
+}
+
+.skill-download-btn:hover::before {
+  transform: translateX(130%);
+}
+
+.skill-steps-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(9, 19, 30, 0.82);
+  padding: 0.92rem;
+  display: grid;
+  gap: 0.56rem;
+}
+
+.skill-steps-card h3 {
+  color: #f1d483;
+  font-size: 0.96rem;
+}
+
+.skill-steps-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.52rem;
+  counter-reset: skill-step;
+}
+
+.skill-steps-list li {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.54;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.skill-steps-list li strong {
+  color: #d8ecff;
+  font-size: 0.86rem;
+}
+
+.skill-steps-list li span {
+  font-size: 0.82rem;
+}
+
+.skill-steps-list code {
+  background: rgba(41, 199, 162, 0.15);
+  border: 1px solid rgba(41, 199, 162, 0.3);
+  border-radius: 6px;
+  padding: 0.08rem 0.32rem;
+  font-size: 0.78rem;
+  color: #c5f8eb;
+}
+
+.skill-tech-pills {
+  margin-top: 0.24rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.32rem;
+}
+
+@media (max-width: 1120px) {
+  .features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .skill-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 920px) {
+  .features-grid,
+  .skill-covers-grid {
+    grid-template-columns: 1fr;
+  }
+}

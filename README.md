@@ -1,6 +1,6 @@
 # DataMentor
 
-Scientific web portal and application for reproducible CSV intelligence, notebook automation, and interactive analytics.
+Scientific web application for reproducible CSV intelligence, interactive visualizations, in-browser Python notebooks, and domain-aware data analysis.
 
 [![Live Portal](https://img.shields.io/badge/Live%20Portal-GitHub%20Pages-0b7?style=for-the-badge)](https://anis151993.github.io/Notebook-Studio/)
 [![Live App](https://img.shields.io/badge/Live%20App-DataMentor-2d7bf4?style=for-the-badge)](https://datamentor.marcbd.site)
@@ -8,210 +8,199 @@ Scientific web portal and application for reproducible CSV intelligence, noteboo
 [![React](https://img.shields.io/badge/React-19-149eca?style=for-the-badge&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Chart.js](https://img.shields.io/badge/Chart.js-4.5.1-f5788d?style=for-the-badge&logo=chartdotjs)](https://www.chartjs.org/)
+[![Pyodide](https://img.shields.io/badge/Pyodide-0.25-f7c948?style=for-the-badge)](https://pyodide.org/)
 
 ## Live Links
 
 - Portal: https://anis151993.github.io/Notebook-Studio/
-- Overview anchor: https://anis151993.github.io/Notebook-Studio/index.html#overview
 - Live app: https://datamentor.marcbd.site
 - Repository: https://github.com/ANIS151993/Notebook-Studio
 
 ## Quick Navigation
 
-1. [Project Snapshot](#1-project-snapshot)
-2. [Single-Page Website Structure](#2-single-page-website-structure)
-3. [Scientific Framework](#3-scientific-framework)
-4. [All Graphs and Charts](#4-all-graphs-and-charts)
-5. [Interactive Chart Profiles](#5-interactive-chart-profiles)
-6. [Architecture Graph](#6-architecture-graph)
-7. [Development Graph (Timeline)](#7-development-graph-timeline)
-8. [Technology Stack](#8-technology-stack)
+1. [What is DataMentor](#1-what-is-datamentor)
+2. [Key Features](#2-key-features)
+3. [Universal Visualizations](#3-universal-visualizations)
+4. [Domain-Aware Analysis](#4-domain-aware-analysis)
+5. [Interactive Python Notebook](#5-interactive-python-notebook)
+6. [Architecture](#6-architecture)
+7. [Technology Stack](#7-technology-stack)
+8. [Claude Skill](#8-claude-skill)
 9. [Run Locally](#9-run-locally)
-10. [Deployment Notes](#10-deployment-notes)
-11. [Professional Profile](#11-professional-profile)
+10. [Portal Website](#10-portal-website)
+11. [Development Timeline](#11-development-timeline)
+12. [Professional Profile](#12-professional-profile)
 
-## 1) Project Snapshot
+## 1) What is DataMentor
 
-DataMentor provides:
-- deterministic CSV cleaning,
-- guided notebook orchestration,
-- in-browser Python execution,
-- hybrid runtime repair,
-- interactive scientific evaluation charts,
-- one unified documentation + research portal.
+DataMentor is a serverless, in-browser platform for CSV data analysis. Upload any CSV file and get:
 
-## 2) Single-Page Website Structure
+- **Deterministic cleaning** — header normalization, whitespace trimming, duplicate removal, missing value handling
+- **10 interactive chart types** — each with dynamic column selectors that adapt to your data
+- **AI-powered analysis** — domain-aware insights generated from the columns you select
+- **Python notebooks** — 14 guided code cells executing in-browser via Pyodide, including matplotlib visualizations
+- **AI runtime repair** — automatic error detection and fix suggestions for notebook execution failures
+- **Cloud persistence** — Firebase auth with Firestore save/load/delete for your analysis workspaces
 
-The website (`docs/index.html`) is one integrated technical page with these sections:
+## 2) Key Features
 
-- Overview
-- Scientific Basis
-- Development Steps
-- Architecture
-- Evaluation
-- Research Brief
-- Profiles and Contact
+### Upload and Clean
+- Drag-and-drop CSV upload with Papa Parse
+- Automatic column type detection (numeric, categorical, boolean, datetime)
+- Deterministic cleaning pipeline with transparent step-by-step display
 
-<details>
-<summary><strong>Portal Interaction Features</strong></summary>
+### Visualize with Column Selectors
+- **STANDARD mode**: 10 pre-configured chart panels, each with dropdown column selectors
+- **CUSTOM mode**: pick any chart type and map your own columns
+- Smart defaults — auto-selects the best columns for each chart type based on data
 
-- Sticky section-aware navigation
-- Clickable architecture module explorer
-- Clickable development stage explorer with progress bar
-- KPI counter animations
-- Profile-based chart switching (Academic, SME, Enterprise)
-- Multi-chart responsive analytics grid
+### Domain-Aware Analysis
+- Knowledge-base engine that recognizes domain-specific columns (medical, financial, etc.)
+- Generates contextual insights: statistical findings, suitability assessments, pair-wise relationships
+- Updates dynamically whenever you change column selections
 
-</details>
+### In-Browser Python Execution
+- Pyodide runtime with pandas, numpy, matplotlib, scipy pre-loaded
+- 14 guided notebook cells from basic exploration to advanced visualizations
+- Matplotlib plots rendered inline as base64 PNG images — no server required
 
-## 3) Scientific Framework
+### Account Workspace
+- Firebase Google authentication
+- Save, load, and delete uploaded CSV works
+- Cloud (Firestore) and offline (localStorage) persistence
 
-### Problem
-Real-world CSV workflows are frequently slow, fragmented, and non-reproducible.
+## 3) Universal Visualizations
 
-### Hypothesis
-A serverless deterministic pipeline with browser-native execution and hybrid repair can improve:
-- productivity,
-- reproducibility,
-- runtime reliability.
+All 10 chart types work with any CSV — no hardcoded data assumptions.
 
-### Evaluation Objectives
-- Measure stage-level time savings versus manual baseline.
-- Measure quality uplift across key data dimensions.
-- Measure runtime repair outcomes and intervention rates.
+| Chart Type | Columns | Description |
+|---|---|---|
+| **DistPlot** | 1 numeric | Distribution histogram with KDE density curve |
+| **Pie Chart** | 1 categorical/boolean | Proportional category breakdown |
+| **Violin Plot** | 1 numeric + 1 categorical | Distribution shape comparison across groups |
+| **HeatMap** | 2-8 numeric | Correlation matrix with annotated r-values |
+| **PairPlot** | 2-10 numeric + optional group | NxN scatter/histogram grid with responsive scaling |
+| **JointPlot** | 2 numeric | Scatter with marginal distributions and regression line |
+| **Bar Chart** | 1 categorical + 1 numeric | Aggregated values by category |
+| **Histogram** | 1 numeric | Frequency distribution with configurable bins |
+| **Scatter Plot** | 2 numeric | Relationship between two continuous variables |
+| **Line Chart** | 1 x-axis + 1 numeric | Trend visualization over ordered values |
 
-## 4) All Graphs and Charts
+### Responsive PairPlot Scaling
 
-All charts are present in the Evaluation section of the website and connected to profile switching.
+The PairPlot automatically adapts its layout based on the number of selected columns:
+- 2 columns: fills available width at 320px cell height
+- 3-4 columns: moderately scaled grid
+- 5-6 columns: compact grid at 130px cell height
+- 7+ columns: dense grid at 90px cell height with scaled fonts
 
-| # | Chart | Type | Canvas ID | Main Signal |
-|---|---|---|---|---|
-| 1 | Processing Time Trend | Line | `trendChart` | Monthly processing-time reduction |
-| 2 | Manual vs Automated Stage Time | Bar | `barChart` | Stage-by-stage efficiency comparison |
-| 3 | Data Quality Radar | Radar | `radarChart` | Quality dimension uplift |
-| 4 | Scalability Profile | Scatter | `scatterChart` | Size vs processing-time behavior |
-| 5 | Cumulative Workflow Savings | Area/Line | `areaChart` | End-to-end cumulative time savings |
-| 6 | Error Recovery Distribution | Doughnut | `doughnutChart` | Auto vs retry vs manual recovery share |
+## 4) Domain-Aware Analysis
 
-<details>
-<summary><strong>Chart 1: Processing Time Trend (Line)</strong></summary>
+The analysis engine (`lib/visualizationAnalysis.ts`) maintains a knowledge base of domain-specific column insights. When recognized columns are selected (e.g., `age`, `cholesterol`, `blood_pressure`), it generates:
 
-- Purpose: show how workflow time changes over monthly periods.
-- X-axis: time window (Jan-Aug).
-- Y-axis: average processing time (minutes).
-- Interaction: updates when chart profile changes.
+- **Statistical insights** — mean, median, spread, skewness relative to domain thresholds
+- **Clinical/domain context** — e.g., "Cholesterol above 200 mg/dL indicates elevated cardiovascular risk"
+- **Pair-wise relationships** — e.g., "Age vs Cholesterol: cardiac risk increases with age-related lipid changes"
+- **Chart suitability** — why the selected visualization is appropriate for the data
 
-</details>
+The analysis panel updates in real-time via `useMemo` whenever column selections change.
 
-<details>
-<summary><strong>Chart 2: Manual vs Automated Stage Time (Bar)</strong></summary>
+## 5) Interactive Python Notebook
 
-- Purpose: compare manual baseline against DataMentor per stage.
-- Stages: ingestion, cleaning, validation, notebook prep, debugging.
-- Interaction: side-by-side bars update by selected profile.
+14 guided cells covering the complete analysis workflow:
 
-</details>
+| # | Cell | What It Does |
+|---|---|---|
+| 1 | Load CSV | Import data with pandas |
+| 2 | Shape & Info | Data dimensions and types |
+| 3 | Descriptive Stats | Statistical summary |
+| 4 | Missing Values | Null detection |
+| 5 | Duplicates | Duplicate identification and removal |
+| 6 | Correlation | Numeric correlation matrix |
+| 7 | Value Counts | Category frequencies |
+| 8 | DistPlot | matplotlib KDE + histogram visualization |
+| 9 | Pie Chart | Auto-detected categorical pie chart |
+| 10 | Violin Plot | Grouped distribution comparison |
+| 11 | HeatMap | Annotated correlation heatmap |
+| 12 | PairPlot | NxN scatter/histogram grid |
+| 13 | JointPlot | Joint scatter with marginal histograms |
+| 14 | Custom Code | Your own Python code |
 
-<details>
-<summary><strong>Chart 3: Data Quality Radar (Radar)</strong></summary>
+### Inline Image Rendering
 
-- Purpose: compare quality dimensions before and after automation.
-- Dimensions: completeness, consistency, uniqueness, traceability, reusability.
-- Interaction: profile-specific quality curves.
+Matplotlib plots use the `AGG` backend, render to `BytesIO` buffers, encode as base64 PNG, and display inline via the `__IMG_BASE64__:` protocol — enabling full matplotlib visualizations without any server-side infrastructure.
 
-</details>
-
-<details>
-<summary><strong>Chart 4: Scalability Profile (Scatter)</strong></summary>
-
-- Purpose: evaluate time growth as dataset size increases.
-- X-axis: dataset size (x1000 rows).
-- Y-axis: processing time (minutes).
-- Interaction: profile-specific point distribution.
-
-</details>
-
-<details>
-<summary><strong>Chart 5: Cumulative Workflow Savings (Area)</strong></summary>
-
-- Purpose: compare accumulated manual vs automated minutes across stages.
-- Visual: two filled lines showing cumulative divergence.
-- Interaction: profile-based cumulative curves.
-
-</details>
-
-<details>
-<summary><strong>Chart 6: Error Recovery Distribution (Doughnut)</strong></summary>
-
-- Purpose: visualize runtime repair outcomes.
-- Categories: auto-resolved, retry-resolved, manual intervention.
-- Interaction: updates by profile scenario.
-
-</details>
-
-## 5) Interactive Chart Profiles
-
-The chart toolbar supports three scenario profiles:
-- `Academic Labs`
-- `SME Operations`
-- `Enterprise Analytics`
-
-Switching profile updates all six charts together.
-
-```mermaid
-flowchart LR
-    A[Select Profile] --> B[Update Trend]
-    A --> C[Update Stage Bar]
-    A --> D[Update Radar]
-    A --> E[Update Scatter]
-    A --> F[Update Area]
-    A --> G[Update Doughnut]
-```
-
-## 6) Architecture Graph
+## 6) Architecture
 
 ```mermaid
 flowchart TD
-    A[CSV Ingestion] --> B[Cleaning Engine]
-    B --> C[Notebook Builder]
-    C --> D[Pyodide Runtime]
-    D --> E[Evaluation Charts]
-
-    F[Firebase Auth] --> G[User Session]
-    G --> H[Workspace Storage]
-    H --> I[User Dashboard]
-
-    D --> J[Runtime Trace]
-    J --> K[Rule-based Repair]
-    K --> L[Model Fallback]
-    L --> D
+    A[CSV Upload] --> B[Papa Parse]
+    B --> C[Column Type Detection]
+    C --> D[Cleaning Pipeline]
+    
+    D --> E[Notebook Builder]
+    D --> F[Visualization Engine]
+    D --> G[Account Workspace]
+    
+    E --> H[Pyodide Runtime]
+    H --> I[matplotlib → base64]
+    H --> J[AI Repair Assistant]
+    J --> H
+    
+    F --> K[STANDARD Mode]
+    F --> L[CUSTOM Mode]
+    K --> M[Column Selectors]
+    L --> M
+    M --> N[10 Universal Charts]
+    N --> O[Analysis Engine]
+    O --> P[Domain Knowledge Base]
+    
+    G --> Q[Firebase Auth]
+    Q --> R[Firestore Cloud]
+    Q --> S[localStorage Fallback]
 ```
 
-## 7) Development Graph (Timeline)
+## 7) Technology Stack
 
-```mermaid
-gantt
-    title DataMentor Development Timeline
-    dateFormat  YYYY-MM-DD
-    section Core
-    Problem Discovery            :a1, 2026-01-01, 7d
-    Deterministic Cleaning       :a2, after a1, 10d
-    Notebook Orchestration       :a3, after a2, 8d
-    section Platform
-    Auth and Persistence         :b1, after a3, 8d
-    Visual Analytics             :b2, after b1, 9d
-    AI Reliability Layer         :b3, after b2, 9d
-```
+| Layer | Technologies |
+|---|---|
+| **Framework** | Next.js 16 (Turbopack), React 19, TypeScript 5 |
+| **Charts** | Chart.js 4.5.1, react-chartjs-2, chartjs-chart-matrix |
+| **Python** | Pyodide 0.25.0 (pandas, numpy, matplotlib, scipy) |
+| **Parsing** | Papa Parse 5.4.1 |
+| **Auth/DB** | Firebase 10.12.5 (Auth + Firestore) |
+| **Styling** | Tailwind CSS 4 |
+| **Code Display** | react-syntax-highlighter |
+| **DnD** | @dnd-kit (core, sortable, utilities) |
 
-## 8) Technology Stack
+## 8) Claude Skill
 
-- Next.js 16
-- React 19
-- TypeScript
-- Chart.js
-- Firebase Authentication + Firestore
-- Papa Parse
-- Pyodide
+**Build DataMentor yourself using the Claude Skill.**
+
+The skill file contains the complete blueprint to recreate this application from scratch — including architecture, every component, implementation patterns, and step-by-step build instructions.
+
+### Download
+
+Download the skill file from this repository:
+
+**[`datamentor-skill.md`](./datamentor-skill.md)**
+
+### How to Use
+
+1. Download `datamentor-skill.md` from this repository
+2. Open Claude Code (CLI), Claude Desktop, or any Claude-powered tool
+3. Provide the skill file as context and ask Claude to build the app
+4. Follow the guided steps to customize for your use case
+
+The skill covers:
+- Complete project structure and dependencies
+- CSV parsing and column type detection
+- All 10 visualization types with column selectors
+- Domain-aware analysis knowledge base
+- Pyodide notebook with matplotlib rendering
+- Firebase auth and persistence
+- Account workspace with save/load/delete
+- GitHub Pages portal site
 
 ## 9) Run Locally
 
@@ -229,19 +218,60 @@ npm run lint
 npm run build
 ```
 
-## 10) Deployment Notes
+### Environment Variables
 
-GitHub Pages portal files:
-- `docs/index.html`
-- `docs/styles.css`
-- `docs/main.js`
+Create `.env.local` with your Firebase config:
 
-Deployment flow:
-1. Update docs files.
-2. Commit and push to `main`.
-3. GitHub Pages publishes the updated portal.
+```
+NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+```
 
-## 11) Professional Profile
+## 10) Portal Website
+
+The GitHub Pages portal (`docs/`) is a single-page technical documentation site featuring:
+
+- Sticky section-aware navigation
+- Animated KPI counters
+- Interactive development step explorer with progress bar
+- Interactive architecture module explorer
+- 6 evaluation charts with profile switching (Academic / SME / Enterprise)
+- Video overview with lazy YouTube embed
+- Research paper preview with encrypted download gate
+- Claude Skill download section
+- Professional profile and collaboration request builder
+
+**Portal files:**
+- `docs/index.html` — structure
+- `docs/styles.css` — styling
+- `docs/main.js` — interactivity
+
+## 11) Development Timeline
+
+```mermaid
+gantt
+    title DataMentor Development Timeline
+    dateFormat  YYYY-MM-DD
+    section Core
+    Problem Discovery            :a1, 2026-01-01, 7d
+    Deterministic Cleaning       :a2, after a1, 10d
+    Notebook Orchestration       :a3, after a2, 8d
+    section Platform
+    Auth and Persistence         :b1, after a3, 8d
+    Visual Analytics             :b2, after b1, 9d
+    AI Reliability Layer         :b3, after b2, 9d
+    section Advanced
+    Universal Visualizations     :c1, after b3, 7d
+    Domain-Aware Analysis        :c2, after c1, 5d
+    Notebook Viz Cells           :c3, after c2, 4d
+    Account Workspace            :c4, after c3, 3d
+```
+
+## 12) Professional Profile
 
 Md Anisur Rahman Chowdhury  
 Master's of Information Technology  

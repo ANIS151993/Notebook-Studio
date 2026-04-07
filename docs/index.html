@@ -21,10 +21,12 @@
       <a class="brand" href="#overview">Notebook Studio: DataMentor</a>
       <nav class="topnav" aria-label="Primary">
         <a href="#overview">Overview</a>
+        <a href="#features">Features</a>
         <a href="#science">Scientific Basis</a>
         <a href="#workflow">Development Steps</a>
         <a href="#architecture">Architecture</a>
         <a href="#evaluation">Evaluation</a>
+        <a href="#skill">Claude Skill</a>
         <a href="#video">Video Overview</a>
         <a href="#paper">Research Paper</a>
         <a href="#contact">Profiles & Contact</a>
@@ -40,8 +42,8 @@
           <p class="eyebrow">Integrated Technical + Scientific Documentation</p>
           <h1>DataMentor: A Reproducible Framework for Serverless CSV Intelligence and Notebook Automation</h1>
           <p class="lead">
-            This single website includes everything in one place: product overview, step-by-step development,
-            system architecture, evaluation metrics, methodology, references, and professional profile.
+            Upload any CSV and get 10 interactive visualizations with column selectors, domain-aware analysis,
+            in-browser Python notebooks with matplotlib, AI runtime repair, and cloud persistence — all serverless.
           </p>
           <div class="hero-actions">
             <a class="btn-primary" href="#workflow">View Development Steps</a>
@@ -55,10 +57,12 @@
             <a href="https://marcbd.com" target="_blank" rel="noopener noreferrer">Portfolio</a>
           </div>
           <div class="hero-tags">
-            <span>Serverless Analytics</span>
+            <span>10 Universal Charts</span>
+            <span>Domain-Aware Analysis</span>
             <span>In-Browser Python</span>
-            <span>Interactive Notebooks</span>
-            <span>Hybrid AI Runtime Repair</span>
+            <span>matplotlib Inline</span>
+            <span>AI Runtime Repair</span>
+            <span>Claude Skill</span>
           </div>
         </article>
 
@@ -76,17 +80,76 @@
 
       <div class="metrics-grid">
         <article>
-          <h3 class="kpi-value" data-target="70" data-suffix="%+">0</h3>
-          <p>Reduction in repetitive manual preprocessing</p>
+          <h3 class="kpi-value" data-target="10" data-suffix="">0</h3>
+          <p>Universal chart types with dynamic column selectors</p>
         </article>
         <article>
-          <h3 class="kpi-value" data-target="3" data-suffix="x">0</h3>
-          <p>Faster notebook runtime issue resolution</p>
+          <h3 class="kpi-value" data-target="14" data-suffix="">0</h3>
+          <p>Guided Python notebook cells with inline matplotlib</p>
         </article>
         <article>
           <h3 class="kpi-value" data-target="100" data-suffix="%">0</h3>
-          <p>Cloud-delivered serverless workflow coverage</p>
+          <p>Serverless — everything runs in your browser</p>
         </article>
+      </div>
+    </section>
+
+    <section class="panel reveal" id="features">
+      <div class="section-head">
+        <h2>Platform Features</h2>
+        <p>Everything you need to analyze any CSV dataset — from upload to publication-quality visualizations.</p>
+      </div>
+
+      <div class="features-grid">
+        <article class="feature-card">
+          <div class="feature-icon">10</div>
+          <h3>Universal Visualizations</h3>
+          <p>DistPlot, Pie, Violin, HeatMap, PairPlot, JointPlot, Bar, Histogram, Scatter, Line — each with dynamic column selectors that adapt to your data.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">AI</div>
+          <h3>Domain-Aware Analysis</h3>
+          <p>Knowledge-base engine generates contextual insights based on recognized column names — medical, financial, or scientific. Updates in real-time as you change selections.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">Py</div>
+          <h3>In-Browser Python</h3>
+          <p>14 guided Pyodide cells including 6 matplotlib visualizations rendered inline as base64 images. Full pandas, numpy, matplotlib, and scipy — no server required.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">FIX</div>
+          <h3>AI Runtime Repair</h3>
+          <p>Rule-based error detection with model-assisted fallback. Automatically identifies notebook execution failures and suggests one-click fixes.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">DB</div>
+          <h3>Cloud Persistence</h3>
+          <p>Firebase Google auth with Firestore cloud storage. Save, load, and delete your analysis workspaces. Offline localStorage fallback included.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">CSV</div>
+          <h3>Deterministic Cleaning</h3>
+          <p>Automated pipeline: header normalization, whitespace trimming, duplicate removal, missing value handling — fully transparent and reproducible.</p>
+        </article>
+      </div>
+
+      <div class="viz-showcase">
+        <div class="section-head" style="margin-top:0.8rem">
+          <h2>All 10 Visualization Types</h2>
+          <p>Every chart type includes dropdown column selectors in both STANDARD and CUSTOM modes.</p>
+        </div>
+        <div class="viz-type-grid" role="list">
+          <div class="viz-type-pill">DistPlot</div>
+          <div class="viz-type-pill">Pie Chart</div>
+          <div class="viz-type-pill">Violin Plot</div>
+          <div class="viz-type-pill">HeatMap</div>
+          <div class="viz-type-pill">PairPlot</div>
+          <div class="viz-type-pill">JointPlot</div>
+          <div class="viz-type-pill">Bar Chart</div>
+          <div class="viz-type-pill">Histogram</div>
+          <div class="viz-type-pill">Scatter Plot</div>
+          <div class="viz-type-pill">Line Chart</div>
+        </div>
       </div>
     </section>
 
@@ -140,8 +203,11 @@
           <button type="button" class="build-tab" data-step="engine">Step 2: Data Cleaning Engine</button>
           <button type="button" class="build-tab" data-step="notebook">Step 3: Notebook Orchestration</button>
           <button type="button" class="build-tab" data-step="platform">Step 4: Auth + Persistence</button>
-          <button type="button" class="build-tab" data-step="visuals">Step 5: Visual Analytics</button>
-          <button type="button" class="build-tab" data-step="reliability">Step 6: AI Reliability Layer</button>
+          <button type="button" class="build-tab" data-step="visuals">Step 5: Universal Visualizations</button>
+          <button type="button" class="build-tab" data-step="analysis">Step 6: Domain-Aware Analysis</button>
+          <button type="button" class="build-tab" data-step="notebookViz">Step 7: Notebook Visualizations</button>
+          <button type="button" class="build-tab" data-step="reliability">Step 8: AI Reliability Layer</button>
+          <button type="button" class="build-tab" data-step="workspace">Step 9: Account Workspace</button>
         </div>
 
         <article class="build-detail" id="buildDetail" aria-live="polite">
@@ -174,8 +240,10 @@
           <button type="button" class="arch-node" data-node="runtime">4. Pyodide Runtime</button>
           <button type="button" class="arch-node" data-node="auth">5. Firebase Auth</button>
           <button type="button" class="arch-node" data-node="storage">6. Workspace Storage</button>
-          <button type="button" class="arch-node" data-node="dashboard">7. User Dashboard</button>
-          <button type="button" class="arch-node" data-node="assistant">8. AI Repair Assistant</button>
+          <button type="button" class="arch-node" data-node="viz">7. Visualization Engine</button>
+          <button type="button" class="arch-node" data-node="analysis">8. Analysis Engine</button>
+          <button type="button" class="arch-node" data-node="dashboard">9. User Dashboard</button>
+          <button type="button" class="arch-node" data-node="assistant">10. AI Repair Assistant</button>
         </div>
 
         <article class="arch-detail" id="archDetail" aria-live="polite">
@@ -189,7 +257,7 @@
         </article>
       </div>
 
-      <p class="flow-note"><strong>Data Flow:</strong> Ingestion → Cleaning → Notebook → Runtime → Visualization, with Auth + Storage + AI reliability spanning all stages.</p>
+      <p class="flow-note"><strong>Data Flow:</strong> Ingestion → Cleaning → Notebook → Runtime → Visualization → Domain Analysis, with Auth + Storage + AI reliability spanning all stages.</p>
     </section>
 
     <section class="panel reveal" id="evaluation">
@@ -247,6 +315,71 @@
           <h3>Error Recovery Distribution</h3>
           <div class="chart-frame"><canvas id="doughnutChart"></canvas></div>
         </article>
+      </div>
+    </section>
+
+    <section class="panel reveal" id="skill">
+      <div class="section-head">
+        <h2>Claude Skill — Build DataMentor Yourself</h2>
+        <p>Download the skill file and use it with Claude Code, Claude Desktop, or any Claude-powered tool to recreate this entire application.</p>
+      </div>
+
+      <div class="skill-layout">
+        <article class="skill-main-card">
+          <div class="skill-badge">CLAUDE SKILL</div>
+          <h3>datamentor-skill.md</h3>
+          <p class="skill-description">
+            The complete blueprint to build DataMentor from scratch. Covers the full technology stack, architecture,
+            every component, implementation patterns, and step-by-step build instructions.
+          </p>
+
+          <div class="skill-covers-grid">
+            <div class="skill-cover-item">Project setup and dependencies</div>
+            <div class="skill-cover-item">CSV parsing and column detection</div>
+            <div class="skill-cover-item">10 universal visualization types</div>
+            <div class="skill-cover-item">Domain-aware analysis engine</div>
+            <div class="skill-cover-item">Pyodide notebook with matplotlib</div>
+            <div class="skill-cover-item">Firebase auth and persistence</div>
+            <div class="skill-cover-item">AI runtime repair system</div>
+            <div class="skill-cover-item">Account workspace (save/load/delete)</div>
+          </div>
+
+          <a class="btn-primary skill-download-btn" href="https://raw.githubusercontent.com/ANIS151993/Notebook-Studio/main/datamentor-skill.md" download="datamentor-skill.md">
+            Download Skill File
+          </a>
+        </article>
+
+        <aside class="skill-steps-card">
+          <h3>How to Use</h3>
+          <ol class="skill-steps-list">
+            <li>
+              <strong>Download</strong>
+              <span>Get <code>datamentor-skill.md</code> using the button or from the GitHub repository.</span>
+            </li>
+            <li>
+              <strong>Open Claude</strong>
+              <span>Use Claude Code (CLI), Claude Desktop, or any Claude-powered tool.</span>
+            </li>
+            <li>
+              <strong>Provide the Skill</strong>
+              <span>Pass the skill file as context and ask Claude to build the application.</span>
+            </li>
+            <li>
+              <strong>Customize</strong>
+              <span>Modify the domain knowledge base, add your own chart types, or adjust the UI to your needs.</span>
+            </li>
+          </ol>
+
+          <div class="skill-tech-pills">
+            <span class="pill">Next.js 16</span>
+            <span class="pill">React 19</span>
+            <span class="pill">TypeScript</span>
+            <span class="pill">Chart.js</span>
+            <span class="pill">Pyodide</span>
+            <span class="pill">Firebase</span>
+            <span class="pill accent">Claude Skill</span>
+          </div>
+        </aside>
       </div>
     </section>
 

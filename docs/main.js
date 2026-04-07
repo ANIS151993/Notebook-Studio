@@ -55,6 +55,22 @@ const architectureDetails = {
     outputs: "Resumable data workflow interface",
     reliability: "State-aware UI with explicit status handling",
   },
+  viz: {
+    title: "Visualization Engine",
+    description:
+      "Renders 10 universal chart types (DistPlot, Pie, Violin, HeatMap, PairPlot, JointPlot, Bar, Histogram, Scatter, Line) with dynamic column selectors in both STANDARD and CUSTOM modes.",
+    inputs: "Cleaned dataset + user column selections",
+    outputs: "Interactive Chart.js visualizations with responsive scaling",
+    reliability: "Column type filtering, smart defaults, and adaptive PairPlot grid scaling",
+  },
+  analysis: {
+    title: "Domain-Aware Analysis Engine",
+    description:
+      "Knowledge-base system that generates contextual data insights based on recognized column names from medical, financial, and scientific domains.",
+    inputs: "Selected columns + computed statistics",
+    outputs: "Statistical insights, domain context, pair-wise relationships, suitability assessments",
+    reliability: "Real-time recomputation via useMemo on every column selection change",
+  },
   assistant: {
     title: "AI Runtime Repair Assistant",
     description:
@@ -99,24 +115,48 @@ const buildStepDetails = {
     result: "Session continuity and account-scoped workflows.",
   },
   visuals: {
-    title: "Step 5: Visual Analytics",
+    title: "Step 5: Universal Visualizations",
     description:
-      "Integrated chart modules for quality diagnostics and performance comparison.",
-    goal: "Convert processed data into immediate, interpretable insights.",
-    built: "Trend, stage-time, radar, and scalability visual layers.",
-    result: "Faster quality review and evidence-based decisions.",
+      "Built 10 universal chart types with dynamic column selectors replacing hardcoded industry charts.",
+    goal: "Allow any CSV to be visualized without data-specific assumptions.",
+    built: "DistPlot, Pie, Violin, HeatMap, PairPlot, JointPlot, Bar, Histogram, Scatter, Line — each with column dropdowns and smart defaults.",
+    result: "Fully data-agnostic visualization system with responsive PairPlot scaling.",
+  },
+  analysis: {
+    title: "Step 6: Domain-Aware Analysis",
+    description:
+      "Created a knowledge-base engine for generating contextual data insights.",
+    goal: "Go beyond generic chart labels to domain-specific medical, financial, and scientific context.",
+    built: "Column knowledge base, per-chart analysis generators, real-time useMemo recomputation.",
+    result: "Dynamic AI-powered analysis that updates on every column selection change.",
+  },
+  notebookViz: {
+    title: "Step 7: Notebook Visualizations",
+    description:
+      "Added 6 matplotlib visualization cells to the interactive Python notebook.",
+    goal: "Enable publication-quality plots directly in the browser via Pyodide.",
+    built: "DistPlot, Pie, Violin, HeatMap, PairPlot, JointPlot cells with AGG backend → BytesIO → base64 inline rendering.",
+    result: "14 complete notebook cells covering exploration through advanced visualizations.",
   },
   reliability: {
-    title: "Step 6: AI Reliability Layer",
+    title: "Step 8: AI Reliability Layer",
     description:
       "Implemented runtime repair pipeline for common notebook execution failures.",
     goal: "Reduce debugging overhead and improve first-pass completion.",
     built: "Rule-based repair path plus local-model fallback.",
     result: "Improved runtime resilience and user confidence.",
   },
+  workspace: {
+    title: "Step 9: Account Workspace",
+    description:
+      "Added cloud persistence with save, load, and delete operations for CSV works.",
+    goal: "Enable users to manage their analysis workspaces across sessions.",
+    built: "Firebase Firestore save/load/delete, localStorage fallback, confirmation dialogs, auto-refresh.",
+    result: "Complete account-scoped workspace management with both cloud and offline support.",
+  },
 };
 
-const buildStepOrder = ["discovery", "engine", "notebook", "platform", "visuals", "reliability"];
+const buildStepOrder = ["discovery", "engine", "notebook", "platform", "visuals", "analysis", "notebookViz", "reliability", "workspace"];
 
 function initArchitectureExplorer() {
   const nodeButtons = Array.from(document.querySelectorAll(".arch-node"));
