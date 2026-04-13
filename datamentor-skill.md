@@ -1,3 +1,8 @@
+---
+name: DataMentor
+description: Build a complete scientific CSV intelligence and notebook automation web app from scratch using Next.js 16, React 19, TypeScript, Chart.js, Pyodide, and Firebase.
+---
+
 # DataMentor — Claude Skill
 
 > Build a complete scientific CSV intelligence and notebook automation web app from scratch.

@@ -920,12 +920,229 @@ window.addEventListener("resize", () => {
   }, 180);
 });
 
+const skillBuilderSteps = {
+  step1: {
+    badge: "STEP 1",
+    title: "Download the Skill File",
+    body: `<p>The skill file <code>datamentor-skill.md</code> is the complete blueprint. It contains every instruction Claude needs to build the entire application.</p>
+    <div class="skill-builder-instructions">
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">A</span>
+        <div>
+          <strong>Option A — Download from this page</strong>
+          <p>Click the green "Download Skill File" button at the bottom of this section. You will be asked to star the GitHub profile first (takes 5 seconds).</p>
+        </div>
+      </div>
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">B</span>
+        <div>
+          <strong>Option B — Clone from GitHub</strong>
+          <p>Run this command in your terminal to get the file directly:</p>
+          <div class="skill-code-block"><code>git clone https://github.com/ANIS151993/Notebook-Studio.git<br>cd Notebook-Studio<br>ls datamentor-skill.md</code></div>
+        </div>
+      </div>
+    </div>
+    <div class="skill-builder-tip"><strong>Tip:</strong> Save the file somewhere easy to find, like your Desktop or Documents folder. You will reference this file in Step 3.</div>`,
+  },
+  step2: {
+    badge: "STEP 2",
+    title: "Create a New Project Folder",
+    body: `<p>Open your terminal (Command Prompt on Windows, Terminal on Mac/Linux) and create a new empty folder for your project.</p>
+    <div class="skill-builder-instructions">
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">1</span>
+        <div>
+          <strong>Create the project folder</strong>
+          <p>Run these commands to create and enter your project directory:</p>
+          <div class="skill-code-block"><code>mkdir my-datamentor<br>cd my-datamentor</code></div>
+        </div>
+      </div>
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">2</span>
+        <div>
+          <strong>Copy the skill file into this folder</strong>
+          <p>Move or copy the <code>datamentor-skill.md</code> file you downloaded in Step 1 into this <code>my-datamentor</code> folder. This lets Claude read it directly.</p>
+        </div>
+      </div>
+    </div>
+    <div class="skill-builder-tip"><strong>Tip:</strong> If you are using Claude Desktop instead of Claude Code, you can skip creating a folder — just drag the skill file into the Claude Desktop chat window in Step 3.</div>`,
+  },
+  step3: {
+    badge: "STEP 3",
+    title: "Give the Skill File to Claude",
+    body: `<p>Now launch Claude and provide the skill file so it can read the full blueprint and start building.</p>
+    <div class="skill-builder-instructions">
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">A</span>
+        <div>
+          <strong>If using Claude Code (CLI)</strong>
+          <p>Open your terminal inside the <code>my-datamentor</code> folder and run:</p>
+          <div class="skill-code-block"><code>claude</code></div>
+          <p>Then type this message to Claude:</p>
+          <div class="skill-code-block"><code>Read datamentor-skill.md and build the entire DataMentor application following every step in the skill file. Start from Step 1 and go through all 11 steps.</code></div>
+        </div>
+      </div>
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">B</span>
+        <div>
+          <strong>If using Claude Desktop</strong>
+          <p>Open Claude Desktop, start a new conversation, and drag-and-drop the <code>datamentor-skill.md</code> file into the chat. Then type the same message above.</p>
+        </div>
+      </div>
+    </div>
+    <div class="skill-builder-tip"><strong>Important:</strong> Claude will start creating files and writing code. Approve the file creation prompts when asked. This process builds the entire application automatically.</div>`,
+  },
+  step4: {
+    badge: "STEP 4",
+    title: "Let Claude Build — Key Commands",
+    body: `<p>Claude will follow the skill file and execute these build steps automatically. Here is what happens behind the scenes:</p>
+    <div class="skill-builder-instructions">
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">1</span>
+        <div>
+          <strong>Project initialization</strong>
+          <p>Claude runs <code>npx create-next-app@latest</code> to scaffold a Next.js 16 project with TypeScript and Tailwind CSS.</p>
+        </div>
+      </div>
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">2</span>
+        <div>
+          <strong>Install dependencies</strong>
+          <p>Claude installs all required packages:</p>
+          <div class="skill-code-block"><code>npm install chart.js react-chartjs-2 chartjs-chart-matrix<br>npm install papaparse firebase react-syntax-highlighter<br>npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities</code></div>
+        </div>
+      </div>
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">3</span>
+        <div>
+          <strong>Create all components</strong>
+          <p>Claude writes 20+ files including the CSV orchestrator, all 10 chart components, the notebook viewer, the AI assistant, and all library utilities.</p>
+        </div>
+      </div>
+    </div>
+    <div class="skill-builder-tip"><strong>Tip:</strong> If Claude pauses or asks a question, answer it and tell it to continue. You can also say "continue building from where you left off" if the conversation gets long.</div>`,
+  },
+  step5: {
+    badge: "STEP 5",
+    title: "Configure Firebase",
+    body: `<p>The application uses Firebase for Google sign-in and cloud storage. You need to create a Firebase project and add your credentials.</p>
+    <div class="skill-builder-instructions">
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">1</span>
+        <div>
+          <strong>Create a Firebase project</strong>
+          <p>Go to <code>console.firebase.google.com</code>, click "Add project", and follow the setup wizard. Choose any project name.</p>
+        </div>
+      </div>
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">2</span>
+        <div>
+          <strong>Enable Authentication</strong>
+          <p>In your Firebase project, go to Build > Authentication > Sign-in method, and enable "Google" as a sign-in provider.</p>
+        </div>
+      </div>
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">3</span>
+        <div>
+          <strong>Create Firestore Database</strong>
+          <p>Go to Build > Firestore Database, click "Create database", and choose "Start in test mode" for development.</p>
+        </div>
+      </div>
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">4</span>
+        <div>
+          <strong>Add credentials to your project</strong>
+          <p>In Project Settings > General > Your apps, click the web icon (&lt;/&gt;), register the app, and copy the config. Create a <code>.env.local</code> file in your project root:</p>
+          <div class="skill-code-block"><code>NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key<br>NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com<br>NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id<br>NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com<br>NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id<br>NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id</code></div>
+        </div>
+      </div>
+    </div>
+    <div class="skill-builder-tip"><strong>Note:</strong> Firebase is optional for basic CSV analysis. The app works without it — you just won't have cloud save/load features. You can skip this step and add it later.</div>`,
+  },
+  step6: {
+    badge: "STEP 6",
+    title: "Launch Your App and Customize",
+    body: `<p>Your DataMentor application is now built. Start the development server and see it in action.</p>
+    <div class="skill-builder-instructions">
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">1</span>
+        <div>
+          <strong>Start the development server</strong>
+          <div class="skill-code-block"><code>npm run dev</code></div>
+          <p>Open your browser to <code>http://localhost:3000</code> to see your DataMentor app running.</p>
+        </div>
+      </div>
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">2</span>
+        <div>
+          <strong>Test with a CSV file</strong>
+          <p>Upload any CSV file to verify the cleaning pipeline, visualizations, and notebook all work correctly. Try the built-in sample datasets first.</p>
+        </div>
+      </div>
+      <div class="skill-builder-instruction">
+        <span class="skill-builder-instruction-marker">3</span>
+        <div>
+          <strong>Customize to your needs</strong>
+          <p>Ask Claude to help you modify the app. Example prompts you can try:</p>
+          <div class="skill-code-block"><code>"Add a new BoxPlot chart type to the visualization system"<br>"Change the color theme to a blue/purple palette"<br>"Add medical column knowledge for blood_pressure and glucose"<br>"Deploy this app to Vercel"</code></div>
+        </div>
+      </div>
+    </div>
+    <div class="skill-builder-tip"><strong>Congratulations!</strong> You now have a fully working DataMentor web application. The entire codebase is yours to explore, modify, and deploy.</div>`,
+  },
+};
+
+const skillBuilderStepOrder = ["step1", "step2", "step3", "step4", "step5", "step6"];
+
+function initSkillBuilderSteps() {
+  const tabs = Array.from(document.querySelectorAll(".skill-builder-tab"));
+  const detail = document.getElementById("skillBuilderDetail");
+  const progressFill = document.getElementById("skillBuilderProgressFill");
+  const progressLabel = document.getElementById("skillBuilderProgressLabel");
+  if (tabs.length === 0 || !detail) return;
+
+  function renderStep(stepKey) {
+    const step = skillBuilderSteps[stepKey];
+    if (!step) return;
+
+    detail.innerHTML = `
+      <div class="skill-builder-detail-header">
+        <span class="skill-builder-detail-badge">${step.badge}</span>
+        <h4>${step.title}</h4>
+      </div>
+      <div class="skill-builder-detail-body">${step.body}</div>
+    `;
+
+    tabs.forEach(function (tab) {
+      tab.classList.toggle("active", tab.getAttribute("data-skill-step") === stepKey);
+    });
+
+    var index = skillBuilderStepOrder.indexOf(stepKey);
+    if (progressFill) {
+      var width = ((index + 1) / skillBuilderStepOrder.length) * 100;
+      progressFill.style.width = Math.max(8, width) + "%";
+    }
+    if (progressLabel) {
+      progressLabel.textContent = "Step " + (index + 1) + " of " + skillBuilderStepOrder.length;
+    }
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      var key = tab.getAttribute("data-skill-step") || "step1";
+      renderStep(key);
+    });
+  });
+
+  renderStep("step1");
+}
+
 function initSkillDownloadGate() {
-  const openBtn = document.getElementById("skillGateOpenBtn");
-  const modal = document.getElementById("skillGateModal");
-  const closeBtn = document.getElementById("skillGateCloseBtn");
-  const starConfirm = document.getElementById("skillStarConfirm");
-  const downloadLink = document.getElementById("skillDownloadLink");
+  var openBtn = document.getElementById("skillGateOpenBtn");
+  var modal = document.getElementById("skillGateModal");
+  var closeBtn = document.getElementById("skillGateCloseBtn");
+  var starConfirm = document.getElementById("skillStarConfirm");
+  var downloadLink = document.getElementById("skillDownloadLink");
   if (!openBtn || !modal || !closeBtn || !starConfirm || !downloadLink) return;
 
   if (modal.parentElement !== document.body) {
@@ -1002,6 +1219,7 @@ function initPage() {
   initResearchAccessPolicy();
   initVideoOverview();
   initHireRequestBuilder();
+  initSkillBuilderSteps();
   initSkillDownloadGate();
   makeCharts();
 }

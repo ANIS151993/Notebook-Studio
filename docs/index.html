@@ -321,88 +321,273 @@
     <section class="panel reveal" id="skill">
       <div class="section-head">
         <h2>Claude Skill — Build DataMentor Yourself</h2>
-        <p>Download the skill file and use it with Claude Code, Claude Desktop, or any Claude-powered tool to recreate this entire application.</p>
+        <p>Follow this complete guide to build your own DataMentor web app from scratch. No prior experience required — just Claude and the skill file.</p>
       </div>
 
-      <div class="skill-layout">
-        <article class="skill-main-card">
-          <div class="skill-badge">CLAUDE SKILL</div>
-          <h3>datamentor-skill.md</h3>
-          <p class="skill-description">
-            The complete blueprint to build DataMentor from scratch. Covers the full technology stack, architecture,
-            every component, implementation patterns, and step-by-step build instructions.
-          </p>
-
-          <div class="skill-covers-grid">
-            <div class="skill-cover-item">Project setup and dependencies</div>
-            <div class="skill-cover-item">CSV parsing and column detection</div>
-            <div class="skill-cover-item">10 universal visualization types</div>
-            <div class="skill-cover-item">Domain-aware analysis engine</div>
-            <div class="skill-cover-item">Pyodide notebook with matplotlib</div>
-            <div class="skill-cover-item">Firebase auth and persistence</div>
-            <div class="skill-cover-item">AI runtime repair system</div>
-            <div class="skill-cover-item">Account workspace (save/load/delete)</div>
-          </div>
-
-          <button type="button" class="btn-primary skill-download-btn" id="skillGateOpenBtn">
-            Download Skill File
-          </button>
-        </article>
-
-        <div class="skill-gate-modal" id="skillGateModal" hidden>
-          <div class="skill-gate-dialog" role="dialog" aria-modal="true" aria-labelledby="skillGateTitle">
-            <button type="button" class="skill-gate-close" id="skillGateCloseBtn" aria-label="Close download gate">&times;</button>
-            <div class="skill-gate-icon" aria-hidden="true">&#9733;</div>
-            <h3 id="skillGateTitle">Support the Project</h3>
-            <p class="skill-gate-subtitle">Star the author's GitHub profile to unlock the skill file download.</p>
-
-            <a class="skill-gate-star-btn" href="https://github.com/ANIS151993?tab=stars" target="_blank" rel="noopener noreferrer" id="skillStarLink">
-              <span class="skill-gate-star-icon" aria-hidden="true">&#9733;</span>
-              Star on GitHub
-            </a>
-
-            <label class="skill-gate-check">
-              <input id="skillStarConfirm" type="checkbox" />
-              <span>I starred the GitHub profile</span>
-            </label>
-
-            <button type="button" class="skill-gate-download-btn disabled" id="skillDownloadLink">
-              Download datamentor-skill.md
-            </button>
+      <!-- Hero Banner -->
+      <div class="skill-hero-banner">
+        <div class="skill-hero-glow" aria-hidden="true"></div>
+        <div class="skill-hero-content">
+          <div class="skill-hero-badge">OPEN-SOURCE BLUEPRINT</div>
+          <h3 class="skill-hero-title">Build a Production-Grade CSV Analytics Platform</h3>
+          <p class="skill-hero-lead">One skill file. One AI assistant. Zero boilerplate. Get a complete web app with 10 chart types, in-browser Python, AI error repair, and cloud persistence.</p>
+          <div class="skill-hero-stats">
+            <div class="skill-stat">
+              <span class="skill-stat-value">11</span>
+              <span class="skill-stat-label">Build Steps</span>
+            </div>
+            <div class="skill-stat">
+              <span class="skill-stat-value">450+</span>
+              <span class="skill-stat-label">Lines of Instructions</span>
+            </div>
+            <div class="skill-stat">
+              <span class="skill-stat-value">10</span>
+              <span class="skill-stat-label">Chart Types</span>
+            </div>
+            <div class="skill-stat">
+              <span class="skill-stat-value">14</span>
+              <span class="skill-stat-label">Notebook Cells</span>
+            </div>
           </div>
         </div>
+      </div>
 
-        <aside class="skill-steps-card">
-          <h3>How to Use</h3>
-          <ol class="skill-steps-list">
-            <li>
-              <strong>Download</strong>
-              <span>Get <code>datamentor-skill.md</code> using the button or from the GitHub repository.</span>
-            </li>
-            <li>
-              <strong>Open Claude</strong>
-              <span>Use Claude Code (CLI), Claude Desktop, or any Claude-powered tool.</span>
-            </li>
-            <li>
-              <strong>Provide the Skill</strong>
-              <span>Pass the skill file as context and ask Claude to build the application.</span>
-            </li>
-            <li>
-              <strong>Customize</strong>
-              <span>Modify the domain knowledge base, add your own chart types, or adjust the UI to your needs.</span>
-            </li>
-          </ol>
+      <!-- What is a Claude Skill -->
+      <div class="skill-explainer">
+        <div class="skill-explainer-icon" aria-hidden="true">?</div>
+        <div class="skill-explainer-body">
+          <h3>What is a Claude Skill?</h3>
+          <p>A Claude Skill is a structured markdown file (<code>.md</code>) that acts as a detailed instruction manual for Claude AI. When you provide this file to Claude Code, Claude Desktop, or any Claude-powered tool, the AI reads the entire blueprint and builds the application step by step — writing every file, component, and configuration for you automatically.</p>
+          <p><strong>Think of it as a recipe:</strong> the skill file is the recipe, Claude is the chef, and the result is a fully working web application.</p>
+        </div>
+      </div>
 
-          <div class="skill-tech-pills">
-            <span class="pill">Next.js 16</span>
-            <span class="pill">React 19</span>
-            <span class="pill">TypeScript</span>
-            <span class="pill">Chart.js</span>
-            <span class="pill">Pyodide</span>
-            <span class="pill">Firebase</span>
-            <span class="pill accent">Claude Skill</span>
+      <!-- What You Will Build -->
+      <div class="skill-outcome-section">
+        <h3 class="skill-sub-heading">What You Will Build</h3>
+        <p class="skill-sub-desc">By following this guide, you will have a fully working DataMentor web app with all these features:</p>
+        <div class="skill-outcome-grid">
+          <div class="skill-outcome-card">
+            <div class="skill-outcome-icon" aria-hidden="true">CSV</div>
+            <h4>Smart CSV Upload</h4>
+            <p>Drag-and-drop file upload with automatic parsing, column detection, and type classification (numeric, categorical, boolean, datetime).</p>
           </div>
-        </aside>
+          <div class="skill-outcome-card">
+            <div class="skill-outcome-icon" aria-hidden="true">CLN</div>
+            <h4>Data Cleaning Pipeline</h4>
+            <p>Automated header normalization, whitespace trimming, duplicate row removal, and missing value handling — all deterministic and reproducible.</p>
+          </div>
+          <div class="skill-outcome-card">
+            <div class="skill-outcome-icon" aria-hidden="true">10x</div>
+            <h4>10 Interactive Charts</h4>
+            <p>DistPlot, Pie, Violin, HeatMap, PairPlot, JointPlot, Bar, Histogram, Scatter, and Line — each with dropdown column selectors.</p>
+          </div>
+          <div class="skill-outcome-card">
+            <div class="skill-outcome-icon" aria-hidden="true">AI</div>
+            <h4>Domain-Aware Analysis</h4>
+            <p>Knowledge-base engine that recognizes medical, financial, and scientific columns and generates contextual insights automatically.</p>
+          </div>
+          <div class="skill-outcome-card">
+            <div class="skill-outcome-icon" aria-hidden="true">Py</div>
+            <h4>In-Browser Python Notebook</h4>
+            <p>14 guided Pyodide cells with pandas, numpy, matplotlib, and scipy — including 6 inline chart renderings. No server needed.</p>
+          </div>
+          <div class="skill-outcome-card">
+            <div class="skill-outcome-icon" aria-hidden="true">FIX</div>
+            <h4>AI Runtime Repair</h4>
+            <p>When notebook code fails, the AI assistant automatically detects the error type and suggests one-click fixes using rule-based and model-assisted strategies.</p>
+          </div>
+          <div class="skill-outcome-card">
+            <div class="skill-outcome-icon" aria-hidden="true">DB</div>
+            <h4>Firebase Cloud Persistence</h4>
+            <p>Google sign-in authentication with Firestore storage. Save, load, and delete your analysis workspaces across sessions.</p>
+          </div>
+          <div class="skill-outcome-card">
+            <div class="skill-outcome-icon" aria-hidden="true">WEB</div>
+            <h4>GitHub Pages Portal</h4>
+            <p>A complete documentation website with interactive charts, architecture explorer, video embed, and collaboration tools.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prerequisites -->
+      <div class="skill-prereq-section">
+        <h3 class="skill-sub-heading">Prerequisites — What You Need Before Starting</h3>
+        <p class="skill-sub-desc">Make sure you have these tools installed on your computer. All are free.</p>
+        <div class="skill-prereq-grid">
+          <div class="skill-prereq-card">
+            <div class="skill-prereq-num">1</div>
+            <h4>Node.js (v18 or later)</h4>
+            <p>JavaScript runtime for running Next.js. Download from <code>nodejs.org</code> and verify with <code>node --version</code> in your terminal.</p>
+          </div>
+          <div class="skill-prereq-card">
+            <div class="skill-prereq-num">2</div>
+            <h4>Claude Code or Claude Desktop</h4>
+            <p>Install Claude Code CLI (<code>npm install -g @anthropic-ai/claude-code</code>) or use Claude Desktop app. You need an Anthropic API key or Claude subscription.</p>
+          </div>
+          <div class="skill-prereq-card">
+            <div class="skill-prereq-num">3</div>
+            <h4>Git (Optional)</h4>
+            <p>Version control for managing your code. Download from <code>git-scm.com</code>. Helpful but not strictly required.</p>
+          </div>
+          <div class="skill-prereq-card">
+            <div class="skill-prereq-num">4</div>
+            <h4>Firebase Account (Free Tier)</h4>
+            <p>For authentication and cloud storage. Create a project at <code>console.firebase.google.com</code>. Enable Google sign-in and Firestore database.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step-by-Step Builder Guide -->
+      <div class="skill-builder-section">
+        <h3 class="skill-sub-heading">Step-by-Step: How to Build DataMentor</h3>
+        <p class="skill-sub-desc">Click each step below to see exactly what to do. Follow them in order for the best results.</p>
+
+        <div class="skill-builder-progress">
+          <div class="skill-builder-progress-track">
+            <div class="skill-builder-progress-fill" id="skillBuilderProgressFill"></div>
+          </div>
+          <span class="skill-builder-progress-label" id="skillBuilderProgressLabel">Step 1 of 6</span>
+        </div>
+
+        <div class="skill-builder-tabs" role="tablist" aria-label="Build steps">
+          <button type="button" class="skill-builder-tab active" data-skill-step="step1">
+            <span class="skill-builder-tab-num">1</span>
+            <span class="skill-builder-tab-title">Download Skill</span>
+          </button>
+          <button type="button" class="skill-builder-tab" data-skill-step="step2">
+            <span class="skill-builder-tab-num">2</span>
+            <span class="skill-builder-tab-title">Create Project</span>
+          </button>
+          <button type="button" class="skill-builder-tab" data-skill-step="step3">
+            <span class="skill-builder-tab-num">3</span>
+            <span class="skill-builder-tab-title">Give Skill to Claude</span>
+          </button>
+          <button type="button" class="skill-builder-tab" data-skill-step="step4">
+            <span class="skill-builder-tab-num">4</span>
+            <span class="skill-builder-tab-title">Build Commands</span>
+          </button>
+          <button type="button" class="skill-builder-tab" data-skill-step="step5">
+            <span class="skill-builder-tab-num">5</span>
+            <span class="skill-builder-tab-title">Configure Firebase</span>
+          </button>
+          <button type="button" class="skill-builder-tab" data-skill-step="step6">
+            <span class="skill-builder-tab-num">6</span>
+            <span class="skill-builder-tab-title">Launch &amp; Customize</span>
+          </button>
+        </div>
+
+        <div class="skill-builder-detail" id="skillBuilderDetail" aria-live="polite">
+          <div class="skill-builder-detail-header">
+            <span class="skill-builder-detail-badge">STEP 1</span>
+            <h4>Download the Skill File</h4>
+          </div>
+          <div class="skill-builder-detail-body">
+            <p>The skill file <code>datamentor-skill.md</code> is the complete blueprint. It contains every instruction Claude needs to build the entire application.</p>
+            <div class="skill-builder-instructions">
+              <div class="skill-builder-instruction">
+                <span class="skill-builder-instruction-marker">A</span>
+                <div>
+                  <strong>Option A — Download from this page</strong>
+                  <p>Click the green "Download Skill File" button at the bottom of this section. You will be asked to star the GitHub profile first (takes 5 seconds).</p>
+                </div>
+              </div>
+              <div class="skill-builder-instruction">
+                <span class="skill-builder-instruction-marker">B</span>
+                <div>
+                  <strong>Option B — Clone from GitHub</strong>
+                  <p>Run this command in your terminal to get the file directly:</p>
+                  <div class="skill-code-block"><code>git clone https://github.com/ANIS151993/Notebook-Studio.git<br>cd Notebook-Studio<br>ls datamentor-skill.md</code></div>
+                </div>
+              </div>
+            </div>
+            <div class="skill-builder-tip">
+              <strong>Tip:</strong> Save the file somewhere easy to find, like your Desktop or Documents folder. You will reference this file in Step 3.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Download Card -->
+      <div class="skill-download-section">
+        <div class="skill-download-card-v2">
+          <div class="skill-download-glow" aria-hidden="true"></div>
+          <div class="skill-download-card-left">
+            <div class="skill-badge">CLAUDE SKILL FILE</div>
+            <h3>datamentor-skill.md</h3>
+            <p>Complete blueprint covering 11 build steps, all components, architecture patterns, and implementation details. Works with Claude Code, Claude Desktop, or any Claude-powered tool.</p>
+            <div class="skill-tech-pills">
+              <span class="pill">Next.js 16</span>
+              <span class="pill">React 19</span>
+              <span class="pill">TypeScript</span>
+              <span class="pill">Chart.js</span>
+              <span class="pill">Pyodide</span>
+              <span class="pill">Firebase</span>
+              <span class="pill accent">Claude Skill</span>
+            </div>
+          </div>
+          <div class="skill-download-card-right">
+            <button type="button" class="btn-primary skill-download-btn" id="skillGateOpenBtn">
+              Download Skill File
+            </button>
+            <p class="skill-download-note">Free and open-source. Star the project to unlock.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Download Gate Modal (preserved) -->
+      <div class="skill-gate-modal" id="skillGateModal" hidden>
+        <div class="skill-gate-dialog" role="dialog" aria-modal="true" aria-labelledby="skillGateTitle">
+          <button type="button" class="skill-gate-close" id="skillGateCloseBtn" aria-label="Close download gate">&times;</button>
+          <div class="skill-gate-icon" aria-hidden="true">&#9733;</div>
+          <h3 id="skillGateTitle">Support the Project</h3>
+          <p class="skill-gate-subtitle">Star the author's GitHub profile to unlock the skill file download.</p>
+
+          <a class="skill-gate-star-btn" href="https://github.com/ANIS151993?tab=stars" target="_blank" rel="noopener noreferrer" id="skillStarLink">
+            <span class="skill-gate-star-icon" aria-hidden="true">&#9733;</span>
+            Star on GitHub
+          </a>
+
+          <label class="skill-gate-check">
+            <input id="skillStarConfirm" type="checkbox" />
+            <span>I starred the GitHub profile</span>
+          </label>
+
+          <button type="button" class="skill-gate-download-btn disabled" id="skillDownloadLink">
+            Download datamentor-skill.md
+          </button>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="skill-faq-section">
+        <h3 class="skill-sub-heading">Frequently Asked Questions</h3>
+        <div class="skill-faq-grid">
+          <details class="skill-faq-item">
+            <summary>Do I need to know how to code?</summary>
+            <p>No. Claude writes all the code for you. You just provide the skill file and follow the prompts. Basic familiarity with using a terminal (typing commands) is helpful but not required — Claude Desktop has a visual interface.</p>
+          </details>
+          <details class="skill-faq-item">
+            <summary>How long does it take to build?</summary>
+            <p>Claude typically builds the full application in 15–30 minutes depending on your internet speed and the tool you use. You can build individual parts separately if you prefer.</p>
+          </details>
+          <details class="skill-faq-item">
+            <summary>Is this free?</summary>
+            <p>The skill file is free and open-source. You need a Claude subscription or Anthropic API key to use Claude Code or Claude Desktop. Node.js and Firebase free tier are also free.</p>
+          </details>
+          <details class="skill-faq-item">
+            <summary>Can I customize the app after building it?</summary>
+            <p>Absolutely. The skill file produces standard Next.js + React code. You can modify the domain knowledge base, add new chart types, change the UI theme, add new features, or adjust anything to your needs — either manually or by asking Claude to make changes.</p>
+          </details>
+          <details class="skill-faq-item">
+            <summary>What is the difference between Claude Code and Claude Desktop?</summary>
+            <p><strong>Claude Code</strong> is a terminal-based CLI tool — you type commands and Claude writes code directly in your project folder. <strong>Claude Desktop</strong> is a visual app with a chat interface where you can drag-and-drop files. Both work with this skill file. Claude Code is faster for developers; Claude Desktop is easier for beginners.</p>
+          </details>
+          <details class="skill-faq-item">
+            <summary>Can I use a different AI model instead of Claude?</summary>
+            <p>The skill file is optimized for Claude but the instructions are detailed enough that other AI coding assistants (like GitHub Copilot, Cursor, or ChatGPT) can also follow them. Results may vary — Claude produces the most accurate output because the file uses Claude's skill format.</p>
+          </details>
+        </div>
       </div>
     </section>
 
