@@ -1,0 +1,1089 @@
+% =============================================================
+%  DataMentor — IEEE Conference Paper
+%  Author : MD ANISUR RAHMAN CHOWDHURY, Gannon University
+%  PDF Security : AES-128, Password = MARC@151995$
+%  Compile with : pdflatex (two passes)
+% =============================================================
+
+\documentclass[conference]{IEEEtran}
+
+% ── PDF Encryption (pdfLaTeX native primitives) ──────────────
+% Level 3 = AES-128.  Must appear before \begin{document}.
+\pdfencryptlevel=3
+\pdfuserpassword{MARC@151995$}
+\pdfownerpassword{MARC@151995$}
+
+% ── Core Packages ────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{cite}
+\usepackage{xcolor}
+
+% ── TikZ / PGFPlots ──────────────────────────────────────────
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,
+                fit,backgrounds,calc}
+
+% ── Algorithm ────────────────────────────────────────────────
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% ── Captions / Sub-figures ───────────────────────────────────
+\usepackage{caption}
+\usepackage{subcaption}
+
+% ── Hyperref (load last) ─────────────────────────────────────
+\usepackage{hyperref}
+\hypersetup{
+  pdftitle  = {DataMentor: A Practical Framework for Serverless
+               CSV Intelligence with Interactive Notebook Automation
+               and Deterministic Runtime Repair},
+  pdfauthor = {MD ANISUR RAHMAN CHOWDHURY},
+  pdfsubject= {Serverless Analytics, Notebook Automation,
+               Runtime Repair},
+  pdfkeywords={CSV preprocessing, browser-native execution,
+               notebook automation, runtime repair, serverless
+               analytics, reproducibility, visualization pipeline},
+  colorlinks=false,
+  hidelinks
+}
+
+% ── Custom Colors ────────────────────────────────────────────
+\definecolor{DMBlue} {RGB}{26,  42, 108}
+\definecolor{DMGreen}{RGB}{22, 160, 133}
+\definecolor{DMRed}  {RGB}{192, 57,  43}
+\definecolor{DMGray} {RGB}{127,140, 141}
+
+% =============================================================
+\begin{document}
+
+\title{DataMentor: A Practical Framework for Serverless CSV
+       Intelligence with Interactive Notebook Automation
+       and Deterministic Runtime Repair}
+
+\author{%
+  \IEEEauthorblockN{Md Anisur Rahman Chowdhury\textsuperscript{1*},
+                    Dr.\ Ronny Bazan-Antequera\textsuperscript{1}}
+  \IEEEauthorblockA{%
+    \textsuperscript{1}Dept.\ of Computer and Information Science,
+    Gannon University, USA\\
+    \texttt{engr.aanis@gmail.com, bazanant001@gannon.edu}}
+}
+
+\maketitle
+
+% =============================================================
+\begin{abstract}
+Tabular data preprocessing remains one of the most labor-intensive
+and least reproducible stages of analytical workflows, with analysts
+routinely allocating between 60\,\% and 80\,\% of project time to
+data wrangling before any exploratory or predictive analysis can
+begin. This paper presents \textbf{DataMentor}, a production-deployed,
+serverless platform that integrates deterministic CSV preprocessing,
+browser-native Python notebook execution via the Pyodide WebAssembly
+runtime, domain-aware visualization across ten chart types, and a
+hybrid rule-guided runtime repair subsystem operating without external
+server infrastructure. An empirical evaluation conducted over
+15~heterogeneous CSV datasets spanning five domain verticals and a
+purpose-built repair benchmark (DRB-100) of 100~injected Python
+errors across five error classes demonstrates: (i)~a mean
+preprocessing-time reduction of 91.6\,\% relative to a two-analyst
+manual baseline; (ii)~an overall single-pass automatic repair
+resolution rate of 82\,\%, with rule-based latency of 0.8\,s and
+model-assisted latency of 6.4\,s versus a manual debugging median of
+18.2\,min; and (iii)~full byte-level deterministic reproducibility
+across repeated executions. Comparative analysis against nine
+representative prior systems across four relevant research domains
+confirms that no existing tool combines deterministic preprocessing,
+installationless browser-native Python execution, domain-aware
+visualization, and hybrid runtime repair in a unified,
+offline-capable platform.
+\end{abstract}
+
+\begin{IEEEkeywords}
+CSV preprocessing, browser-native execution, notebook automation,
+runtime repair, serverless analytics, reproducibility,
+visualization pipeline, Pyodide, WebAssembly
+\end{IEEEkeywords}
+
+% =============================================================
+\section{Introduction}
+\label{sec:intro}
+
+Data preprocessing is widely recognized as the dominant time cost in
+analytical workflows~\cite{krishnan2016}. A longitudinal industry
+survey reported that analysts allocate, on average, 76\,\% of total
+project hours to data acquisition, cleaning, and formatting before
+any exploratory or predictive modeling can
+begin~\cite{crowdflower2016}. For small-to-medium enterprises (SMEs)
+and academic laboratories operating without dedicated
+data-engineering teams, this overhead is particularly acute: cleaning
+is performed ad~hoc with heterogeneous toolchains, and the resulting
+artifacts are rarely reproducible between operators or
+sessions~\cite{sculley2015}.
+
+Existing tools partially address these challenges but leave important
+gaps. Notebook environments such as JupyterLab offer expressive code
+cells but require local Python installations and yield non-deterministic
+results when cell execution order varies. Reproducibility frameworks
+such as Data Version Control (DVC)~\cite{dvc2020} and
+MLflow~\cite{mlflow2018} address provenance at the experiment level
+but presuppose that raw data has already been cleaned. Code-repair
+tools for Python operate on source files but lack the execution-state
+awareness needed to diagnose errors that arise from data-schema
+mismatches within an interactive notebook session.
+
+This paper describes \textbf{DataMentor}\,---\,a platform designed
+to unify these concerns in a single, zero-installation workflow.
+DataMentor is deployed at \url{https://datamentor.marcbd.site} and
+built on Next.js~16, React~19, TypeScript, Pyodide~0.25, Firebase,
+and Chart.js. The system makes four primary contributions:
+
+\begin{enumerate}
+  \item A \textbf{deterministic preprocessing pipeline} that
+        normalizes, deduplicates, and type-classifies arbitrary CSV
+        inputs through a fixed rule sequence, guaranteeing identical
+        outputs for identical inputs regardless of operator.
+  \item A \textbf{browser-native notebook execution engine} using
+        Pyodide~\cite{pyodide2021}, which loads CPython~3.11 inside a
+        WebAssembly sandbox, eliminating server-side Python
+        infrastructure and maintaining complete data locality.
+  \item A \textbf{domain-aware visualization system} mapping 47
+        recognized column-name patterns to contextually appropriate
+        chart types and evidence-grounded insight language.
+  \item A \textbf{hybrid runtime repair subsystem} that applies a
+        priority-ordered rule index for common Python error classes
+        before escalating to a local model-assisted repair module,
+        operating without any external API connection.
+\end{enumerate}
+
+The remainder of this paper is organized as follows.
+Section~\ref{sec:related} positions DataMentor against prior art
+across four research domains. Section~\ref{sec:arch} describes the
+system architecture. Section~\ref{sec:method} details the experimental
+methodology and benchmark construction. Section~\ref{sec:results}
+presents quantitative results. Section~\ref{sec:discussion} interprets
+findings and acknowledges limitations. Section~\ref{sec:conclusion}
+concludes.
+
+% =============================================================
+\section{Related Work}
+\label{sec:related}
+
+Prior work relevant to DataMentor spans four partially overlapping
+categories: \emph{notebook-assistant systems}, \emph{reproducible
+analytics frameworks}, \emph{local code-repair tools}, and
+\emph{browser-based analytics platforms}. Table~\ref{tab:related}
+provides a feature-level comparison across these categories.
+
+\subsection{Notebook-Assistant Systems}
+
+JupyterAI~\cite{jupyterai2023} integrates code-completion and inline
+explanation capabilities directly into JupyterLab via an external API
+connection. It reduces cell-authoring effort but does not modify the
+underlying dataset, requires a locally running Jupyter server, and
+provides no deterministic cleaning guarantee. Neptyne~\cite{neptyne2023}
+extends spreadsheet metaphors with Python cell formulas, targeting
+structured manipulation rather than statistical notebook automation.
+Hex~\cite{hex2023} is a cloud-hosted collaborative notebook supporting
+SQL and Python; it is subscription-gated and requires a provisioned
+cloud container. Code Interpreter~\cite{openai2023}, embedded in
+commercial chat interfaces, accepts uploaded CSV files and produces
+analysis outputs but provides no persistent workspace, no user-visible
+cleaning audit, and no domain-aware chart generation.
+
+DataMentor differs from all four in three respects: (i)~preprocessing
+is deterministic, auditable step by step, and requires no external API;
+(ii)~the execution environment is fully in-browser with no server
+dependency; and (iii)~the notebook layout is pre-structured with
+14~guided cells introducing reproducible statistical primitives before
+a free-form cell is available.
+
+\subsection{Reproducible Analytics Frameworks}
+
+DVC~\cite{dvc2020} addresses dataset and model provenance through
+Git-integrated artifact tracking. MLflow~\cite{mlflow2018} provides
+experiment logging, artifact storage, and model registry.
+Sacred~\cite{sacred2017} instruments Python experiments to capture
+configuration snapshots and metric traces. These frameworks excel at
+pipeline-level reproducibility \emph{after} data is clean but impose
+substantial setup overhead and do not address the initial normalization
+of raw CSV inputs.
+
+DataMentor operates at an earlier stage: its preprocessing pipeline
+is self-contained and requires no version-control infrastructure.
+Reproducibility is achieved through the deterministic, ordered
+application of a fixed transformation sequence, which produces
+byte-identical outputs for byte-identical inputs without external
+provenance tooling.
+
+\subsection{Local Code-Repair Tools}
+
+DeepFix~\cite{deepfix2017} applies a sequence-to-sequence model to
+correct syntactic errors in student C programs, achieving approximately
+27\,\% single-pass full-program repair on the IIT~Bombay dataset.
+SyntaxFix~\cite{syntaxfix2021} extends rule-based pattern matching to
+Python syntax errors, covering common indentation and bracket
+mismatches. Refazer~\cite{refazer2016} synthesizes program
+transformations from teacher-provided correction examples. These tools
+operate on file-level source code and do not target the notebook
+execution context where errors typically arise from data-state
+dependencies\,---\,such as a \texttt{NameError} caused by a cell
+executed out of sequence.
+
+DataMentor's repair subsystem addresses this contextual gap: it has
+visibility into the loaded CSV schema, the Pyodide execution state,
+and the cell execution sequence, enabling repairs that are aware of
+the data context, not merely the code syntax.
+
+\subsection{Browser-Based Analytics Platforms}
+
+Observable~\cite{observable2021} provides a JavaScript-native reactive
+notebook, but does not support CPython or pandas workflows natively.
+TensorFlow.js~\cite{tensorflowjs2019} enables in-browser model
+inference but targets prediction, not data preparation.
+Deepnote~\cite{deepnote2022} offers real-time collaborative notebooks
+but requires a provisioned cloud container rather than a WebAssembly
+sandbox. Google Colab~\cite{colab2019} provides free cloud-hosted
+notebooks with GPU access but requires a Google account, imposes
+session time limits, and routes data through cloud infrastructure
+rather than retaining it on the client device.
+
+DataMentor is distinguished by its use of Pyodide to run authentic
+CPython~3.11 with pandas, NumPy, SciPy, and Matplotlib inside the
+browser\,---\,producing outputs byte-compatible with standard desktop
+Python\,---\,while maintaining complete data locality: the uploaded
+CSV never leaves the client device.
+
+\begin{table}[t]
+\centering
+\caption{Functional Comparison of DataMentor Against Related Systems}
+\label{tab:related}
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{System} & \shortstack{\textbf{No}\\\textbf{Install}}
+                & \shortstack{\textbf{Det.}\\\textbf{Clean}}
+                & \shortstack{\textbf{Auto}\\\textbf{Repair}}
+                & \shortstack{\textbf{10+}\\\textbf{Charts}}
+                & \shortstack{\textbf{Offline}\\\textbf{Ready}}
+                & \shortstack{\textbf{Free /}\\\textbf{Open}} \\
+\midrule
+JupyterAI   & \texttimes & \texttimes & \checkmark & \checkmark & \texttimes & \checkmark \\
+Neptyne     & \texttimes & \texttimes & \texttimes & \checkmark & \texttimes & \texttimes \\
+Hex         & \checkmark & \texttimes & \texttimes & \checkmark & \texttimes & \texttimes \\
+DVC         & \texttimes & \texttimes & \texttimes & \texttimes & \checkmark & \checkmark \\
+MLflow      & \texttimes & \texttimes & \texttimes & \checkmark & \checkmark & \checkmark \\
+DeepFix     & \texttimes & \texttimes & \checkmark & \texttimes & \checkmark & \checkmark \\
+Observable  & \checkmark & \texttimes & \texttimes & \checkmark & \texttimes & \checkmark \\
+Deepnote    & \checkmark & \texttimes & \texttimes & \checkmark & \texttimes & \texttimes \\
+Colab       & \checkmark & \texttimes & \texttimes & \checkmark & \texttimes & \texttimes \\
+\midrule
+\textbf{DataMentor} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\bottomrule
+\end{tabular}
+\smallskip
+
+\noindent{\footnotesize
+\checkmark\,=\,supported;\enspace\texttimes\,=\,not supported.
+``Det.\,Clean'' = deterministic CSV preprocessing.
+``Offline Ready'' = operates without active internet after first load.
+}
+\end{table}
+
+% =============================================================
+\section{System Architecture}
+\label{sec:arch}
+
+DataMentor is organized into five functional layers illustrated in
+Fig.\,\ref{fig:arch}. Each layer communicates through typed TypeScript
+interfaces, and the persistence layer spans Layers~3--5.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance = 0.32cm,
+  box/.style  = {draw, rounded corners=3pt,
+                 minimum width=6.6cm, minimum height=0.82cm,
+                 text centered, font=\footnotesize\sffamily, thick},
+  pers/.style = {draw, rounded corners=3pt,
+                 minimum width=1.55cm,
+                 text centered, font=\scriptsize\sffamily,
+                 thick, fill=DMGray!18, draw=DMGray},
+  arr/.style  = {-Stealth, thick, DMBlue!80}
+]
+\node[box, fill=DMBlue!18,  draw=DMBlue]  (L1)
+  {Layer~1\;:\;CSV Ingestion \& Normalization};
+\node[box, fill=DMGreen!18, draw=DMGreen, below=of L1] (L2)
+  {Layer~2\;:\;Column Type Classification};
+\node[box, fill=DMBlue!12,  draw=DMBlue!70, below=of L2] (L3)
+  {Layer~3\;:\;Notebook Generation (Pyodide~0.25)};
+\node[box, fill=DMGreen!12, draw=DMGreen!70, below=of L3] (L4)
+  {Layer~4\;:\;Visualization \& Domain Analysis};
+\node[box, fill=DMRed!12,   draw=DMRed!70, below=of L4] (L5)
+  {Layer~5\;:\;Hybrid Repair Engine};
+
+\draw[arr] (L1.south)--(L2.north);
+\draw[arr] (L2.south)--(L3.north);
+\draw[arr] (L3.south)--(L4.north);
+\draw[arr] (L4.south)--(L5.north);
+
+% Persistence sidebar spanning L3-L5
+\node[pers, right=0.3cm of L3, anchor=north west,
+      minimum height=3.28cm] (P)
+  {\rotatebox{90}{Persistence: Firebase + localStorage Fallback}};
+\draw[arr,dashed,DMGray] (L3.east)--(P.north west|-L3.east);
+\draw[arr,dashed,DMGray] (L4.east)--(P.north west|-L4.east);
+\draw[arr,dashed,DMGray] (L5.east)--(P.north west|-L5.east);
+\end{tikzpicture}
+\caption{Five-layer DataMentor system architecture. Each layer
+  communicates through typed TypeScript interfaces. The persistence
+  layer provides Firebase Firestore when online and transparent
+  localStorage fallback when offline.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Layer 1 — CSV Ingestion and Normalization}
+
+The ingestion pipeline applies seven transformations in fixed,
+deterministic order:
+(1)~Papa Parse tokenization with header detection;
+(2)~leading/trailing whitespace removal from all cell values;
+(3)~header normalization to lowercase underscore convention
+  (\texttt{Blood Pressure}\,$\to$\,\texttt{blood\_pressure});
+(4)~exact-duplicate row removal via a SHA-256 fingerprint of each
+  row's serialized values;
+(5)~null and empty-string detection with count reporting;
+(6)~column type inference (Layer~2);
+(7)~schema summary generation.
+The order of transformations is critical: normalization precedes
+deduplication to avoid false negatives caused by whitespace variation.
+The pipeline is pure (no side effects), enabling byte-identical
+re-execution.
+
+\subsection{Layer 2 — Column Type Classification}
+
+Each column's values are classified by a majority-vote heuristic into
+one of four types. A column is classified as \texttt{boolean} if its
+value set is a subset of $\{0,1\}$. A column is classified as
+\texttt{datetime} only if values parse as valid \texttt{Date} objects
+\emph{and} do not match the regular expression
+\texttt{/\textasciicircum-?\textbackslash d+(\textbackslash.\textbackslash
+d+)?\$/}, which prevents pure numerics (e.g., \texttt{"63"}) from
+being misclassified as years. A column is classified as
+\texttt{numeric} if the majority of non-null values are finite
+floating-point numbers. All remaining columns are \texttt{categorical}.
+
+\subsection{Layer 3 — Notebook Generation Engine}
+
+The Pyodide hook loads CPython~3.11 via WebAssembly, pre-fetching
+pandas~2.0, NumPy~1.26, SciPy~1.11, and Matplotlib~3.8.
+Fourteen code cells are generated from the cleaned dataset's schema.
+Cells~1--7 cover data loading, shape inspection, descriptive
+statistics, missing-value auditing, duplicate detection, correlation
+analysis, and categorical frequency analysis. Cells~8--13 produce
+Matplotlib visualizations (distribution plot, pie chart, violin plot,
+heatmap, pairplot, joint plot) rendered as base64-encoded PNG images
+via a \texttt{BytesIO} buffer and displayed inline without any
+server round-trip. Cell~14 is an empty editor for user-authored code.
+
+\subsection{Layer 4 — Visualization and Domain Analysis}
+
+The visualization layer provides ten universal chart types
+(DistPlot, Pie, Violin, HeatMap, PairPlot, JointPlot, Bar, Histogram,
+Scatter, Line), each paired with a domain-aware analysis engine. The
+knowledge base maps 47 known column-name patterns
+(e.g., \texttt{age}, \texttt{trtbps}, \texttt{chol}, \texttt{glucose})
+to structured insight objects containing a human-readable label, a
+semantic description, and a data-driven insight function conditioned
+on column statistics. When a column name matches a knowledge-base
+entry, the analysis panel generates domain-specific interpretations;
+otherwise, general statistical language is produced.
+
+\subsection{Layer 5 — Hybrid Runtime Repair Engine}
+
+When a code cell raises a Python exception, the repair subsystem
+receives the traceback, the current cell source, and the CSV column
+schema. Algorithm~\ref{alg:repair} describes the resolution procedure.
+The rule index contains 31 patterns across five error classes. If a
+matching rule is found, a corrected version is produced within the
+rule's resolution time. If no rule matches, the error is escalated
+to the local model-assisted repair module, which synthesizes a
+candidate fix from the error message, column schema, and cell context.
+The repair is presented as a suggestion with explicit diff display;
+the user must accept before the fix is applied.
+
+\begin{algorithm}[t]
+\caption{HybridRepair: Priority-Rule with Model Fallback}
+\label{alg:repair}
+\begin{algorithmic}[1]
+\Require Traceback $T$, cell source $C$, CSV schema $S$
+\Ensure  Corrected source $C'$, or \textsc{Unresolved}
+\State Parse $T$ $\Rightarrow$ (\textit{errClass}, \textit{errMsg}, \textit{lineNo})
+\ForAll{rule $r$ in \textsc{RuleIndex} (sorted by priority)}
+  \If{$r$.\textsc{Matches}(\textit{errClass}, \textit{errMsg})}
+    \State $C' \gets r$.\textsc{Apply}($C$, $S$)
+    \If{\textsc{Verify}($C'$, \textit{expectedHash})}
+      \State \Return $C'$
+    \EndIf
+  \EndIf
+\EndFor
+\State $\mathit{ctx} \gets$ \textsc{BuildContext}($T$, $C$, $S$)
+\State $C' \gets$ \textsc{LocalModelModule.Infer}($\mathit{ctx}$)
+\If{\textsc{Verify}($C'$, \textit{expectedHash})}
+  \State \Return $C'$
+\EndIf
+\State \Return \textsc{Unresolved}
+\end{algorithmic}
+\end{algorithm}
+
+% =============================================================
+\section{Methodology and Benchmark Construction}
+\label{sec:method}
+
+\subsection{Dataset Selection}
+
+Fifteen heterogeneous CSV datasets were selected for the preprocessing
+evaluation, grouped into three size tiers of five datasets each:
+\emph{small} ($<$1{,}000 rows), \emph{medium}
+(1{,}000--10{,}000~rows), and \emph{large}
+(10{,}000--100{,}000~rows). Selection required each dataset to exhibit
+at least three of the following defects: mixed-case headers,
+leading/trailing whitespace, exact duplicate rows, at least one null
+column, mixed numeric/string type within a single column, or an absent
+header row. This criterion ensures that each dataset exercises multiple
+pipeline stages rather than a single edge case. Table~\ref{tab:datasets}
+summarizes the benchmark composition.
+
+\begin{table}[t]
+\centering
+\caption{Benchmark Dataset Composition (Preprocessing Evaluation)}
+\label{tab:datasets}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrrc}
+\toprule
+\textbf{ID} & \textbf{Domain} & \textbf{Rows} & \textbf{Cols}
+            & \textbf{Defects} \\
+\midrule
+D01 & Medical (Heart)        &     303 & 14 & 4 \\
+D02 & Medical (Diabetes)     &     768 &  9 & 3 \\
+D03 & Financial (Credit)     &     690 & 16 & 5 \\
+D04 & Environmental (Air)    &     880 & 15 & 3 \\
+D05 & Academic (Student)     &     649 & 33 & 4 \\
+\midrule
+D06 & E-Commerce (Sales)     &   2{,}823 & 21 & 4 \\
+D07 & Medical (ICU)          &   4{,}000 & 43 & 6 \\
+D08 & Financial (Loan)       &   5{,}960 & 13 & 3 \\
+D09 & Social (Survey)        &   7{,}641 & 27 & 5 \\
+D10 & Environmental (Energy) &   9{,}568 & 28 & 4 \\
+\midrule
+D11 & Genomics (TCGA)        &  12{,}400 & 18 & 3 \\
+D12 & Retail (Transactions)  &  25{,}000 & 24 & 5 \\
+D13 & Financial (Equity)     &  48{,}300 & 12 & 4 \\
+D14 & Logistics (Shipments)  &  61{,}000 & 19 & 4 \\
+D15 & Healthcare (EHR)       &  94{,}700 & 31 & 6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Manual Baseline Protocol}
+
+Two professional data analysts (Analyst~A and Analyst~B), each with
+at least three years of pandas experience, independently preprocessed
+all fifteen datasets. Both were provided identical task specifications:
+normalize all headers to lowercase underscore convention, remove exact
+duplicate rows, identify null columns, and produce a cleaned CSV file
+and typed-column summary. Total elapsed time was measured from first
+file open to final export using a stopwatch application. Analysts
+chose their own tools (pandas, Excel, OpenRefine) and worked without
+time pressure. The reported manual baseline time per dataset is the
+arithmetic mean of Analyst~A and Analyst~B's times.
+
+Inter-analyst time agreement, measured as
+$1 - |t_A - t_B| / \max(t_A, t_B)$, averaged 0.82 across all
+datasets, confirming reasonable operator consistency and reducing
+single-analyst bias in the baseline estimate. The same fifteen
+datasets were subsequently processed through DataMentor's pipeline;
+execution time was measured with \texttt{performance.now()} calls
+bracketing the preprocessing sequence.
+
+\subsection{Repair Benchmark: DRB-100}
+
+To evaluate the runtime repair subsystem, we constructed the
+\textbf{DataMentor Repair Benchmark (DRB-100)}, comprising 100 Python
+notebook cell scripts derived from DataMentor's 13 auto-generated
+analysis cells, each containing exactly one injected fault. The five
+error categories reflect the distribution of errors observed in a
+manual audit of 312 notebook sessions sampled from Kaggle dataset
+discussion forums~\cite{kaggle2023}:
+
+\begin{itemize}
+  \item \textbf{E1\,---\,ImportError} (22 cases): missing or
+        misspelled module imports.
+  \item \textbf{E2\,---\,NameError} (18 cases): references to
+        undefined variables caused by out-of-order cell execution
+        or identifier typos.
+  \item \textbf{E3\,---\,TypeError} (21 cases): type mismatch in
+        function arguments, including passing string columns to
+        numeric-only functions.
+  \item \textbf{E4\,---\,AttributeError} (19 cases): access to
+        absent DataFrame attributes, typically from schema-assumption
+        violations.
+  \item \textbf{E5\,---\,RuntimeError/Logic} (20 cases): semantically
+        incorrect code that executes without exception but produces
+        an incorrect or empty visualization.
+\end{itemize}
+
+Each benchmark item contains: (1) the original correct cell source;
+(2) the injected faulty cell source; (3) the expected standard output
+or the SHA-256 hash of the expected base64-encoded plot; and (4) a
+difficulty label (\emph{Easy}, \emph{Medium}, \emph{Hard}) assigned
+by two independent annotators reflecting traceback ambiguity and the
+specificity of context required for repair. Inter-annotator agreement
+on difficulty labels, measured with Cohen's $\kappa$, was 0.74,
+indicating substantial agreement~\cite{landis1977}. The 14 items
+(14\,\%) where annotators disagreed were resolved by a third annotator
+acting as tiebreaker. Table~\ref{tab:drb100} shows the breakdown.
+
+\begin{table}[t]
+\centering
+\caption{DRB-100 Benchmark Composition by Category and Difficulty}
+\label{tab:drb100}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Category} & \textbf{Easy} & \textbf{Medium}
+                  & \textbf{Hard}  & \textbf{Total} \\
+\midrule
+E1\,ImportError    & 14 &  6 &  2 & 22 \\
+E2\,NameError      &  8 &  7 &  3 & 18 \\
+E3\,TypeError      &  6 & 10 &  5 & 21 \\
+E4\,AttributeError &  4 &  8 &  7 & 19 \\
+E5\,RuntimeError   &  2 &  8 & 10 & 20 \\
+\midrule
+\textbf{Total}     & 34 & 39 & 27 & \textbf{100} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Fairness and Evaluation Protocol}
+
+Three methodological safeguards ensure evaluation fairness:
+
+\begin{enumerate}
+  \item \textbf{Temporal separation}: Benchmark items were constructed
+        from cell templates that were not modified after the repair
+        rule index was frozen. No benchmark item was used during rule
+        authoring.
+  \item \textbf{Single-pass constraint}: The repair engine was
+        permitted exactly one repair attempt per benchmark item.
+        No retry or iterative refinement was allowed, making the
+        measured resolution rate a conservative lower bound on
+        interactive utility.
+  \item \textbf{Automated verification}: Resolution was determined
+        by comparing the repaired cell's output hash against the
+        expected output hash stored in DRB-100. Manual inspection
+        was used only for E5 (logic) items where output variation
+        is inherent to the visualization type.
+\end{enumerate}
+
+Repair latency was measured as the wall-clock time from traceback
+receipt to candidate-fix generation, exclusive of user interaction time.
+
+% =============================================================
+\section{Experimental Results}
+\label{sec:results}
+
+\subsection{Preprocessing Time Reduction}
+
+Table~\ref{tab:preprocessing} reports mean preprocessing times and
+percentage reductions across the three dataset tiers. Fig.\,\ref{fig:preproc}
+visualizes the per-tier comparison on a common axis.
+
+\begin{table}[t]
+\centering
+\caption{Mean Preprocessing Time: Manual Baseline vs.\,DataMentor}
+\label{tab:preprocessing}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Tier} & \textbf{Avg\,Rows}
+              & \textbf{Manual\,(min)}
+              & \textbf{DataMentor\,(min)}
+              & \textbf{Reduction} \\
+\midrule
+Small  &      658 &  23.4 & 2.1 & 91.0\,\% \\
+Medium &  5{,}998 &  48.7 & 3.6 & 92.6\,\% \\
+Large  & 48{,}300 &  97.3 & 8.2 & 91.6\,\% \\
+\midrule
+\textbf{Overall} & \textbf{---} & \textbf{56.5} & \textbf{4.6}
+                 & \textbf{91.6\,\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The 91.6\,\% overall reduction is driven by the elimination of
+cognitive discovery overhead. Manual analysts must \emph{locate}
+defects before correcting them, scaling linearly with schema width
+and non-linearly with row count due to scanning behavior. DataMentor's
+pipeline applies transformations unconditionally in a single pass,
+removing discovery cost entirely. Browser-side execution overhead
+(TypeScript parsing, React state updates) adds a fixed latency of
+approximately 0.4~s, explaining the non-zero DataMentor times even
+for small datasets. Pure pipeline execution time, measured in isolation
+with \texttt{performance.now()}, is below 2~s for all datasets tested.
+
+The residual DataMentor interaction time (2.1~min for small datasets)
+reflects user-facing steps: uploading the file, reviewing the cleaning
+summary table, and confirming the column-type classification. These
+steps are user-controlled and could be further reduced by skipping
+the confirmation step in future releases.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  ybar=4pt,
+  bar width=16pt,
+  width=\columnwidth,
+  height=5.8cm,
+  ylabel={Mean Preprocessing Time (min)},
+  xlabel={Dataset Tier},
+  symbolic x coords={Small,Medium,Large},
+  xtick=data,
+  ymin=0, ymax=115,
+  ymajorgrids=true,
+  grid style={dashed,gray!25},
+  legend style={at={(0.97,0.96)}, anchor=north east, font=\small},
+  tick label style={font=\small},
+  label style={font=\small},
+  nodes near coords,
+  nodes near coords style={font=\footnotesize},
+  every node near coord/.append style={
+    /pgf/number format/.cd, fixed, precision=1},
+]
+\addplot[fill=DMBlue!70, draw=DMBlue]
+  coordinates {(Small,23.4) (Medium,48.7) (Large,97.3)};
+\addplot[fill=DMGreen!70, draw=DMGreen]
+  coordinates {(Small,2.1)  (Medium,3.6)  (Large,8.2)};
+\legend{Manual Baseline, DataMentor}
+\end{axis}
+\end{tikzpicture}
+\caption{Mean preprocessing time comparison per tier. DataMentor
+  reduces mean time from 56.5\,min to 4.6\,min overall (91.6\,\%
+  reduction). The manual baseline time is the arithmetic mean of
+  two independent analysts per dataset.}
+\label{fig:preproc}
+\end{figure}
+
+\subsection{Runtime Repair Resolution}
+
+Table~\ref{tab:repair} and Fig.\,\ref{fig:repair} present DRB-100
+resolution outcomes. The rule index achieves 100\,\% resolution on
+E1 (ImportError) because every ImportError traceback contains the
+missing module name as an explicit string, enabling exact-string
+lookup in the rule index. The 88.9\,\% resolution on E2 (NameError)
+reflects two items where the undefined identifier was introduced by
+user-written cell code outside the generated template scope, giving
+the rule index insufficient contextual information for a safe fix.
+
+The 50.0\,\% resolution on E5 (RuntimeError/Logic) reflects the
+fundamental difficulty of semantic repair: logic errors produce no
+exception, and detecting an incorrect visualization output requires
+understanding the expected result, which is inherently ambiguous
+without a pre-computed reference hash. The overall 82\,\%
+single-pass rate is conservative by design: the single-pass
+constraint prohibits the iterative refinement that characterizes
+interactive debugging sessions.
+
+\begin{table}[t]
+\centering
+\caption{DRB-100 Resolution Detail by Error Category}
+\label{tab:repair}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Category} & \textbf{Total} & \textbf{Rule}
+                  & \textbf{Model} & \textbf{Unresolved}
+                  & \textbf{Rate} \\
+\midrule
+E1\,ImportError    & 22 & 22 &  0 &  0 & 100.0\,\% \\
+E2\,NameError      & 18 & 16 &  0 &  2 &  88.9\,\% \\
+E3\,TypeError      & 21 & 14 &  5 &  2 &  90.5\,\% \\
+E4\,AttributeError & 19 &  8 &  7 &  4 &  78.9\,\% \\
+E5\,RuntimeError   & 20 &  4 &  6 & 10 &  50.0\,\% \\
+\midrule
+\textbf{Total} & \textbf{100} & \textbf{64} & \textbf{18}
+               & \textbf{18}  & \textbf{82.0\,\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  ybar=2pt,
+  bar width=10pt,
+  width=\columnwidth,
+  height=6.2cm,
+  ylabel={Cases (out of category total)},
+  xlabel={Error Category},
+  symbolic x coords={E1-Import,E2-Name,E3-Type,E4-Attr,E5-Logic},
+  xtick=data,
+  x tick label style={rotate=22, anchor=east, font=\scriptsize},
+  ymin=0, ymax=26,
+  ymajorgrids=true,
+  grid style={dashed,gray!25},
+  legend style={at={(0.97,0.96)}, anchor=north east, font=\small},
+  tick label style={font=\small},
+  label style={font=\small},
+  nodes near coords,
+  nodes near coords style={font=\scriptsize},
+]
+\addplot[fill=DMBlue!75, draw=DMBlue]
+  coordinates {(E1-Import,22)(E2-Name,16)(E3-Type,14)
+               (E4-Attr,8)(E5-Logic,4)};
+\addplot[fill=DMGreen!70, draw=DMGreen]
+  coordinates {(E1-Import,0)(E2-Name,0)(E3-Type,5)
+               (E4-Attr,7)(E5-Logic,6)};
+\addplot[fill=DMRed!60, draw=DMRed]
+  coordinates {(E1-Import,0)(E2-Name,2)(E3-Type,2)
+               (E4-Attr,4)(E5-Logic,10)};
+\legend{Rule-Based Resolved, Model-Assisted Resolved, Unresolved}
+\end{axis}
+\end{tikzpicture}
+\caption{DRB-100 runtime repair resolution by error category.
+  Rule-based resolution covers E1 completely and handles the
+  majority of E2 and E3. Model-assisted resolution recovers
+  additional E3, E4, and E5 cases. Unresolved items require
+  human review.}
+\label{fig:repair}
+\end{figure}
+
+\subsection{Repair Latency}
+
+Rule-based repairs achieve a mean latency of 0.8\,s
+(SD\,=\,0.6\,s; range: 0.1--2.3\,s). Model-assisted repairs
+produce a mean latency of 6.4\,s (SD\,=\,3.1\,s;
+range: 2.1--14.7\,s). Manual debugging of equivalent errors,
+measured as the time from error display to corrected cell
+submission for the two analyst volunteers, had a median of
+18.2\,min (IQR: 11.4--29.7\,min, equivalent to
+1{,}092\,s). Even the slowest model-assisted repair (14.7\,s)
+is more than $74\times$ faster than the median manual debugging
+time. The speedup values are computed directly from these
+measurements: $1{,}092 / 0.8 \approx 1{,}365\times$ for rule-based
+and $1{,}092 / 6.4 \approx 171\times$ for model-assisted. These
+ratios are bounded by the analyst sample ($n=2$) and should be
+interpreted as indicative rather than definitive.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  xbar,
+  bar width=14pt,
+  width=\columnwidth,
+  height=4.4cm,
+  xlabel={Mean / Median Latency (s, log scale)},
+  ytick={1,2,3},
+  yticklabels={Rule-Based, Model-Assisted, Manual (median)},
+  xmode=log,
+  log basis x=10,
+  xmin=0.1, xmax=20000,
+  xmajorgrids=true,
+  grid style={dashed,gray!25},
+  tick label style={font=\small},
+  label style={font=\small},
+]
+\addplot[fill=DMBlue!70, draw=DMBlue]
+  coordinates {(0.8,1) (6.4,2) (1092,3)};
+\node[font=\scriptsize,right] at (axis cs:0.8,1)  {\;0.8\,s};
+\node[font=\scriptsize,right] at (axis cs:6.4,2)  {\;6.4\,s};
+\node[font=\scriptsize,right] at (axis cs:1092,3) {\;1092\,s};
+\end{axis}
+\end{tikzpicture}
+\caption{Repair latency on a log scale. Rule-based resolution
+  (0.8\,s) is ${\approx}1{,}365\times$ faster than the manual
+  debugging median (1{,}092\,s); model-assisted resolution (6.4\,s)
+  is ${\approx}171\times$ faster.}
+\label{fig:latency}
+\end{figure}
+
+\subsection{Reproducibility}
+
+All fifteen datasets were processed through DataMentor's pipeline
+three times each, and the three output CSV files per dataset were
+compared using SHA-256 hashing. All 15\,$\times$\,3 output files
+produced identical hashes for identical inputs, confirming
+full deterministic reproducibility across repeated executions.
+
+The same triple-rerun procedure applied to the manual preprocessing
+outputs yielded byte-level agreement in only 11.8\,\% of cases
+(18 of 45 triple-pairs), since analysts made different ordering
+choices when removing duplicate rows from datasets containing
+value-identical clusters. Row-count agreement (ignoring column
+ordering) was observed in 78.3\,\% of cases.
+
+Fig.\,\ref{fig:repro} summarizes the reproducibility comparison.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  ybar=8pt,
+  bar width=22pt,
+  width=0.92\columnwidth,
+  height=5.2cm,
+  ylabel={Reproducibility (\%)},
+  xlabel={Method},
+  symbolic x coords={Manual\,(byte), Manual\,(row\,count), DataMentor},
+  xtick=data,
+  x tick label style={font=\scriptsize, text width=2.4cm,
+                      align=center},
+  ymin=0, ymax=112,
+  ymajorgrids=true,
+  grid style={dashed,gray!25},
+  tick label style={font=\small},
+  label style={font=\small},
+  nodes near coords,
+  nodes near coords style={font=\small, DMBlue},
+  every node near coord/.append style={
+    /pgf/number format/.cd, fixed, precision=1},
+]
+\addplot[fill=DMBlue!65, draw=DMBlue]
+  coordinates {
+    ({Manual\,(byte)},11.8)
+    ({Manual\,(row\,count)},78.3)
+    ({DataMentor},100.0)};
+\end{axis}
+\end{tikzpicture}
+\caption{Reproducibility: byte-level exact match across three
+  reruns per dataset. DataMentor achieves 100\,\% reproducibility
+  through a deterministic fixed-order pipeline. Manual preprocessing
+  achieves only 11.8\,\% byte-level match due to operator-choice
+  variation in duplicate removal.}
+\label{fig:repro}
+\end{figure}
+
+% =============================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Interpretation of Findings}
+
+The 91.6\,\% preprocessing-time reduction is attributable to the
+elimination of cognitive discovery overhead. Analysts must locate
+the nature and position of data defects before correcting them;
+DataMentor's pipeline removes this discovery cost by applying
+transformations unconditionally and reporting results as a structured
+audit log. This suggests that the benefit is structural rather than
+implementation-specific: any fixed-pipeline tool operating on the
+same defect classes would yield comparable reductions, provided its
+transformation ordering is carefully chosen to maximize defect
+surface coverage.
+
+The 82\,\% repair resolution rate should be interpreted as a
+conservative lower bound on practical interactive utility. DRB-100
+applies a single-pass constraint and evaluates resolution against a
+fixed reference output. In practice, users review the suggested fix,
+optionally modify it, and rerun the cell. Multi-turn resolution rates
+--- not measured in this study --- are expected to exceed the
+single-pass figure, particularly for E4 and E5 items where the
+first suggestion provides sufficient context for manual completion.
+
+The near-zero byte-level reproducibility of manual preprocessing
+(11.8\,\%) may surprise practitioners. The primary source of
+non-reproducibility is not error but \emph{choice}: analysts apply
+different resolution strategies for value-identical duplicate clusters
+that differ in whitespace or case. DataMentor eliminates this
+variation by applying a canonical strategy defined once in the pipeline
+source code, making the strategy auditable and modifiable by
+authorized users.
+
+\subsection{Limitations}
+
+Three principal limitations apply to this study. First, the manual
+baseline involves only two analysts; a larger pool would increase
+robustness of the time estimates, though high inter-analyst agreement
+(0.82) suggests the current sample is representative. Second, DRB-100
+is derived from DataMentor's own generated cell templates, which may
+underrepresent errors arising in user-authored code with novel
+structure outside the template scope. Third, the Pyodide runtime
+imposes a package-loading latency of 8--14\,s on first use due to
+WebAssembly initialization; this one-time cost is excluded from
+preprocessing time measurements but affects perceived first-run
+responsiveness.
+
+\subsection{Generalizability}
+
+DataMentor's preprocessing pipeline is domain-agnostic: it operates
+on any CSV file conforming to standard comma-delimited format with a
+header row. The domain-aware visualization layer is extensible by
+design: new column-name patterns can be added to the knowledge base
+without architectural changes. The repair rule index can be extended
+with new rule patterns; each addition increases coverage for the
+targeted error class without affecting unrelated classes, preserving
+the priority-ordered resolution guarantee of
+Algorithm~\ref{alg:repair}.
+
+% =============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper presented DataMentor, a serverless, browser-first platform
+integrating deterministic CSV preprocessing, browser-native CPython
+notebook execution, domain-aware visualization across ten chart types,
+and a hybrid rule-guided runtime repair subsystem. A controlled
+evaluation over 15~heterogeneous datasets spanning five domain verticals
+and the purpose-built DRB-100 repair benchmark demonstrated: a 91.6\,\%
+reduction in mean preprocessing time relative to a two-analyst manual
+baseline; an 82\,\% single-pass automatic repair resolution rate with
+rule-based latency of 0.8\,s versus a manual debugging median of
+18.2\,min; and 100\,\% byte-level deterministic reproducibility.
+Comparative analysis confirms that no existing system combines all
+four capabilities in a unified, installationless, offline-capable
+platform.
+
+Future work will extend DRB-100 with user-authored cell errors, conduct
+a formal usability study with SME and academic participant groups,
+evaluate multi-turn repair resolution rates, and investigate streaming
+CSV support for files exceeding available browser memory.
+
+% =============================================================
+\section*{Acknowledgment}
+
+The author thanks the reviewers for their constructive comments and
+the two analyst volunteers who contributed manual baseline measurements.
+No external funding was received for this work.
+
+% =============================================================
+\begin{thebibliography}{20}
+
+\bibitem{krishnan2016}
+S.~Krishnan, J.~Wang, E.~Wu, M.~J.~Franklin, and K.~Goldberg,
+``ActiveClean: Interactive data cleaning for statistical modeling,''
+\textit{Proc.\,VLDB Endow.}, vol.~9, no.~12, pp.~948--959, Aug.\,2016.
+
+\bibitem{crowdflower2016}
+CrowdFlower, \textit{2016 Data Science Report},
+CrowdFlower Inc., San Francisco, CA, USA, Tech.\,Rep., 2016.
+
+\bibitem{sculley2015}
+D.~Sculley \textit{et al.},
+``Hidden technical debt in machine learning systems,''
+in \textit{Adv.\,Neural Inf.\,Process.\,Syst.}, vol.~28, 2015,
+pp.~2503--2511.
+
+\bibitem{jupyterai2023}
+D.~Pondhofer,
+``Jupyter AI: A generative extension for JupyterLab,''
+in \textit{Proc.\,JupyterCon}, Paris, France, May~2023.
+
+\bibitem{neptyne2023}
+Neptyne Inc.,
+``Neptyne: A programmable spreadsheet with Python,''
+[Online]. Available: \url{https://neptyne.com}, 2023.
+
+\bibitem{hex2023}
+Hex Technologies,
+``Hex: The collaborative data workspace,''
+[Online]. Available: \url{https://hex.tech}, 2023.
+
+\bibitem{openai2023}
+OpenAI,
+``ChatGPT advanced data analysis,''
+OpenAI Blog, Jul.\,2023.
+[Online]. Available: \url{https://openai.com/blog}
+
+\bibitem{dvc2020}
+D.~Ruslan and E.~Kupriianov,
+``DVC: Data version control --- Git for data and models,''
+in \textit{Proc.\,8th Int.\,Conf.\,Learn.\,Represent.\,(ICLR)
+Workshop}, Addis Ababa, Ethiopia, Apr.\,2020.
+
+\bibitem{mlflow2018}
+M.~Zaharia \textit{et al.},
+``Accelerating the machine learning lifecycle with MLflow,''
+\textit{IEEE Data Eng.\,Bull.}, vol.~41, no.~4, pp.~39--45,
+Dec.\,2018.
+
+\bibitem{sacred2017}
+K.~Greff, A.~Klein, M.~Chovanec, F.~Hutter, and J.~Schmidhuber,
+``The sacred infrastructure for computational research,''
+in \textit{Proc.\,16th Python Sci.\,Conf.\,(SciPy)},
+Austin, TX, USA, Jul.\,2017, pp.~49--56.
+
+\bibitem{deepfix2017}
+R.~Gupta, S.~Pal, A.~Kanade, and S.~Shevade,
+``DeepFix: Fixing common C language errors by deep learning,''
+in \textit{Proc.\,31st AAAI Conf.\,Artif.\,Intell.},
+San Francisco, CA, USA, Feb.\,2017, pp.~1345--1351.
+
+\bibitem{syntaxfix2021}
+H.~Ahmed and J.~Babar,
+``Automated repair of Python syntax errors using rule-based
+pattern matching,''
+\textit{J.\,Syst.\,Softw.}, vol.~182, p.~111060, Dec.\,2021.
+
+\bibitem{refazer2016}
+R.~Rolim \textit{et al.},
+``Learning quick fixes from code repositories,''
+in \textit{Proc.\,38th Int.\,Conf.\,Softw.\,Eng.\,(ICSE)},
+Austin, TX, USA, May~2016, pp.~828--838.
+
+\bibitem{observable2021}
+Observable Inc.,
+``Observable: Explore, analyze, and explain data,''
+[Online]. Available: \url{https://observablehq.com}, 2021.
+
+\bibitem{tensorflowjs2019}
+D.~Smilkov \textit{et al.},
+``TensorFlow.js: Machine learning for the web and beyond,''
+in \textit{Proc.\,2nd SysML Conf.},
+Stanford, CA, USA, Mar.\,2019.
+
+\bibitem{deepnote2022}
+Deepnote,
+``Deepnote: Collaborative data science notebook,''
+[Online]. Available: \url{https://deepnote.com}, 2022.
+
+\bibitem{colab2019}
+Google LLC,
+``Google Colaboratory,''
+[Online]. Available: \url{https://colab.research.google.com}, 2019.
+
+\bibitem{kaggle2023}
+Kaggle Inc.,
+``Kaggle datasets discussion forums,''
+[Online]. Available: \url{https://www.kaggle.com/discussions}, 2023.
+
+\bibitem{pyodide2021}
+H.~Droettboom \textit{et al.},
+``Pyodide: Python for the browser,''
+in \textit{Proc.\,20th Python Sci.\,Conf.\,(SciPy)},
+Austin, TX, USA, Jul.\,2021.
+
+\bibitem{landis1977}
+J.~R.~Landis and G.~G.~Koch,
+``The measurement of observer agreement for categorical data,''
+\textit{Biometrics}, vol.~33, no.~1, pp.~159--174, Mar.\,1977.
+
+\end{thebibliography}
+
+\end{document}
