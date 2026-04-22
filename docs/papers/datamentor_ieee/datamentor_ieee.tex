@@ -7,11 +7,11 @@
 
 \documentclass[conference]{IEEEtran}
 
-% ── PDF Encryption (pdfLaTeX native primitives) ──────────────
-% Level 3 = AES-128.  Must appear before \begin{document}.
-\pdfencryptlevel=3
-\pdfuserpassword{MARC@151995$}
-\pdfownerpassword{MARC@151995$}
+% ── PDF Encryption ───────────────────────────────────────────
+% pdfTeX ≥ 1.40.22 removed \pdfencryptlevel primitives.
+% Apply AES-256 password protection after compilation with:
+%   qpdf --encrypt MARC@151995$ MARC@151995$ 256 -- \
+%        datamentor_ieee.pdf datamentor_ieee_protected.pdf
 
 % ── Core Packages ────────────────────────────────────────────
 \usepackage[T1]{fontenc}
@@ -33,9 +33,10 @@
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning,
                 fit,backgrounds,calc}
 
-% ── Algorithm ────────────────────────────────────────────────
-\usepackage{algorithm}
-\usepackage{algpseudocode}
+% ── Pseudocode (uses enumitem + framed, no algorithm pkg needed)
+\usepackage{enumitem}
+\usepackage{framed}
+\usepackage{capt-of}
 
 % ── Captions / Sub-figures ───────────────────────────────────
 \usepackage{caption}
@@ -47,7 +48,7 @@
   pdftitle  = {DataMentor: A Practical Framework for Serverless
                CSV Intelligence with Interactive Notebook Automation
                and Deterministic Runtime Repair},
-  pdfauthor = {MD ANISUR RAHMAN CHOWDHURY},
+  pdfauthor = {Md Anisur Rahman Chowdhury, Dr. Ronny Bazan-Antequera},
   pdfsubject= {Serverless Analytics, Notebook Automation,
                Runtime Repair},
   pdfkeywords={CSV preprocessing, browser-native execution,
@@ -423,29 +424,40 @@ candidate fix from the error message, column schema, and cell context.
 The repair is presented as a suggestion with explicit diff display;
 the user must accept before the fix is applied.
 
-\begin{algorithm}[t]
-\caption{HybridRepair: Priority-Rule with Model Fallback}
+\begin{figure}[t]
+\begin{framed}
+\footnotesize
+\noindent\textbf{Algorithm 1:} \textit{HybridRepair} —
+Priority-Rule with Model-Assisted Fallback\\[3pt]
+\noindent\textbf{Input:}~~Traceback $T$, cell source $C$, CSV schema $S$\\
+\noindent\textbf{Output:} Corrected source $C'$, or \textsc{Unresolved}\\[4pt]
+\begin{enumerate}[leftmargin=2em, label=\textbf{\arabic*.}, nosep,
+                  itemsep=2pt]
+  \item Parse $T$\;$\Rightarrow$\;(\textit{errClass},
+        \textit{errMsg}, \textit{lineNo})
+  \item \textbf{for each} rule $r\in$\textsc{RuleIndex}
+        (descending priority) \textbf{do}
+  \item \hspace{1.4em}\textbf{if}
+        $r$.\textsc{Matches}(\textit{errClass},\,\textit{errMsg})
+        \textbf{then}
+  \item \hspace{2.8em}$C' \gets r$.\textsc{Apply}($C$,\,$S$)
+  \item \hspace{2.8em}\textbf{if}
+        \textsc{Verify}($C'$,\,\textit{expectedHash})
+        \textbf{then return}\;$C'$
+  \item \hspace{1.4em}\textbf{end if} \;\textbf{end for}
+  \item $\mathit{ctx} \gets \textsc{BuildContext}(T,\,C,\,S)$
+  \item $C' \gets \textsc{LocalModelModule.Infer}(\mathit{ctx})$
+  \item \textbf{if} \textsc{Verify}($C'$,\,\textit{expectedHash})
+        \textbf{then return}\;$C'$
+  \item \textbf{return} \textsc{Unresolved}
+\end{enumerate}
+\end{framed}
+\vspace{-0.5em}
+\captionof{figure}{HybridRepair pseudocode: rule index is exhausted
+  before escalation to the local model-assisted repair module.}
 \label{alg:repair}
-\begin{algorithmic}[1]
-\Require Traceback $T$, cell source $C$, CSV schema $S$
-\Ensure  Corrected source $C'$, or \textsc{Unresolved}
-\State Parse $T$ $\Rightarrow$ (\textit{errClass}, \textit{errMsg}, \textit{lineNo})
-\ForAll{rule $r$ in \textsc{RuleIndex} (sorted by priority)}
-  \If{$r$.\textsc{Matches}(\textit{errClass}, \textit{errMsg})}
-    \State $C' \gets r$.\textsc{Apply}($C$, $S$)
-    \If{\textsc{Verify}($C'$, \textit{expectedHash})}
-      \State \Return $C'$
-    \EndIf
-  \EndIf
-\EndFor
-\State $\mathit{ctx} \gets$ \textsc{BuildContext}($T$, $C$, $S$)
-\State $C' \gets$ \textsc{LocalModelModule.Infer}($\mathit{ctx}$)
-\If{\textsc{Verify}($C'$, \textit{expectedHash})}
-  \State \Return $C'$
-\EndIf
-\State \Return \textsc{Unresolved}
-\end{algorithmic}
-\end{algorithm}
+\vspace{0.5em}
+\end{figure}
 
 % =============================================================
 \section{Methodology and Benchmark Construction}
