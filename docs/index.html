@@ -659,21 +659,21 @@
 
     <section class="panel reveal section section-alt" id="paper">
       <div class="container">
-        <p class="section-kicker">Research Manuscript</p>
-        <h2 class="section-title">IEEE Conference Paper — Open Access</h2>
+        <p class="section-kicker">Protected Manuscript</p>
+        <h2 class="section-title">Public first-page preview only</h2>
         <p class="section-subtitle">
-          The full conference PDF and LaTeX source package are freely available below.
-          Free to read, download, and cite with proper attribution.
+          The site intentionally exposes only the first-page manuscript preview and abstract summary.
+          The full conference PDF and LaTeX source package are available only through the policy gate.
         </p>
 
         <div class="paper-preview-shell">
           <article class="paper-sheet paper-sheet-preview">
             <a
               class="paper-preview-link"
-              href="./papers/datamentor_ieee/datamentor_ieee.pdf"
+              href="./papers/datamentor_ieee/datamentor_page1.png"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Open full paper PDF"
+              aria-label="Open first-page manuscript preview"
             >
               <img
                 src="./papers/datamentor_ieee/datamentor_page1.png"
@@ -681,54 +681,103 @@
                 loading="lazy"
               />
               <span class="paper-preview-overlay" aria-hidden="true">
-                <strong>Click to open full PDF</strong>
-                <span>Opens the complete conference paper in a new tab</span>
+                <strong>Interactive First-Page Preview</strong>
+                <span>Move pointer to inspect and click to open full resolution</span>
               </span>
             </a>
 
             <div class="paper-insight-grid">
               <article>
-                <h4>Open access</h4>
-                <p>Full PDF available for reading, download, and citation.</p>
+                <h4>Public visibility</h4>
+                <p>Only this first page is openly visible in the portal.</p>
               </article>
               <article>
-                <h4>Source included</h4>
-                <p>Complete LaTeX source and bibliography provided.</p>
+                <h4>Protected assets</h4>
+                <p>Full PDF and LaTeX source are password-protected.</p>
               </article>
+            </div>
+
+            <div class="paper-lock">
+              Preview access is intentionally limited to first-page manuscript information. Complete the policy steps and enter the access password to unlock the secure downloads.
             </div>
           </article>
 
           <aside class="policy-card">
-            <h3>Download the paper</h3>
-            <p style="margin-bottom:1.2rem;font-size:0.93rem;opacity:0.85;">
-              Both files are freely available with no gate or password required.
-              Please cite the work if you use it in your research.
-            </p>
-
-            <a
-              class="btn btn-primary policy-open-btn"
-              href="./papers/datamentor_ieee/datamentor_ieee.pdf"
-              download="DataMentor_IEEE_Paper.pdf"
-              style="display:block;text-align:center;margin-bottom:0.75rem;text-decoration:none;"
-            >
-              ⬇ Download Conference PDF
-            </a>
-
-            <a
-              class="btn btn-primary policy-open-btn"
-              href="./papers/datamentor_ieee/datamentor_ieee_latex_source.zip"
-              download="DataMentor_LaTeX_Source.zip"
-              style="display:block;text-align:center;margin-bottom:1.4rem;text-decoration:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);"
-            >
-              ⬇ Download LaTeX Source (.zip)
-            </a>
-
-            <p style="font-size:0.82rem;opacity:0.6;line-height:1.5;">
-              Reading and downloading are permitted for academic and non-commercial use.
-              Redistribution must preserve author attribution.
-              Commercial resale and plagiarism are prohibited.
-            </p>
+            <h3>Download policy</h3>
+            <ol class="policy-list">
+              <li>Follow the author on GitHub.</li>
+              <li>Subscribe to the YouTube channel and review the overview video.</li>
+              <li>Send a password request email to the author.</li>
+              <li>Enter the password to unlock the download links.</li>
+            </ol>
+            <button class="btn btn-primary policy-open-btn" id="policyOpenGateBtn" type="button">Open secure download gate</button>
           </aside>
+
+          <div class="policy-modal" id="policyGateModal" hidden>
+            <div class="policy-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="policyGateTitle">
+              <button type="button" class="policy-modal-close" id="policyGateCloseBtn" aria-label="Close secure download gate">×</button>
+              <h3 id="policyGateTitle">Secure download gate</h3>
+              <p class="policy-modal-subtitle">Complete the public policy steps, then unlock the protected downloads.</p>
+
+              <div class="policy-gate-shell" id="policyGateStep1">
+                <span class="policy-gate-badge">STEP 1</span>
+                <h4>Follow the public channels</h4>
+                <p>Open the official profile and video links first, then confirm the two checks below.</p>
+                <a class="policy-action-btn policy-action-btn--secondary" href="https://github.com/ANIS151993" target="_blank" rel="noopener noreferrer">Open GitHub profile</a>
+                <a class="policy-action-btn policy-action-btn--secondary" href="https://youtu.be/yN4jibDm8v8" target="_blank" rel="noopener noreferrer">Open YouTube video</a>
+                <label class="policy-check">
+                  <input id="policyStep1Github" type="checkbox" />
+                  <span>I followed the GitHub profile.</span>
+                </label>
+                <label class="policy-check">
+                  <input id="policyStep1Youtube" type="checkbox" />
+                  <span>I subscribed to the YouTube channel.</span>
+                </label>
+                <button class="policy-action-btn policy-action-btn--primary" id="policyStep1Next" type="button" disabled>Continue</button>
+              </div>
+
+              <div class="policy-gate-shell" id="policyGateStep2" hidden>
+                <span class="policy-gate-badge">STEP 2</span>
+                <h4>Request the password</h4>
+                <p>Send a short request email so the author can verify the purpose of access before sharing the document password.</p>
+                <a
+                  class="policy-action-btn policy-action-btn--secondary"
+                  href="mailto:engr.aanis@gmail.com?subject=Password%20request%20for%20DataMentor%20research%20download&body=Hello%20Md%20Anisur%20Rahman%20Chowdhury%2C%0A%0AI%20followed%20the%20GitHub%20profile%2C%20subscribed%20to%20the%20YouTube%20channel%2C%20and%20would%20like%20the%20password%20for%20the%20DataMentor%20IEEE%20research%20paper.%0A%0AName%3A%0AInstitution%3A%0APurpose%20of%20use%3A"
+                >Email the author</a>
+                <div id="policyEmailTemplate" class="policy-template-box">Subject: Password request for DataMentor research download
+
+Hello Md Anisur Rahman Chowdhury,
+I followed the GitHub profile, subscribed to the YouTube channel,
+and would like the password for the DataMentor IEEE research paper.
+Name:
+Institution:
+Purpose of use:</div>
+                <button class="policy-copy-btn" id="policyCopyTemplate" type="button">Copy email template</button>
+                <label class="policy-check">
+                  <input id="policyStep2Sent" type="checkbox" />
+                  <span>I sent the password request email.</span>
+                </label>
+                <button class="policy-action-btn policy-action-btn--primary" id="policyStep2Next" type="button" disabled>Continue</button>
+              </div>
+
+              <div class="policy-gate-shell" id="policyGateStep3" hidden>
+                <span class="policy-gate-badge">STEP 3</span>
+                <h4>Enter the password</h4>
+                <p>Enter the document password received from the author to reveal the download links.</p>
+                <input id="researchPasswordInput" class="policy-password-input" type="password" placeholder="Enter the document password" autocomplete="off" />
+                <p id="researchAccessStatus" class="policy-status" aria-live="polite"></p>
+                <button type="button" class="policy-action-btn policy-action-btn--primary" id="researchUnlockBtn">Unlock downloads</button>
+              </div>
+
+              <div class="policy-gate-shell" id="policyGateUnlocked" hidden>
+                <span class="policy-gate-badge">UNLOCKED</span>
+                <h4>Downloads ready</h4>
+                <p>The PDF is AES-256 password-protected. Use the same password to open it in any PDF viewer.</p>
+                <a class="policy-action-btn policy-action-btn--primary" id="researchDownloadBtn" href="#" download="DataMentor_IEEE_Paper.pdf">Download Conference PDF</a>
+                <a class="policy-action-btn policy-action-btn--secondary" id="researchDownloadZip" href="./papers/datamentor_ieee/datamentor_ieee_latex_source.zip" download="DataMentor_LaTeX_Source.zip" style="margin-top:0.6rem;display:block;text-align:center;">Download LaTeX Source (.zip)</a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

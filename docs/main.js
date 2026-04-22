@@ -426,7 +426,7 @@ function initResearchAccessPolicy() {
   }
 
   const expectedHash = "5b484d8b2799daf74779ce686501847d4a08b5e917c1e8395e1da7f7e73bce0d";
-  const encodedBundlePath = "Li9wYXBlcnMvZGF0YW1lbnRvcl9pZWVlL2RhdGFtZW50b3JfcmVzZWFyY2hfYnVuZGxlLnRhci5nei5lbmM=";
+  const encodedBundlePath = "Li9wYXBlcnMvZGF0YW1lbnRvcl9pZWVlL2RhdGFtZW50b3JfaWVlZS5wZGY=";
   const steps = [step1, step2, step3, unlocked];
   if (modal.parentElement !== document.body) {
     document.body.appendChild(modal);
