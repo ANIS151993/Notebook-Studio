@@ -440,9 +440,6 @@ function initResearchAccessPolicy() {
 
   function openModal() {
     resetFlow();
-    // Document protection removed: downloads are openly accessible.
-    downloadButton.setAttribute("href", atob(encodedBundlePath));
-    showStep(unlocked);
     modal.hidden = false;
     document.body.classList.add("policy-modal-open");
     window.requestAnimationFrame(() => {

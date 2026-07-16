@@ -703,21 +703,22 @@
           </article>
 
           <aside class="policy-card">
-            <h3>Download policy</h3>
+            <h3>Document access policy</h3>
+            <p class="policy-card-note">The conference PDF and the full research bundle are password-protected. Access is granted to readers who complete the steps below.</p>
             <ol class="policy-list">
               <li>Follow the author on GitHub.</li>
-              <li>Subscribe to the YouTube channel and review the overview video.</li>
-              <li>Send a password request email to the author.</li>
-              <li>Enter the password to unlock the download links.</li>
+              <li>Subscribe to the YouTube channel and watch the overview video.</li>
+              <li>Email the author to request the document password.</li>
+              <li>Enter the password to reveal the protected download links.</li>
             </ol>
-            <button class="btn btn-primary policy-open-btn" id="policyOpenGateBtn" type="button">Open secure download gate</button>
+            <button class="btn btn-primary policy-open-btn" id="policyOpenGateBtn" type="button">Open protected download gate</button>
           </aside>
 
           <div class="policy-modal" id="policyGateModal" hidden>
             <div class="policy-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="policyGateTitle">
-              <button type="button" class="policy-modal-close" id="policyGateCloseBtn" aria-label="Close secure download gate">×</button>
-              <h3 id="policyGateTitle">Secure download gate</h3>
-              <p class="policy-modal-subtitle">Complete the public policy steps, then unlock the protected downloads.</p>
+              <button type="button" class="policy-modal-close" id="policyGateCloseBtn" aria-label="Close protected download gate">×</button>
+              <h3 id="policyGateTitle">Protected download gate</h3>
+              <p class="policy-modal-subtitle">Complete the access-policy steps, then enter the password to unlock the protected downloads.</p>
 
               <div class="policy-gate-shell" id="policyGateStep1">
                 <span class="policy-gate-badge">STEP 1</span>
@@ -772,7 +773,7 @@ Purpose of use:</div>
               <div class="policy-gate-shell" id="policyGateUnlocked" hidden>
                 <span class="policy-gate-badge">UNLOCKED</span>
                 <h4>Downloads ready</h4>
-                <p>The PDF is AES-256 password-protected. Use the same password to open it in any PDF viewer.</p>
+                <p>The conference PDF is AES-256 password-protected — use the same password to open it in any PDF viewer. The LaTeX source archive (.tex, .cls, .bib) is provided for reference.</p>
                 <a class="policy-action-btn policy-action-btn--primary" id="researchDownloadBtn" href="#" download="DataMentor_IEEE_Paper.pdf">Download Conference PDF</a>
                 <a class="policy-action-btn policy-action-btn--secondary" id="researchDownloadZip" href="./papers/datamentor_ieee/datamentor_ieee_latex_source.zip" download="DataMentor_LaTeX_Source.zip" style="margin-top:0.6rem;display:block;text-align:center;">Download LaTeX Source (.zip)</a>
               </div>

@@ -1,3 +1,0 @@
-runtime,p50_ms,p95_ms,tokens_per_sec
-WebGPU,182,341,46.9
-WASM-q4,692,1187,12.8
