@@ -1,0 +1,6 @@
+category,pass1_pct,pass3_pct,repair_success_pct
+Syntax Recovery,92.5,97.5,97.5
+Pandas Transform,85.45,94.55,94.6
+Runtime Debug,81.54,93.85,93.8
+Data Validation,90.0,96.67,96.7
+Pipeline Authoring,80.0,93.33,93.3

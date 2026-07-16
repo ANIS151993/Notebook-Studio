@@ -1,0 +1,6 @@
+category,total,pass1,pass3,repair_success
+Syntax Recovery,40,37,39,97.5
+Pandas Transform,55,47,52,94.6
+Runtime Debug,65,53,61,93.8
+Data Validation,30,27,29,96.7
+Pipeline Authoring,30,24,28,93.3

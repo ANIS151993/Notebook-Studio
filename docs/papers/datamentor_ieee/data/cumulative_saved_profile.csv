@@ -1,0 +1,6 @@
+stage,academic,sme,enterprise
+Ingestion,15,18,22
+Cleaning,39,45,56
+Validation,51,60,75
+Notebook Prep,62,74,92
+Debugging,82,97,118

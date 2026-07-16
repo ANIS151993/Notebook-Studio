@@ -1,0 +1,4 @@
+configuration,pass1,repair_rate,latency_ms
+Rules Only,71.4,76.3,88
+Model Only,79.2,83.8,431
+Hybrid (Rules -> Model),89.7,93.9,214

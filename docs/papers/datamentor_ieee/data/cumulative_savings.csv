@@ -1,0 +1,16 @@
+profile,stage,cumulative_manual,cumulative_datamentor,saved_minutes
+Academic,Ingestion,22,7,15
+Academic,Cleaning,56,17,39
+Academic,Validation,74,23,51
+Academic,Notebook Prep,90,28,62
+Academic,Debugging,119,37,82
+SME,Ingestion,28,10,18
+SME,Cleaning,69,24,45
+SME,Validation,93,33,60
+SME,Notebook Prep,115,41,74
+SME,Debugging,150,53,97
+Enterprise,Ingestion,35,13,22
+Enterprise,Cleaning,87,31,56
+Enterprise,Validation,118,43,75
+Enterprise,Notebook Prep,145,53,92
+Enterprise,Debugging,187,69,118

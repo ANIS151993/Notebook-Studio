@@ -1,0 +1,16 @@
+DataMentor Benchmark Run
+Generated at (UTC): 2026-03-08T18:01:55.745195+00:00
+
+Stage-time improvement by profile:
+- Academic: 68.91% reduction
+- SME: 64.67% reduction
+- Enterprise: 63.1% reduction
+
+Python expertise benchmark:
+- Overall Pass@1: 85.45%
+- Overall Pass@3: 95.0%
+- Overall Repair Success: 95.0%
+
+Runtime throughput:
+- WebGPU: p50=182ms, p95=341ms, 46.9 tokens/s
+- WASM-q4: p50=692ms, p95=1187ms, 12.8 tokens/s

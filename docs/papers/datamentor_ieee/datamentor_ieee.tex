@@ -2,9 +2,7 @@
 %  DataMentor — IEEE Conference Paper
 %  Authors: Md Anisur Rahman Chowdhury & Dr. Ronny Bazan-Antequera
 %  Affiliation: Gannon University, USA
-%  PDF Password (apply via qpdf post-compile): MARC@151995$
-%    qpdf --encrypt MARC@151995$ MARC@151995$ 256 --
-%         datamentor_ieee.pdf datamentor_ieee_protected.pdf
+%  Distribution: unprotected — no PDF password applied.
 %  Compile: pdflatex (two passes)
 % =============================================================
 
@@ -145,7 +143,9 @@ a single zero-installation environment.
 
 This paper describes \textbf{DataMentor}\,---\,a platform that closes
 this integration gap in a browser-first, installationless workflow
-deployable to any device with a modern web browser. DataMentor is
+deployable to any device with a modern web browser, extending our
+prior work on serverless, zero-trust service
+architectures~\cite{chowdhury2025serverless}. DataMentor is
 live at \url{https://datamentor.marcbd.site} and built on Next.js~16,
 React~19, TypeScript, Pyodide~0.25, Firebase, and Chart.js. The
 system makes four primary contributions:
@@ -184,13 +184,11 @@ summarizes the functional scope of representative systems.
 
 JupyterAI~\cite{jupyterai2023} integrates code-completion into
 JupyterLab via an external API but requires a locally running server
-and provides no deterministic cleaning guarantee. Neptyne~\cite{neptyne2023}
-extends spreadsheet metaphors with Python formulas, targeting tabular
-manipulation rather than notebook automation. Hex~\cite{hex2023} is a
+and provides no deterministic cleaning guarantee. Hex~\cite{hex2023} is a
 subscription-gated cloud notebook with no offline capability. Code
 Interpreter~\cite{openai2023} accepts CSV uploads but provides no
 persistent workspace, cleaning audit, or domain-aware chart generation.
-DataMentor differs from all four: preprocessing is deterministic and
+DataMentor differs from all three: preprocessing is deterministic and
 server-free; the execution environment is fully in-browser; and the
 notebook is pre-generated with 14~guided cells.
 
@@ -911,10 +909,12 @@ D.~Pondhofer,
 ``Jupyter AI: A generative extension for JupyterLab,''
 in \textit{Proc.\,JupyterCon}, Paris, France, May~2023.
 
-\bibitem{neptyne2023}
-Neptyne Inc.,
-``Neptyne: A programmable spreadsheet with Python,''
-[Online]. Available: \url{https://neptyne.com}, 2023.
+\bibitem{chowdhury2025serverless}
+M.~A.~R.~Chowdhury, H.~N.~Dang, R.~Bazan-Antequera, M.~S.~Khan,
+M.~R.~Karim, and S.~Manakkadu,
+``Towards a serverless intelligent firewall: AI-driven security
+and zero-trust architectures,''
+\textit{IEEE}, 2025.
 
 \bibitem{hex2023}
 Hex Technologies,

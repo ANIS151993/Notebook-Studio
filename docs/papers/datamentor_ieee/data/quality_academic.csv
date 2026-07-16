@@ -1,0 +1,6 @@
+metric,before,after
+Completeness,42,86
+Consistency,49,89
+Uniqueness,51,92
+Traceability,36,81
+Reusability,44,88
